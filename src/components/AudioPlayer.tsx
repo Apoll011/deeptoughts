@@ -243,7 +243,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [handleClickOutside]);
 
-    if (duration == 0) {
+    if (duration == 0) { //TODO: Fix this while loading this appears and change it to on error or something
         return (
             <div className="w-full h-48 bg-white rounded-2xl p-6 my-5 shadow-xl w-full border border-gray-200 transition-all duration-300 hover:shadow-2xl flex items-center justify-center">
                 <div className="text-center text-gray-300">

@@ -45,9 +45,7 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                 {hasError ? (
                     <div className="w-full h-48 bg-gray-900 flex items-center justify-center">
                         <div className="text-center text-gray-300">
-                            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="white" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 468.552"><path fill-rule="nonzero" d="M234.279 320.204c-3.085-37.773-8.145-44.093-10.098-68.552-1.966-24.662-3.6-60.342 31.765-60.342 37.063 0 33.94 39.748 31.277 65.224-2.162 20.979-6.85 28.527-9.77 63.67h-43.174zM97.632 0h316.736C468.072 0 512 43.928 512 97.632v273.292c0 53.682-43.95 97.629-97.632 97.629H97.632C43.927 468.553 0 424.629 0 370.924V97.632C0 43.902 43.901 0 97.632 0zm292.767 28.619H284.447l-37.054 94.343h105.793L389.4 30.763c.286-.725.62-1.441.999-2.144zm-130.818 0H150.703l-37.057 94.343h108.69l36.129-91.983c.314-.798.687-1.587 1.116-2.36zm-133.998 0H97.632c-37.929 0-69.013 31.084-69.013 69.013v25.33h59.75l36.215-92.199c.286-.725.62-1.441.999-2.144zM28.619 151.575v219.349c0 37.907 31.106 69.01 69.013 69.01h316.736c37.884 0 69.012-31.126 69.012-69.01V151.575H28.619zm454.761-28.613v-25.33c0-37.461-30.422-68.386-67.867-69.003l-37.051 94.333H483.38zM234.279 344.093h43.174v36.488h-43.174v-36.488z"/></svg>
                             <p className="text-sm">Failed to load video</p>
                         </div>
                     </div>
