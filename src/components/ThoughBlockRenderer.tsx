@@ -173,12 +173,6 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
             data-block-id={block.id}
             data-block-position={block.position}
         >
-            <div className="absolute -left-8 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
-                    {getBlockTypeIcon(block.type)}
-                </div>
-            </div>
-
             <div className="relative">
                 {block.type === 'text' && (
                     <TextBlock
@@ -214,6 +208,12 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                         <p className="text-sm text-gray-700">{block.content}</p>
                     </div>
                 )}
+            </div>
+
+            <div className="absolute right-3 bottom-4 opacity-100 transition-opacity">
+                <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                    {getBlockTypeIcon(block.type)}
+                </div>
             </div>
 
             {isSelected && (
