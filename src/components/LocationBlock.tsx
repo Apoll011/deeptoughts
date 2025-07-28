@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import type {LocationInfo} from "../types.ts";
+import React, { useState } from "react";
+import type { LocationInfo } from "../types.ts";
 
 interface LocationBlockProps {
     location: LocationInfo;
@@ -8,12 +8,22 @@ interface LocationBlockProps {
 
 export const LocationBlock: React.FC<LocationBlockProps> = ({ location, className = '' }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     const handleMapClick = () => {
         if (location.coordinates) {
             const { lat, lng } = location.coordinates;
-            const url = `https://maps.google.com/?q=${lat},${lng}`;
-            window.open(url, '_blank');
+            window.open(`https://maps.google.com/?q=${lat},${lng}`, '_blank');
+        }
+    };
+
+    const handleCopyCoordinates = () => {
+        if (location.coordinates) {
+            const coordStr = formatCoordinates(location.coordinates);
+            navigator.clipboard.writeText(coordStr).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+            });
         }
     };
 
@@ -21,8 +31,32 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
         return `${coords.lat.toFixed(4)}°, ${coords.lng.toFixed(4)}°`;
     };
 
+    const renderMap = () => {
+        const { lat, lng } = location.coordinates!;
+        return (
+            <div className="mt-3 rounded-xl overflow-hidden border border-blue-100 shadow-sm">
+                <iframe
+                    width="100%"
+                    height="250"
+                    className="rounded-xl w-full"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.01},${lat - 0.01},${lng + 0.01},${lat + 0.01}&layer=mapnik&marker=${lat},${lng}`}>
+                </iframe>
+
+            </div>
+        );
+    };
+
+    const renderLocalTime = () => {
+        try {
+            const date = new Date().toLocaleString("en-US", { timeZone: location.timezone });
+            return date;
+        } catch {
+            return "Unknown";
+        }
+    };
+
     return (
-        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-2xl ${className}`}>
+        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-2xl transition-all ${className}`}>
             {/* Header */}
             <div className="p-4 bg-white bg-opacity-70 backdrop-blur-sm border-b border-blue-100">
                 <div className="flex items-center justify-between">
@@ -34,13 +68,12 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
                             </svg>
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-900">{location.name}</h3>
+                            <h3 className="font-semibold text-gray-900">{location.name || "Unknown Location"}</h3>
                             {location.city && location.country && (
                                 <p className="text-sm text-gray-600">{location.city}, {location.country}</p>
                             )}
                         </div>
                     </div>
-
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
                         className="p-2 hover:bg-blue-100 rounded-full transition-colors"
@@ -72,7 +105,8 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
                 )}
 
                 {isExpanded && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
+                        {/* Address */}
                         {location.address && (
                             <div className="flex items-start space-x-2">
                                 <svg className="w-4 h-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,26 +116,37 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
                             </div>
                         )}
 
+                        {/* Coordinates */}
                         {location.coordinates && (
-                            <div className="flex items-start space-x-2">
-                                <svg className="w-4 h-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
                                 </svg>
-                                <button
-                                    onClick={handleMapClick}
-                                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                                >
+                                <button onClick={handleMapClick} className="text-sm text-blue-600 underline hover:text-blue-800">
                                     {formatCoordinates(location.coordinates)}
+                                </button>
+                                <button
+                                    onClick={handleCopyCoordinates}
+                                    className="ml-2 text-xs text-gray-500 hover:text-gray-700"
+                                    title="Copy to clipboard"
+                                >
+                                    {copied ? "✅" : "📋"}
                                 </button>
                             </div>
                         )}
 
+                        {/* Map */}
+                        {location.coordinates && renderMap()}
+
+                        {/* Timezone */}
                         {location.timezone && (
                             <div className="flex items-start space-x-2">
                                 <svg className="w-4 h-4 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <p className="text-sm text-gray-700">{location.timezone}</p>
+                                <p className="text-sm text-gray-700">
+                                    {location.timezone} — <span className="font-medium">{renderLocalTime()}</span>
+                                </p>
                             </div>
                         )}
                     </div>
