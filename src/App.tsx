@@ -60,7 +60,6 @@ const mockThoughts: Thought[] = [
                     type: 'audio',
                     url: '/music.mp3',
                     caption: "Button click and success chime"
-                    // duration and waveform will be generated on the fly
                 }
             },
             {
@@ -160,7 +159,7 @@ const mockThoughts: Thought[] = [
                 media: {
                     id: 'm3',
                     type: 'video',
-                    url: 'https://videos.pexels.com/video-files/4753007/4753007-uhd_2560_1440_24fps.mp4',
+                    url: '/home/apollo/WebstormProjects/deeptoughts/public/video.mp4',
                     duration: 30,
                     caption: "Children running and laughing"
                 }

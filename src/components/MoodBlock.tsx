@@ -33,7 +33,7 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
     const intensityBars = Array.from({ length: 10 }, (_, i) => i + 1);
 
     return (
-        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br ${getIntensityColor(mood.intensity)} border ${className}`}>
+        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br ${getIntensityColor(mood.intensity)} border hover:shadow-2xl ${className}`}>
             {/* Header */}
             <div className="p-4 bg-white bg-opacity-70 backdrop-blur-sm border-b border-opacity-20">
                 <div className="flex items-center justify-between">

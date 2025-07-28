@@ -31,7 +31,7 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
     };
 
     return (
-        <div className={`rounded-2xl overflow-hidden shadow-lg bg-white ${className}`}>
+        <div className={`rounded-2xl overflow-hidden shadow-lg bg-white hover:shadow-2xl ${className}`}>
             <div className="relative">
                 {isLoading && (
                     <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-10">
@@ -75,7 +75,6 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                     </div>
                 )}
             </div>
-
             {media.caption && (
                 <div className="p-4 bg-gray-50 border-t">
                     <p className="text-sm text-gray-700 leading-relaxed">

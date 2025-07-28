@@ -4,7 +4,6 @@ export interface MediaAttachment {
     url: string;
     caption?: string;
     duration?: number; // for audio/video in seconds
-    waveform?: number[]; // for audio visualization
 }
 
 export interface MediaBlockProps {

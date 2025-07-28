@@ -183,9 +183,9 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
     // Get volume icon based on current volume
     const getVolumeIcon = () => {
-        if (volume === 0) return <VolumeX className="w-5 h-5 text-gray-600" />;
-        if (volume < 0.5) return <Volume1 className="w-5 h-5 text-gray-600" />;
-        return <Volume2 className="w-5 h-5 text-gray-600" />;
+        if (volume === 0) return <VolumeX className="w-5 h-5 text-gray-600"/>;
+        if (volume < 0.5) return <Volume1 className="w-5 h-5 text-gray-600"/>;
+        return <Volume2 className="w-5 h-5 text-gray-600"/>;
     };
 
     // Handle keyboard shortcuts
@@ -195,7 +195,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
             // Check if the player is in the viewport
             const rect = playerRef.current.getBoundingClientRect();
-            const isInViewport = 
+            const isInViewport =
                 rect.top >= 0 &&
                 rect.left >= 0 &&
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
@@ -229,7 +229,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Handle click outside for dropdowns
     const handleClickOutside = useCallback((e: MouseEvent) => {
         if (volumeRef.current && !volumeRef.current.contains(e.target as Node)) {
             setShowVolumeSlider(false);
@@ -244,7 +243,16 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [handleClickOutside]);
 
-
+    if (duration == 0) {
+        return (
+            <div className="w-full h-48 bg-white rounded-2xl p-6 my-5 shadow-xl w-full border border-gray-200 transition-all duration-300 hover:shadow-2xl flex items-center justify-center">
+                <div className="text-center text-gray-300">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 16.5858V7.41421C12 6.52331 10.9229 6.07714 10.2929 6.70711L8.29289 8.70711C8.10536 8.89464 7.851 9 7.58579 9H6C5.44772 9 5 9.44772 5 10V14C5 14.5523 5.44772 15 6 15H7.58579C7.851 15 8.10536 15.1054 8.29289 15.2929L10.2929 17.2929C10.9229 17.9229 12 17.4767 12 16.5858Z" stroke="#000000" stroke-width="2" stroke-linecap="round"></path> <path d="M16.5361 13.5353V8" stroke="#000000" stroke-width="2" stroke-linecap="round"></path> <path d="M17.5361 16.598C17.5361 17.1503 17.0884 17.598 16.5361 17.598C15.9838 17.598 15.5361 17.1503 15.5361 16.598C15.5361 16.0457 15.9838 15.598 16.5361 15.598C17.0884 15.598 17.5361 16.0457 17.5361 16.598Z" fill="#000000"></path> </g></svg>
+                    <p className="text-sm">Failed to load Audio</p>
+                </div>
+            </div>
+        )
+    };
     return (
         <div 
             ref={playerRef}
@@ -273,11 +281,10 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.05)' }}
             >
                 {isWaveformLoading ? (
-                    // Loading placeholder
                     <div className="flex items-center justify-center w-full h-full">
                         <div className="animate-pulse flex space-x-1">
                             {Array(20).fill(0).map((_, index) => (
-                                <div 
+                                <div
                                     key={index}
                                     className="bg-gray-300 rounded-full"
                                     style={{

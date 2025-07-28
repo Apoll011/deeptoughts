@@ -22,7 +22,7 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
     };
 
     return (
-        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 ${className}`}>
+        <div className={`rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-2xl ${className}`}>
             {/* Header */}
             <div className="p-4 bg-white bg-opacity-70 backdrop-blur-sm border-b border-blue-100">
                 <div className="flex items-center justify-between">

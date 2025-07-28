@@ -15,7 +15,7 @@ export const ImageBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
     };
 
     return (
-        <div className={`rounded-2xl overflow-hidden shadow-lg bg-white ${className}`}>
+        <div className={`rounded-2xl overflow-hidden shadow-lg bg-white hover:shadow-2xl ${className}`}>
             <div className="relative">
                 {isLoading && (
                     <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">
