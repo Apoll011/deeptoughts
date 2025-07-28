@@ -11,6 +11,8 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
     const [playbackRate, setPlaybackRate] = useState(1);
     const [showPlaybackOptions, setShowPlaybackOptions] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
+    const [waveform, setWaveform] = useState<number[]>(media.waveform || []);
+    const [isWaveformLoading, setIsWaveformLoading] = useState(!media.waveform);
 
     const audioRef = useRef<HTMLAudioElement>(null);
     const progressRef = useRef<HTMLDivElement>(null);
@@ -52,18 +54,29 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         };
         const handleEnded = () => setIsPlaying(false);
 
+        // Load metadata and update duration as soon as possible
+        const handleLoadedMetadata = () => {
+            updateDuration();
+
+            // If we don't have a waveform yet and we're not already loading one,
+            // we can use the audio element's duration
+            if (waveform.length === 0 && !isWaveformLoading) {
+                console.log("Audio duration loaded:", audio.duration);
+            }
+        };
+
         audio.addEventListener('timeupdate', updateTime);
         audio.addEventListener('durationchange', updateDuration);
         audio.addEventListener('ended', handleEnded);
-        audio.addEventListener('loadedmetadata', updateDuration);
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
 
         return () => {
             audio.removeEventListener('timeupdate', updateTime);
             audio.removeEventListener('durationchange', updateDuration);
             audio.removeEventListener('ended', handleEnded);
-            audio.removeEventListener('loadedmetadata', updateDuration);
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
         };
-    }, []);
+    }, [waveform.length, isWaveformLoading]);
 
     // Update volume
     useEffect(() => {
@@ -78,6 +91,73 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
             audioRef.current.playbackRate = playbackRate;
         }
     }, [playbackRate]);
+
+    // Generate waveform data from audio file
+    useEffect(() => {
+        if (!media.waveform && media.url) {
+            setIsWaveformLoading(true);
+
+            const generateWaveform = async () => {
+                try {
+                    // Create audio context
+                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+                    // Fetch the audio file
+                    const response = await fetch(media.url);
+                    const arrayBuffer = await response.arrayBuffer();
+
+                    // Decode the audio data
+                    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+                    // Get the audio data
+                    const channelData = audioBuffer.getChannelData(0); // Use the first channel
+
+                    // Set the number of samples we want for our visualization
+                    const numberOfSamples = 50;
+                    const blockSize = Math.floor(channelData.length / numberOfSamples);
+
+                    // Create an array to hold our waveform data
+                    const waveformData = [];
+
+                    // Process the audio data to create the waveform
+                    for (let i = 0; i < numberOfSamples; i++) {
+                        let blockStart = blockSize * i;
+                        let sum = 0;
+
+                        // Calculate the average amplitude for this block
+                        for (let j = 0; j < blockSize; j++) {
+                            sum += Math.abs(channelData[blockStart + j]);
+                        }
+
+                        // Normalize the value (0-1)
+                        const average = sum / blockSize;
+                        waveformData.push(average);
+                    }
+
+                    // Normalize the waveform data to ensure good visual representation
+                    const maxValue = Math.max(...waveformData);
+                    const normalizedData = waveformData.map(value => value / maxValue);
+
+                    // Update the waveform state
+                    setWaveform(normalizedData);
+
+                    // Update the duration if not already set
+                    if (!media.duration) {
+                        setDuration(audioBuffer.duration);
+                    }
+
+                    setIsWaveformLoading(false);
+                } catch (error) {
+                    console.error("Error generating waveform:", error);
+                    setIsWaveformLoading(false);
+                    // Fallback to a default waveform if there's an error
+                    setWaveform(Array(50).fill(0.5));
+                }
+            };
+
+            generateWaveform();
+        }
+    }, [media.url, media.waveform, media.duration]);
 
     // Handle seeking
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -192,29 +272,49 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 onClick={handleSeek}
                 style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.05)' }}
             >
-                {media.waveform?.map((height, index) => {
-                    const isActive = index <= (currentTime / duration) * (media.waveform?.length || 1);
-                    const barHeight = Math.max(height * 100, 5);
+                {isWaveformLoading ? (
+                    // Loading placeholder
+                    <div className="flex items-center justify-center w-full h-full">
+                        <div className="animate-pulse flex space-x-1">
+                            {Array(20).fill(0).map((_, index) => (
+                                <div 
+                                    key={index}
+                                    className="bg-gray-300 rounded-full"
+                                    style={{
+                                        height: `${20 + Math.sin(index/3) * 15}%`,
+                                        width: '4px',
+                                        opacity: 0.7
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    // Actual waveform
+                    waveform.map((height, index) => {
+                        const isActive = index <= (currentTime / duration) * waveform.length;
+                        const barHeight = Math.max(height * 100, 5);
 
-                    return (
-                        <div
-                            key={index}
-                            className={`rounded-full transition-all duration-300 ${
-                                isActive
-                                    ? 'bg-blue-500'
-                                    : 'bg-gray-300'
-                            }`}
-                            style={{
-                                height: `${barHeight}%`,
-                                width: `${100 / (media.waveform?.length || 1)}%`,
-                                maxWidth: '6px',
-                                minWidth: '3px',
-                                minHeight: '4px',
-                                animation: isPlaying && isActive ? 'waveform-pulse 1s infinite' : 'none'
-                            }}
-                        />
-                    );
-                })}
+                        return (
+                            <div
+                                key={index}
+                                className={`rounded-full transition-all duration-300 ${
+                                    isActive
+                                        ? 'bg-blue-500'
+                                        : 'bg-gray-300'
+                                }`}
+                                style={{
+                                    height: `${barHeight}%`,
+                                    width: `${100 / waveform.length}%`,
+                                    maxWidth: '6px',
+                                    minWidth: '3px',
+                                    minHeight: '4px',
+                                    animation: isPlaying && isActive ? 'waveform-pulse 1s infinite' : 'none'
+                                }}
+                            />
+                        );
+                    })
+                )}
             </div>
 
             {/* Time display */}
