@@ -134,14 +134,6 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                     {getBlockTypeIcon(block.type)}
                 </div>
             </div>
-
-            {isSelected && (
-                <div className="absolute inset-0 bg-blue-50 bg-opacity-20 rounded-xl pointer-events-none" />
-            )}
-
-            {isLongPressing && (
-                <div className="absolute inset-0 bg-purple-100 bg-opacity-30 rounded-xl animate-pulse" />
-            )}
         </div>
     );
 };
