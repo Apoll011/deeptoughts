@@ -1,5 +1,5 @@
 import type {MediaBlockProps} from "../types.ts";
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import { Play, Pause, Volume2, Volume1, VolumeX, Maximize, Minimize, SkipForward, SkipBack, Settings } from "lucide-react";
 
 export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' }) => {
@@ -319,9 +319,8 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                                         <SkipForward className="w-5 h-5" />
                                     </button>
 
-                                    {/* Volume Control */}
-                                    <div className="relative">
-                                        <button 
+                                    <div className="relative w-5 h-5">
+                                        <button
                                             className="text-white hover:text-indigo-300 transition-colors"
                                             onClick={toggleMute}
                                             onMouseEnter={() => setShowVolumeSlider(true)}
@@ -336,7 +335,7 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                                         </button>
                                         {showVolumeSlider && (
                                             <div 
-                                                className="absolute bottom-full left-0 mb-2 bg-gray-800 rounded-lg p-2 shadow-lg"
+                                                className="absolute bottom-full left-2 mb-2 bg-gray-800 rounded-lg p-2 shadow-lg"
                                                 onMouseEnter={() => setShowVolumeSlider(true)}
                                                 onMouseLeave={() => setShowVolumeSlider(false)}
                                                 ref={volumeRef}
