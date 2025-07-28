@@ -203,7 +203,7 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                     <MoodBlock mood={block.mood} />
                 )}
 
-                {block.content && block.type !== 'text' && block.type !== 'media' && (
+                {block.content && block.type !== 'text' && block.type !== 'media' && block.type !== 'mood' && block.type !== 'location' && (
                     <div className="mt-3 p-3 bg-gray-50 rounded-lg">
                         <p className="text-sm text-gray-700">{block.content}</p>
                     </div>
