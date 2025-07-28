@@ -4,7 +4,7 @@ import type {MediaAttachment} from "../types.ts";
 
 export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
+    const [currentTime] = useState(0);
 
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
