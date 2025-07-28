@@ -28,13 +28,13 @@ export interface LocationInfo {
 
 export interface MoodInfo {
     id: string;
-    primary: string; // main mood
-    intensity: number; // 1-10 scale
-    secondary?: string[]; // additional mood descriptors
+    primary: string;
+    intensity: number;
+    secondary?: string[];
     energy?: 'low' | 'medium' | 'high';
-    color?: string; // hex color representation
+    color?: string;
     emoji?: string;
-    note?: string; // brief description
+    note?: string;
 }
 
 export interface ThoughtBlock {

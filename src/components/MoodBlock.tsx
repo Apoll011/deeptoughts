@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { MoodInfo } from "../types.ts";
-import { Sparkles, Flame, Activity, ChevronsUpDown, Heart, Zap, Cloud, Sun } from "lucide-react";
+import { Sparkles, Activity, ChevronsUpDown, Heart, Zap, Cloud, Sun } from "lucide-react";
 
 interface MoodBlockProps {
     mood: MoodInfo;

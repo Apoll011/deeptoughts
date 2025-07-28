@@ -7,10 +7,11 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
 
-    const handleMetadataLoaded = (event) => {
-      const videoDuration = event.target.duration;
-      setDuration(videoDuration);
+    const handleMetadataLoaded = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+        const videoDuration = event.currentTarget.duration;
+        setDuration(videoDuration);
     };
+
     const handleVideoLoad = () => {
         setIsLoading(false);
     };
@@ -71,7 +72,7 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                         </video>
 
                         {/* Duration badge */}
-                        {duration && (
+                        {duration && !isPlaying && (
                             <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium">
                                 {formatDuration(duration)}
                             </div>
