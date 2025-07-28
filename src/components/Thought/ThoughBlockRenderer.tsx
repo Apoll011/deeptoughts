@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {LocationBlock} from "./LocationBlock.tsx";
-import type {ThoughtBlock} from "../types.ts";
+import type {ThoughtBlock} from "../../types.ts";
 import {ImageBlock} from "./ImageBlock.tsx";
 import {VideoBlock} from "./VideoBlock.tsx";
 import {MoodBlock} from "./MoodBlock.tsx";
