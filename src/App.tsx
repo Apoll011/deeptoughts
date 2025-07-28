@@ -73,7 +73,6 @@ const mockThoughts: Thought[] = [
                     intensity: 8,
                     energy: 'high',
                     emoji: "🚀",
-                    tags: ["focus", "tech"],
                     color: "#FF9800",
                     note: "Pulled an all-nighter but worth it."
                 }
@@ -159,8 +158,7 @@ const mockThoughts: Thought[] = [
                 media: {
                     id: 'm3',
                     type: 'video',
-                    url: '/home/apollo/WebstormProjects/deeptoughts/public/video.mp4',
-                    duration: 30,
+                    url: '/video.mp4',
                     caption: "Children running and laughing"
                 }
             }
@@ -253,7 +251,6 @@ const mockThoughts: Thought[] = [
                     energy: 'low',
                     secondary: ["peaceful", "awe"],
                     emoji: "🌄",
-                    tags: ["nature", "serenity", "mindfulness"],
                     color: "#89CFF0",
                     note: "Seeing the sunrise reflected in the lake felt almost sacred."
                 }
@@ -496,7 +493,7 @@ const App: React.FC = () => {
                             {selectedThought.blocks
                                 .sort((a, b) => a.position - b.position)
                                 .map(block => (
-                                    <ThoughtBlockRenderer block={block} />
+                                    <ThoughtBlockRenderer block={block} showTimestamp={true} />
                                 ))}
                         </div>
                     </div>

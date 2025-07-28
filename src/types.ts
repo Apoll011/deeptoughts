@@ -32,7 +32,6 @@ export interface MoodInfo {
     intensity: number; // 1-10 scale
     secondary?: string[]; // additional mood descriptors
     energy?: 'low' | 'medium' | 'high';
-    tags?: string[]; // custom mood tags
     color?: string; // hex color representation
     emoji?: string;
     note?: string; // brief description
