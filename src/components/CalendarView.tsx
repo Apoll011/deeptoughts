@@ -7,7 +7,6 @@ import {
     CalendarDays,
     CalendarRange, Heart
 } from "lucide-react";
-import type {FilterType} from "./FilterPanel.tsx";
 
 const animationStyles = `
   @keyframes fadeIn {
@@ -36,7 +35,6 @@ export const CalendarView: React.FC<{
   onDateChange: (date: Date) => void;
   thoughts: Thought[];
   onThoughtSelect: (thought: Thought) => void;
-  filters: FilterType;
 }> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect}) => {
   const [viewType, setViewType] = useState<ViewType>('month');
 

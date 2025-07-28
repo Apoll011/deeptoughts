@@ -103,8 +103,9 @@ export const ThoughtCard: React.FC<{
     };
 
     useEffect(() => {
-        if (thought.blocks.find(block => block.media?.type === 'video')) {
-            const url: string | undefined = thought.blocks.find(block => block.media?.type === 'video')?.media.url;
+        const media = thought.blocks.find(block => block.media?.type === 'video');
+        if (media && media.media) {
+            const url: string | undefined = media.media.url;
             extractRandomFrame(url);
         }
     }, [thought.id]);
