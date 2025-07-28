@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {LocationBlock} from "./LocationBlock.tsx";
 import type {ThoughtBlock} from "../types.ts";
 import {ImageBlock} from "./ImageBlock.tsx";
 import {VideoBlock} from "./VideoBlock.tsx";
 import {MoodBlock} from "./MoodBlock.tsx";
 import {AudioPlayer} from "./AudioPlayer.tsx";
+import {TextBlock} from "./TextBlock.tsx";
 
 interface ThoughtBlockRendererProps {
     block: ThoughtBlock;
@@ -14,87 +15,6 @@ interface ThoughtBlockRendererProps {
     onBlockClick?: (block: ThoughtBlock) => void;
     onBlockLongPress?: (block: ThoughtBlock) => void;
 }
-
-const TextBlock: React.FC<{ content: string; timestamp?: Date }> = ({ content, timestamp }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const isLongText = content.length > 300;
-
-    const displayContent = useMemo(() => {
-        if (!isLongText || isExpanded) return content;
-        return content.substring(0, 300) + '...';
-    }, [content, isLongText, isExpanded]);
-
-    const formatText = (text: string) => {
-        return text
-            .split(/(\s+)/)
-            .map((word, index) => {
-                if (word.match(/^https?:\/\/[^\s]+$/)) {
-                    return (
-                        <a
-                            key={index}
-                            href={word}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 underline"
-                        >
-                            {word}
-                        </a>
-                    );
-                }
-                if (word.match(/^#[a-zA-Z0-9_]+$/)) {
-                    return (
-                        <span key={index} className="text-blue-500 font-medium">
-                            {word}
-                        </span>
-                    );
-                }
-                if (word.match(/^@[a-zA-Z0-9_]+$/)) {
-                    return (
-                        <span key={index} className="text-purple-600 font-medium">
-                            {word}
-                        </span>
-                    );
-                }
-                return word;
-            });
-    };
-
-    return (
-        <div className="rounded-xl bg-white p-4 shadow-sm border border-gray-100 hover:border-gray-200 transition-colors">
-            <div className="prose prose-gray max-w-none">
-                <p className="text-gray-800 leading-relaxed text-base m-0 whitespace-pre-wrap">
-                    {formatText(displayContent)}
-                </p>
-            </div>
-
-            {isLongText && (
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1"
-                >
-                    <span>{isExpanded ? 'Show less' : 'Read more'}</span>
-                    <svg
-                        className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            )}
-
-            {timestamp && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                    <time className="text-xs text-gray-500">
-                        {timestamp.toLocaleString()}
-                    </time>
-                </div>
-            )}
-        </div>
-    );
-};
-
 
 export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                                                                               block,
