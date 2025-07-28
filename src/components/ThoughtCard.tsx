@@ -1,6 +1,6 @@
 import React from "react";
 import type {Thought} from "../types.ts";
-import {Heart, MapPin, MessageCircle, Mic, Share, Tag} from "lucide-react";
+import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
 
 export const ThoughtCard: React.FC<{
     thought: Thought;
@@ -80,11 +80,7 @@ export const ThoughtCard: React.FC<{
                     <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-2 shadow-lg">
                         <span className="text-2xl">{thought.primaryEmotion}</span>
                     </div>
-                    {thought.isFavorite && (
-                        <div className="absolute top-4 left-4 bg-red-500 bg-opacity-90 backdrop-blur-sm rounded-full p-2 shadow-lg">
-                            <Heart className="w-4 h-4 text-white fill-current" />
-                        </div>
-                    )}
+
                 </div>
             )}
 
@@ -131,15 +127,15 @@ export const ThoughtCard: React.FC<{
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                thought.category === 'Family'
-                    ? 'bg-blue-100 text-blue-800'
-                    : thought.category === 'Nature'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-amber-100 text-amber-800'
-            }`}>
-              {thought.category}
-            </span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            thought.category === 'Family'
+                                ? 'bg-blue-100 text-blue-800'
+                                : thought.category === 'Nature'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {thought.category}
+                        </span>
                         {hasAudio && (
                             <div className="bg-purple-100 rounded-full p-1.5">
                                 <Mic className="w-3 h-3 text-purple-600" />
@@ -148,8 +144,10 @@ export const ThoughtCard: React.FC<{
                     </div>
 
                     <div className="flex items-center space-x-3 text-gray-400">
-                        <MessageCircle className="w-4 h-4" />
-                        <Share className="w-4 h-4" />
+                        <div className={`${thought.isFavorite ? 'bg-red-500' : ''} bg-opacity-90 backdrop-blur-sm rounded-full p-1 shadow-lg`}>
+                            <Heart className={`w-6 h-6 ${thought.isFavorite ? 'fill-current text-white' : ''}`} />
+                        </div>
+                        <Share className="w-6 h-6" />
                     </div>
                 </div>
 
