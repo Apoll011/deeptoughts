@@ -5,7 +5,7 @@ import type { MediaAttachment } from "../types.ts";
 export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(media.duration || 0);
+    const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(0.7);
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
     const [playbackRate, setPlaybackRate] = useState(1);
@@ -20,14 +20,12 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
     const volumeRef = useRef<HTMLDivElement>(null);
     const playbackRef = useRef<HTMLDivElement>(null);
 
-    // Format time to display as MM:SS
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    // Handle play/pause
     const togglePlayPause = () => {
         if (audioRef.current) {
             if (isPlaying) {
@@ -99,46 +97,35 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
             const generateWaveform = async () => {
                 try {
-                    // Create audio context
                     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
-                    // Fetch the audio file
                     const response = await fetch(media.url);
                     const arrayBuffer = await response.arrayBuffer();
 
-                    // Decode the audio data
                     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-                    // Get the audio data
                     const channelData = audioBuffer.getChannelData(0); // Use the first channel
 
-                    // Set the number of samples we want for our visualization
                     const numberOfSamples = 50;
                     const blockSize = Math.floor(channelData.length / numberOfSamples);
 
-                    // Create an array to hold our waveform data
                     const waveformData = [];
 
-                    // Process the audio data to create the waveform
                     for (let i = 0; i < numberOfSamples; i++) {
                         const blockStart = blockSize * i;
                         let sum = 0;
 
-                        // Calculate the average amplitude for this block
                         for (let j = 0; j < blockSize; j++) {
                             sum += Math.abs(channelData[blockStart + j]);
                         }
 
-                        // Normalize the value (0-1)
                         const average = sum / blockSize;
                         waveformData.push(average);
                     }
 
-                    // Normalize the waveform data to ensure good visual representation
                     const maxValue = Math.max(...waveformData);
                     const normalizedData = waveformData.map(value => value / maxValue);
 
-                    // Update the waveform state
                     setWaveform(normalizedData);
 
                     setDuration(audioBuffer.duration);
@@ -147,7 +134,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 } catch (error) {
                     console.error("Error generating waveform:", error);
                     setIsWaveformLoading(false);
-                    // Fallback to a default waveform if there's an error
                     setWaveform(Array(50).fill(0.5));
                 }
             };
@@ -168,7 +154,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         }
     };
 
-    // Skip forward/backward
     const skip = (seconds: number) => {
         if (audioRef.current) {
             audioRef.current.currentTime = Math.min(
@@ -178,53 +163,11 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         }
     };
 
-    // Get volume icon based on current volume
     const getVolumeIcon = () => {
         if (volume === 0) return <VolumeX className="w-5 h-5 text-gray-600"/>;
         if (volume < 0.5) return <Volume1 className="w-5 h-5 text-gray-600"/>;
         return <Volume2 className="w-5 h-5 text-gray-600"/>;
     };
-
-    // Handle keyboard shortcuts
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!playerRef.current) return;
-
-            // Check if the player is in the viewport
-            const rect = playerRef.current.getBoundingClientRect();
-            const isInViewport =
-                rect.top >= 0 &&
-                rect.left >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.right <= (window.innerWidth || document.documentElement.clientWidth);
-
-            if (!isInViewport) return;
-
-            switch (e.code) {
-                case 'Space':
-                    e.preventDefault();
-                    togglePlayPause();
-                    break;
-                case 'ArrowRight':
-                    skip(10);
-                    break;
-                case 'ArrowLeft':
-                    skip(-10);
-                    break;
-                case 'ArrowUp':
-                    setVolume(prev => Math.min(prev + 0.1, 1));
-                    break;
-                case 'ArrowDown':
-                    setVolume(prev => Math.max(prev - 0.1, 0));
-                    break;
-                default:
-                    break;
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
 
     const handleClickOutside = useCallback((e: MouseEvent) => {
         if (volumeRef.current && !volumeRef.current.contains(e.target as Node)) {
@@ -240,7 +183,18 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [handleClickOutside]);
 
-    if (duration == 0) { //TODO: Fix this while loading this appears and change it to on error or something
+    if (isWaveformLoading) {
+        return (
+            <div className="w-full h-48 bg-white rounded-2xl p-6 my-5 shadow-xl w-full border border-gray-200 transition-all duration-300 hover:shadow-2xl flex items-center justify-center">
+                <div className="text-center text-gray-300">
+                    <div className="w-12 h-12 border-4 border-gray border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-sm">Loading...</p>
+                </div>
+            </div>
+        )
+    };
+
+    if (duration == 0) { //TODO: change it to on error or something
         return (
             <div className="w-full h-48 bg-white rounded-2xl p-6 my-5 shadow-xl w-full border border-gray-200 transition-all duration-300 hover:shadow-2xl flex items-center justify-center">
                 <div className="text-center text-gray-300">
@@ -262,7 +216,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         >
             <audio ref={audioRef} src={media.url} preload="metadata" />
 
-            {/* Title and caption */}
             <div className="text-center mb-4">
                 <h3 className="text-xl font-bold text-gray-800 mb-1">{media.caption}</h3>
                 <div className="text-xs text-gray-600 opacity-80">
@@ -270,7 +223,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 </div>
             </div>
 
-            {/* Waveform visualization */}
             <div
                 ref={progressRef}
                 className="flex items-center justify-center space-x-0.5 h-32 px-2 cursor-pointer mb-4 bg-gray-50 rounded-xl p-3 border border-gray-100"
@@ -321,14 +273,12 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 )}
             </div>
 
-            {/* Time display */}
             <div className="flex justify-between text-xs text-gray-700 mb-5 font-medium">
                 <span>{formatTime(currentTime)}</span>
                 <span>-{formatTime(duration - currentTime)}</span>
             </div>
 
-            {/* Main controls */}
-            <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
+            <div className="flex flex-wrap items-center justify-center mb-6 gap-4">
                 <div className="flex items-center space-x-4 sm:space-x-5 mx-auto sm:mx-0">
                     <button 
                         onClick={() => skip(-10)}
@@ -435,7 +385,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                 </div>
             </div>
 
-            {/* Add CSS animation */}
             <style>{`
 
                 @keyframes fadeIn {

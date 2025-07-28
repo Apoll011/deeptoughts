@@ -11,7 +11,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
     const [isExpanded, setIsExpanded] = useState(false);
     const [animatedIntensity, setAnimatedIntensity] = useState(0);
 
-    // Animate the circular progress when expanded
     useEffect(() => {
         if (isExpanded) {
             const timer = setTimeout(() => {
@@ -55,24 +54,20 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
 
     const intensityBars = Array.from({ length: 10 }, (_, i) => i + 1);
 
-    // Circular progress calculation
-    const circumference = 2 * Math.PI * 45; // radius = 45
+    const circumference = 2 * Math.PI * 45;
     const strokeDasharray = circumference;
     const strokeDashoffset = circumference - (animatedIntensity / 10) * circumference;
 
-    // Get mood-based accent color
     const getAccentColor = (intensity: number): string => {
-        if (intensity <= 3) return '#10b981'; // emerald-500
-        if (intensity <= 6) return '#f59e0b'; // amber-500
-        return '#ef4444'; // red-500
+        if (intensity <= 3) return '#10b981';
+        if (intensity <= 6) return '#f59e0b';
+        return '#ef4444';
     };
 
     return (
         <div className={`rounded-2xl border border-gray-200 shadow-lg bg-white overflow-hidden transition-all duration-500 hover:shadow-xl ${className}`}>
-            {/* Fixed White Header */}
             <div className="bg-white border-b border-gray-100 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    {/* Mood Avatar */}
                     <div className="relative">
                         <div
                             className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md border-2"
@@ -114,11 +109,9 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                 </button>
             </div>
 
-            {/* Dynamic Body */}
             <div className={`bg-gradient-to-br ${getGradient(mood.intensity)} transition-all duration-500`}>
                 <div className="p-4">
                     {!isExpanded ? (
-                        // Collapsed State - Linear Progress
                         <div className="space-y-3">
                             <div className="flex gap-1">
                                 {intensityBars.map((bar) => (
@@ -144,13 +137,10 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                             )}
                         </div>
                     ) : (
-                        // Expanded State - Circular Progress & Enhanced Features
                         <div className="space-y-6">
-                            {/* Circular Progress Indicator */}
                             <div className="flex justify-center">
                                 <div className="relative">
                                     <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
-                                        {/* Background circle */}
                                         <circle
                                             cx="50"
                                             cy="50"
@@ -159,7 +149,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                             strokeWidth="6"
                                             fill="none"
                                         />
-                                        {/* Progress circle */}
                                         <circle
                                             cx="50"
                                             cy="50"
@@ -172,7 +161,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                             strokeDashoffset={strokeDashoffset}
                                             className="transition-all duration-1000 ease-out drop-shadow-sm"
                                         />
-                                        {/* Glow effect for high intensity */}
                                         {mood.intensity >= 7 && (
                                             <circle
                                                 cx="50"
@@ -189,7 +177,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                         )}
                                     </svg>
 
-                                    {/* Center emoji and intensity */}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                                         <div className="text-4xl mb-1">{mood.emoji || '😊'}</div>
                                         <div className={`text-sm font-bold ${getIntensityColor(mood.intensity)}`}>
@@ -199,7 +186,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                 </div>
                             </div>
 
-                            {/* Enhanced Note Display */}
                             {mood.note && (
                                 <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/30">
                                     <div className="flex items-start gap-2">
@@ -211,8 +197,7 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                 </div>
                             )}
 
-                            {/* Secondary Feelings with Enhanced Design */}
-                            {mood.secondary?.length > 0 && (
+                            {mood.secondary && mood.secondary.length > 0 && (
                                 <div className="space-y-3">
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-gray-600 flex items-center gap-2">
                                         <Sparkles className="w-3 h-3" />
@@ -232,7 +217,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                 </div>
                             )}
 
-                            {/* Mood Insights */}
                             <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/30">
                                 <h4 className="text-xs font-bold uppercase tracking-wider text-gray-600 mb-2 flex items-center gap-2">
                                     <Activity className="w-3 h-3" />

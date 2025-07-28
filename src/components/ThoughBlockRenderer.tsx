@@ -28,7 +28,6 @@ const TextBlock: React.FC<{ content: string; timestamp?: Date }> = ({ content, t
         return text
             .split(/(\s+)/)
             .map((word, index) => {
-                // URL detection
                 if (word.match(/^https?:\/\/[^\s]+$/)) {
                     return (
                         <a

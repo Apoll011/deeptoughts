@@ -1,104 +1,356 @@
-import React from "react";
-import type {Thought} from "../types.ts";
-import {ChevronLeft, ChevronRight} from "lucide-react";
+import React, { useState } from "react";
+import type { Thought } from "../types.ts";
+import {
+    ChevronLeft,
+    ChevronRight,
+    Calendar,
+    CalendarDays,
+    CalendarRange, Heart
+} from "lucide-react";
+import type {FilterType} from "./FilterPanel.tsx";
+
+const animationStyles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  .animate-slideIn {
+    animation: slideIn 0.3s ease-out forwards;
+  }
+`;
+
+type ViewType = 'day' | 'week' | 'month';
 
 export const CalendarView: React.FC<{
-    selectedDate: Date;
-    onDateChange: (date: Date) => void;
-    thoughts: Thought[];
-    onThoughtSelect: (thought: Thought) => void;
-}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect }) => {
-    const today = new Date();
-    const currentMonth = selectedDate.getMonth();
-    const currentYear = selectedDate.getFullYear();
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+  thoughts: Thought[];
+  onThoughtSelect: (thought: Thought) => void;
+  filters: FilterType;
+}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect}) => {
+  const [viewType, setViewType] = useState<ViewType>('month');
 
+  const today = new Date();
+  const currentMonth = selectedDate.getMonth();
+  const currentYear = selectedDate.getFullYear();
+
+  const filteredThoughts = thoughts;
+
+  const getThoughtsForDate = (date: Date): Thought[] => {
+    return filteredThoughts.filter(thought =>
+      thought.createdAt.toDateString() === date.toDateString()
+    );
+  };
+
+  const navigatePrevious = () => {
+    if (viewType === 'day') {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1));
+    } else if (viewType === 'week') {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 7));
+    } else {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1));
+    }
+  };
+
+  const navigateNext = () => {
+    if (viewType === 'day') {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1));
+    } else if (viewType === 'week') {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 7));
+    } else {
+      onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1));
+    }
+  };
+
+  const renderDayView = (date: Date | undefined = undefined) => {
+    const dateD = date ? date : selectedDate;
+    const dayThoughts = getThoughtsForDate(dateD);
+
+    return (
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-gray-700">
+          {dateD.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+        </h3>
+
+        {dayThoughts.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            No thoughts for this day
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {dayThoughts.map(thought => (
+              <div
+                key={thought.id}
+                className="bg-white rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-3 border-purple-300"
+                onClick={() => onThoughtSelect(thought)}
+              >
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="text-lg">{thought.primaryEmotion}</span>
+                  <h4 className="font-medium text-gray-800 flex-1">{thought.title}</h4>
+                  {thought.isFavorite && <Heart className="w-4 h-4 text-red-500 fill-current" />}
+                </div>
+
+                <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                  {thought.blocks.find(block => block.type === 'text')?.content || ''}
+                </p>
+
+                <div className="flex flex-wrap gap-1.5">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    thought.category === 'Family'
+                      ? 'bg-blue-50 text-blue-700'
+                      : thought.category === 'Nature'
+                        ? 'bg-green-50 text-green-700'
+                        : 'bg-amber-50 text-amber-700'
+                  }`}>
+                    {thought.category}
+                  </span>
+
+                  {thought.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="inline-flex items-center space-x-1 bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+                      <span>{tag}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderWeekView = () => {
+    const startOfWeek = new Date(selectedDate);
+    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
+
+    const weekDays = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      weekDays.push(date);
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-7 gap-2 mb-2">
+          {weekDays.map((date, index) => {
+            const isToday = date.toDateString() === today.toDateString();
+            const isSelected = date.toDateString() === selectedDate.toDateString();
+
+            return (
+              <div 
+                key={index} 
+                className={`text-center py-2 cursor-pointer rounded-lg ${
+                  isSelected 
+                    ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white font-bold' 
+                    : isToday 
+                      ? 'bg-gradient-to-br from-amber-50 to-orange-50 text-amber-700 font-medium' 
+                      : 'hover:bg-gray-50'
+                }`}
+                onClick={() => onDateChange(date)}
+              >
+                <div className="text-xs mb-1">
+                  {date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </div>
+                <div className="text-sm font-medium">
+                  {date.getDate()}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+          {weekDays.map(date => (
+              <div>
+                  {getThoughtsForDate(date).length > 0 ? renderDayView(date) : ''}
+              </div>
+          ))}
+      </div>
+    );
+  };
+
+  const renderMonthView = () => {
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const getThoughtsForDate = (date: Date): Thought[] => {
-        return thoughts.filter(thought =>
-            thought.createdAt.toDateString() === date.toDateString()
-        );
-    };
-
     const days = [];
 
-    // Empty cells for days before month start
     for (let i = 0; i < startingDayOfWeek; i++) {
-        days.push(<div key={`empty-${i}`} className="h-24"></div>);
+      days.push(<div key={`empty-${i}`} className="h-24"></div>);
     }
 
-    // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(currentYear, currentMonth, day);
-        const dayThoughts = getThoughtsForDate(date);
-        const isToday = date.toDateString() === today.toDateString();
+      const date = new Date(currentYear, currentMonth, day);
+      const dayThoughts = getThoughtsForDate(date);
+      const isToday = date.toDateString() === today.toDateString();
+      const isSelected = date.toDateString() === selectedDate.toDateString();
 
-        days.push(
-            <div key={day} className={`h-24 p-2 border border-gray-100 rounded-lg ${
-                isToday ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200' : 'hover:bg-gray-50'
-            }`}>
-                <div className={`text-sm font-medium mb-2 ${isToday ? 'text-amber-700' : 'text-gray-700'}`}>
-                    {day}
-                </div>
-                <div className="space-y-1">
-                    {dayThoughts.slice(0, 2).map(thought => (
-                        <div
-                            key={thought.id}
-                            className="bg-white rounded-lg p-2 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-2 border-purple-300"
-                            onClick={() => onThoughtSelect(thought)}
-                        >
-                            <div className="flex items-center space-x-1">
-                                <span className="text-xs">{thought.primaryEmotion}</span>
-                                <span className="text-xs text-gray-700 truncate flex-1 font-medium">
-                  {thought.title}
-                </span>
-                            </div>
-                        </div>
-                    ))}
-                    {dayThoughts.length > 2 && (
-                        <div className="text-xs text-gray-400 text-center py-1">
-                            +{dayThoughts.length - 2} more
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
+      days.push(
+        <div 
+          key={day} 
+          className={`h-24 p-1 sm:p-2 border border-gray-100 rounded-lg cursor-pointer ${
+            isSelected 
+              ? 'bg-gradient-to-br from-yellow-100 to-orange-100 border-orange-300 shadow-inner' 
+              : isToday 
+                ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200' 
+                : 'hover:bg-gray-50'
+          }`}
+          onClick={() => {
+            onDateChange(date);
+            setViewType('day');
+          }}
+        >
+          <div className={`text-xs sm:text-sm font-medium mb-1 ${isToday ? 'text-amber-700' : 'text-gray-700'}`}>
+            {day}
+          </div>
+          <div className="space-y-1">
+            {dayThoughts.length > 0 ? (
+              <>
+                {dayThoughts.slice(0, 2).map(thought => (
+                  <div
+                    key={thought.id}
+                    className="bg-white rounded-lg p-1 sm:p-2 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-2 border-purple-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onThoughtSelect(thought);
+                    }}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span className="text-xs">{thought.primaryEmotion}</span>
+                      <span className="text-[10px] sm:text-xs text-gray-700 truncate flex-1 font-medium">
+                        {thought.title}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {dayThoughts.length > 2 && (
+                  <div className="text-[10px] sm:text-xs text-gray-400 text-center py-0.5">
+                    +{dayThoughts.length - 2} more
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="h-full flex items-center justify-center opacity-0 hover:opacity-30 transition-opacity">
+                <span className="text-[10px] text-gray-400">No thoughts</span>
+              </div>
+            )}
+          </div>
+        </div>
+      );
     }
 
     return (
-        <div className="bg-white rounded-3xl p-6 shadow-lg">
-            <div className="flex items-center justify-between mb-6">
-                <button
-                    onClick={() => onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1))}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                    <ChevronLeft className="w-6 h-6 text-gray-600" />
-                </button>
-                <h2 className="text-xl font-bold text-gray-900">
-                    {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                </h2>
-                <button
-                    onClick={() => onDateChange(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1))}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                    <ChevronRight className="w-6 h-6 text-gray-600" />
-                </button>
+      <>
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="text-center text-sm font-semibold text-gray-500 py-3">
+              {day}
             </div>
-
-            <div className="grid grid-cols-7 gap-2 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-sm font-semibold text-gray-500 py-3">
-                        {day}
-                    </div>
-                ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-2">
-                {days}
-            </div>
+          ))}
         </div>
+
+        <div className="grid grid-cols-7 gap-2">
+          {days}
+        </div>
+      </>
     );
+  };
+
+
+  React.useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = animationStyles;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
+  return (
+    <>
+      <div className="flex flex-col space-y-4 mb-6">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={navigatePrevious}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-600" />
+          </button>
+
+          <h2 className="text-xl font-bold text-gray-900">
+            {viewType === 'day' 
+              ? selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+              : viewType === 'week'
+                ? `Week of ${new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - selectedDate.getDay()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                : selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          </h2>
+
+          <button
+            onClick={navigateNext}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-600" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+          <button
+            onClick={() => setViewType('day')}
+            className={`p-1.5 sm:p-2 rounded-lg flex items-center space-x-1 transition-colors ${
+              viewType === 'day'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
+                : 'bg-gray-300 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-xs font-medium">Day</span>
+          </button>
+
+          <button
+            onClick={() => setViewType('week')}
+            className={`p-1.5 sm:p-2 rounded-lg flex items-center space-x-1 transition-colors ${
+              viewType === 'week'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
+                  : 'bg-gray-300 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            <CalendarRange className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-xs font-medium">Week</span>
+          </button>
+
+          <button
+            onClick={() => setViewType('month')}
+            className={`p-1.5 sm:p-2 rounded-lg flex items-center space-x-1 transition-colors ${
+              viewType === 'month'
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white'
+                  : 'bg-gray-300 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            <CalendarDays className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="text-[10px] sm:text-xs font-medium">Month</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="animate-fadeIn bg-white rounded-3xl p-6 shadow-lg">
+        {viewType === 'day' && renderDayView()}
+        {viewType === 'week' && renderWeekView()}
+        {viewType === 'month' && renderMonthView()}
+      </div>
+    </>
+  );
 };

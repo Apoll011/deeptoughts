@@ -4,6 +4,7 @@ import type {CurrentView, Thought, ViewMode} from './types';
 import {CalendarView} from "./components/CalendarView.tsx";
 import {ThoughtCard} from "./components/ThoughtCard.tsx";
 import {ThoughtBlockRenderer} from "./components/ThoughBlockRenderer.tsx";
+import {FilterPanel, type FilterType} from "./components/FilterPanel.tsx";
 
 const mockThoughts: Thought[] = [
     {
@@ -210,7 +211,7 @@ const mockThoughts: Thought[] = [
                 media: {
                     id: 'm21',
                     type: 'image',
-                    url: 'https://plus.unsplash.com/premium_photo-1751667124857-32b5a1c63d8a?q=80&w=441&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // example real unsplash link placeholder
+                    url: 'https://plus.unsplash.com/premium_photo-1751667124857-32b5a1c63d8a?q=80&w=441&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                     caption: "Sunrise illuminating lake beneath mountain peaks"
                 }
             },
@@ -230,7 +231,6 @@ const mockThoughts: Thought[] = [
                     type: 'audio',
                     url: 'https://file-examples.com/wp-content/storage/2017/11/file_example_MP3_700KB.mp3',
                     caption: "Gentle wave sounds at dawn"
-                    // duration and waveform will be generated on the fly
                 }
             },
             {
@@ -283,7 +283,14 @@ const App: React.FC = () => {
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [lastScrollY, setLastScrollY] = useState(0);
-    const [headerVisibility, setHeaderVisibility] = useState(1); // 1 = fully visible, 0 = hidden
+    const [headerVisibility, setHeaderVisibility] = useState(1);
+    const [showFilters, setShowFilters] = useState(false);
+    const [filters, setFilters] = useState<FilterType>({
+        tags: [],
+        categories: [],
+        favorites: false,
+        moods: []
+    });
 
     useEffect(() => {
         const controlScrollElements = () => {
@@ -303,15 +310,36 @@ const App: React.FC = () => {
         };
     }, [lastScrollY]);
 
-    const filteredThoughts = mockThoughts.filter(thought =>
-        thought.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        thought.blocks.some(block =>
-            block.content.toLowerCase().includes(searchQuery.toLowerCase())
-        ) ||
-        thought.tags.some(tag =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-    );
+    const filteredThoughts = mockThoughts.filter(thought => {
+        const matchesSearch =
+            thought.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            thought.blocks.some(block =>
+                block.content.toLowerCase().includes(searchQuery.toLowerCase())
+            ) ||
+            thought.tags.some(tag =>
+                tag.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+        if (!matchesSearch) return false;
+
+        if (filters.tags.length > 0 && !thought.tags.some(tag => filters.tags.includes(tag))) {
+            return false;
+        }
+
+        if (filters.categories.length > 0 && !filters.categories.includes(thought.category)) {
+            return false;
+        }
+
+        if (filters.favorites && !thought.isFavorite) {
+            return false;
+        }
+
+        if (filters.moods.length > 0 && !filters.moods.includes(thought.mood)) {
+            return false;
+        }
+
+        return true;
+    });
 
     const handleThoughtSelect = (thought: Thought) => {
         setSelectedThought(thought);
@@ -365,37 +393,49 @@ const App: React.FC = () => {
                                         />
                                     </div>
 
-                                    <div className="flex items-center space-x-4 justify-center pb-2">
-                                        <button
-                                            onClick={() => setViewMode('month')}
-                                            className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
-                                                viewMode === 'month'
-                                                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
-                                                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
-                                            }`}
-                                        >
-                                            <Calendar className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={() => setViewMode('grid')}
-                                            className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
-                                                viewMode === 'grid'
-                                                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
-                                                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
-                                            }`}
-                                        >
-                                            <Grid3X3 className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            onClick={() => setViewMode('list')}
-                                            className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
-                                                viewMode === 'list'
-                                                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
-                                                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
-                                            }`}
-                                        >
-                                            <List className="w-5 h-5" />
-                                        </button>
+                                    <div className="flex items-center justify-between pb-2">
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                onClick={() => setViewMode('month')}
+                                                className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
+                                                    viewMode === 'month'
+                                                        ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
+                                                        : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+                                                }`}
+                                            >
+                                                <Calendar className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setViewMode('grid')}
+                                                className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
+                                                    viewMode === 'grid'
+                                                        ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
+                                                        : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+                                                }`}
+                                            >
+                                                <Grid3X3 className="w-5 h-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => setViewMode('list')}
+                                                className={`p-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
+                                                    viewMode === 'list'
+                                                        ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-lg'
+                                                        : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+                                                }`}
+                                            >
+                                                <List className="w-5 h-5" />
+                                            </button>
+                                        </div>
+
+                                        <div className="flex items-center">
+                                            <FilterPanel 
+                                                thoughts={filteredThoughts}
+                                                filters={filters}
+                                                setFilters={setFilters}
+                                                showFilters={showFilters}
+                                                setShowFilters={setShowFilters}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -411,6 +451,7 @@ const App: React.FC = () => {
                                 onDateChange={setSelectedDate}
                                 thoughts={filteredThoughts}
                                 onThoughtSelect={handleThoughtSelect}
+                                filters={filters}
                             />
                         )}
                         {viewMode === 'grid' && (
@@ -440,7 +481,7 @@ const App: React.FC = () => {
                             onClick={() => setCurrentView('mindstream')}
                             className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-5 rounded-full transform hover:scale-110 z-50"
                             style={{
-                                transform: `translateY(${(1 - headerVisibility) * 112}px) rotate(${(1 - headerVisibility) * 90}deg)`, // 28 * 4 = 112px
+                                transform: `translateY(${(1 - headerVisibility) * 112}px) rotate(${(1 - headerVisibility) * 90}deg)`,
                                 opacity: headerVisibility,
                                 boxShadow: headerVisibility > 0.5 ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' : 'none',
                                 transition: 'none'

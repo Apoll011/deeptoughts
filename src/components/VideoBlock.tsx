@@ -25,7 +25,6 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
     const volumeRef = useRef<HTMLDivElement>(null);
     const playbackRef = useRef<HTMLDivElement>(null);
 
-    // Retry loading the video if it fails
     useEffect(() => {
         if (hasError && retryCount < maxRetries) {
             const retryTimer = setTimeout(() => {
@@ -33,13 +32,12 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                 setHasError(false);
                 setIsLoading(true);
                 setRetryCount(prev => prev + 1);
-            }, 1000 * (retryCount + 1)); // Exponential backoff
+            }, 1000 * (retryCount + 1));
 
             return () => clearTimeout(retryTimer);
         }
     }, [hasError, retryCount]);
 
-    // Handle time updates
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
