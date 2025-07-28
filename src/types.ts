@@ -3,7 +3,6 @@ export interface MediaAttachment {
     type: 'image' | 'audio' | 'video';
     url: string;
     caption?: string;
-    duration?: number; // for audio/video in seconds
 }
 
 export interface MediaBlockProps {
