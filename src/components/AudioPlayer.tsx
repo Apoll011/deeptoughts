@@ -11,8 +11,8 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
     const [playbackRate, setPlaybackRate] = useState(1);
     const [showPlaybackOptions, setShowPlaybackOptions] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
-    const [waveform, setWaveform] = useState<number[]>(media.waveform || []);
-    const [isWaveformLoading, setIsWaveformLoading] = useState(!media.waveform);
+    const [waveform, setWaveform] = useState<number[]>([]);
+    const [isWaveformLoading, setIsWaveformLoading] = useState(true);
 
     const audioRef = useRef<HTMLAudioElement>(null);
     const progressRef = useRef<HTMLDivElement>(null);
@@ -94,7 +94,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
     // Generate waveform data from audio file
     useEffect(() => {
-        if (!media.waveform && media.url) {
+        if (media.url) {
             setIsWaveformLoading(true);
 
             const generateWaveform = async () => {
@@ -121,7 +121,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
                     // Process the audio data to create the waveform
                     for (let i = 0; i < numberOfSamples; i++) {
-                        let blockStart = blockSize * i;
+                        const blockStart = blockSize * i;
                         let sum = 0;
 
                         // Calculate the average amplitude for this block
@@ -141,10 +141,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                     // Update the waveform state
                     setWaveform(normalizedData);
 
-                    // Update the duration if not already set
-                    if (!media.duration) {
-                        setDuration(audioBuffer.duration);
-                    }
+                    setDuration(audioBuffer.duration);
 
                     setIsWaveformLoading(false);
                 } catch (error) {
@@ -157,7 +154,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
             generateWaveform();
         }
-    }, [media.url, media.waveform, media.duration]);
+    }, [media.url]);
 
     // Handle seeking
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
