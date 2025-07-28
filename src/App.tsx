@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, Calendar, Grid3X3, List, ChevronLeft, MapPin } from 'lucide-react';
 import type {CurrentView, Thought, ViewMode} from './types';
 import {CalendarView} from "./components/CalendarView.tsx";
@@ -108,6 +108,44 @@ const App: React.FC = () => {
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [showButton, setShowButton] = useState(true);
+
+    useEffect(() => {
+        const debounce = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                timeoutId = setTimeout(() => {
+                    func.apply(null, args);
+                }, delay);
+            };
+        };
+
+        const controlButton = () => {
+            const currentScrollY = window.scrollY;
+
+            const scrollThreshold = 10;
+
+            if (currentScrollY > lastScrollY + scrollThreshold) {
+                setShowButton(false);
+                setLastScrollY(currentScrollY);
+            } else if (currentScrollY < lastScrollY - scrollThreshold) {
+                setShowButton(true);
+                setLastScrollY(currentScrollY);
+            }
+        };
+
+        const debouncedControlButton = debounce(controlButton, 50);
+
+        window.addEventListener('scroll', debouncedControlButton);
+
+        return () => {
+            window.removeEventListener('scroll', debouncedControlButton);
+        };
+    }, [lastScrollY]);
 
     const filteredThoughts = mockThoughts.filter(thought =>
         thought.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -219,9 +257,13 @@ const App: React.FC = () => {
                         )}
                         <button
                             onClick={() => setCurrentView('mindstream')}
-                            className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-500 to-orange-400 hover:from-yellow-600 hover:to-yellow-500 text-white p-5 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 z-50"
+                            className={`fixed bottom-10 right-4 bg-gradient-to-r from-yellow-500 to-orange-400 hover:from-yellow-600 hover:to-yellow-500 text-white p-5 rounded-3xl transition-all duration-500 transform hover:scale-105 z-50 ${
+                                showButton 
+                                    ? 'translate-y-0 opacity-100 rotate-0 shadow-lg hover:shadow-xl' 
+                                    : 'translate-y-28 opacity-0 rotate-90 shadow-none'
+                            }`}
                         >
-                            <Plus className="w-7 h-7" />
+                            <Plus className={`w-7 h-7 transition-transform duration-500 ${showButton ? '' : 'rotate-45'}`} />
                         </button>
                     </div>
                 </>
