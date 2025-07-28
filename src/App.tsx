@@ -132,17 +132,11 @@ const App: React.FC = () => {
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                    <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                                         DeepThoughts
                                     </h1>
                                     <p className="text-sm text-gray-500 mt-1">Your mindful journal</p>
                                 </div>
-                                <button
-                                    onClick={() => setCurrentView('mindstream')}
-                                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                                >
-                                    <Plus className="w-6 h-6" />
-                                </button>
                             </div>
 
                             <div className="relative mb-6">
@@ -191,7 +185,6 @@ const App: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Content */}
                     <div className="p-6">
                         {viewMode === 'month' && (
                             <CalendarView
@@ -224,6 +217,12 @@ const App: React.FC = () => {
                                 ))}
                             </div>
                         )}
+                        <button
+                            onClick={() => setCurrentView('mindstream')}
+                            className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-500 to-orange-400 hover:from-yellow-600 hover:to-yellow-500 text-white p-5 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 z-50"
+                        >
+                            <Plus className="w-7 h-7" />
+                        </button>
                     </div>
                 </>
             )}
