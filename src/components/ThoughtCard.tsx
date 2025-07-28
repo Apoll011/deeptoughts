@@ -10,6 +10,60 @@ export const ThoughtCard: React.FC<{
     const firstImage = thought.blocks.find(block => block.media?.type === 'image')?.media;
     const hasAudio = thought.blocks.some(block => block.media?.type === 'audio');
 
+    if (compact) {
+        return (
+            <div
+                className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300"
+                onClick={() => onSelect(thought)}
+            >
+                <div className="p-3 flex items-center">
+                    <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                            <h3 className="font-medium text-gray-900 text-sm leading-tight truncate">
+                                {thought.title}
+                            </h3>
+                            <span className="text-lg">{thought.primaryEmotion}</span>
+                            {thought.isFavorite && (
+                                <Heart className="w-3 h-3 text-red-500 fill-current" />
+                            )}
+                        </div>
+
+                        <div className="flex items-center text-xs text-gray-500 space-x-2">
+                            <span>{thought.createdAt.toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric'
+                            })}</span>
+
+                            <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                thought.category === 'Family'
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : thought.category === 'Nature'
+                                        ? 'bg-green-50 text-green-700'
+                                        : 'bg-amber-50 text-amber-700'
+                            }`}>
+                                {thought.category}
+                            </span>
+
+                            {hasAudio && (
+                                <Mic className="w-3 h-3 text-purple-600" />
+                            )}
+                        </div>
+                    </div>
+
+                    {firstImage && (
+                        <div className="w-12 h-12 rounded-lg overflow-hidden ml-2 flex-shrink-0">
+                            <img
+                                src={firstImage.url}
+                                alt={firstImage.caption}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
