@@ -3,7 +3,7 @@ import { Search, Plus, Calendar, Grid3X3, List, ChevronLeft, MapPin } from 'luci
 import type {CurrentView, Thought, ViewMode} from './types';
 import {CalendarView} from "./components/CalendarView.tsx";
 import {ThoughtCard} from "./components/ThoughtCard.tsx";
-import {AudioPlayer} from "./components/AudioPlayer.tsx";
+import {ThoughtBlockRenderer} from "./components/ThoughBlockRenderer.tsx";
 
 const mockThoughts: Thought[] = [
     {
@@ -319,36 +319,7 @@ const App: React.FC = () => {
                             {selectedThought.blocks
                                 .sort((a, b) => a.position - b.position)
                                 .map(block => (
-                                    <div key={block.id}>
-                                        {block.type === 'text' && (
-                                            <p className="text-gray-700 leading-relaxed text-base">
-                                                {block.content}
-                                            </p>
-                                        )}
-                                        {block.type === 'media' && block.media && (
-                                            <div className="my-4">
-                                                {block.media.type === 'image' && (
-                                                    <div className="rounded-2xl overflow-hidden shadow-lg">
-                                                        <img
-                                                            src={block.media.url}
-                                                            alt={block.media.caption}
-                                                            className="w-full h-auto"
-                                                        />
-                                                        {block.media.caption && (
-                                                            <div className="p-3 bg-gray-50">
-                                                                <p className="text-sm text-gray-600 italic">
-                                                                    {block.media.caption}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                {block.media.type === 'audio' && (
-                                                    <AudioPlayer media={block.media} />
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
+                                    <ThoughtBlockRenderer block={block} />
                                 ))}
                         </div>
                     </div>

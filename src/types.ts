@@ -7,16 +7,48 @@ export interface MediaAttachment {
     waveform?: number[]; // for audio visualization
 }
 
+export interface MediaBlockProps {
+    media: MediaAttachment;
+    className?: string;
+}
+
+
+export interface LocationInfo {
+    id: string;
+    name: string;
+    coordinates?: { lat: number; lng: number };
+    address?: string;
+    city?: string;
+    country?: string;
+    timezone?: string;
+    weather?: {
+        condition: string;
+        temperature?: number;
+        icon?: string;
+    };
+}
+
+export interface MoodInfo {
+    id: string;
+    primary: string; // main mood
+    intensity: number; // 1-10 scale
+    secondary?: string[]; // additional mood descriptors
+    energy?: 'low' | 'medium' | 'high';
+    tags?: string[]; // custom mood tags
+    color?: string; // hex color representation
+    emoji?: string;
+    note?: string; // brief description
+}
+
 export interface ThoughtBlock {
     id: string;
     type: 'text' | 'media' | 'location' | 'mood';
     content: string;
     position: number;
     media?: MediaAttachment;
-    location?: {
-        name: string;
-        coordinates?: { lat: number; lng: number };
-    };
+    location?: LocationInfo;
+    mood?: MoodInfo;
+    timestamp?: Date;
 }
 
 export interface Thought {
