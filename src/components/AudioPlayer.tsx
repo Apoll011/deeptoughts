@@ -194,7 +194,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
             >
                 {media.waveform?.map((height, index) => {
                     const isActive = index <= (currentTime / duration) * (media.waveform?.length || 1);
-                    const animationDelay = `${index * 0.01}s`;
                     const barHeight = Math.max(height * 100, 5);
 
                     return (
@@ -211,13 +210,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                                 maxWidth: '6px',
                                 minWidth: '3px',
                                 minHeight: '4px',
-                                transform: isPlaying
-                                    ? `scaleY(${isActive ? 1 + (Math.sin(Date.now() / 150 + index) * 0.2) : 1})`
-                                    : `scaleY(${isActive ? 1.1 : 1})`,
-                                transition: isPlaying
-                                    ? 'transform 0.1s ease, background 0.2s ease'
-                                    : 'transform 0.3s ease, background 0.3s ease',
-                                animationDelay,
                                 animation: isPlaying && isActive ? 'waveform-pulse 1s infinite' : 'none'
                             }}
                         />
@@ -340,12 +332,7 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
             </div>
 
             {/* Add CSS animation */}
-            <style jsx>{`
-                @keyframes pulse {
-                    0% { opacity: 0.1; }
-                    50% { opacity: 0.3; }
-                    100% { opacity: 0.1; }
-                }
+            <style>{`
 
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
