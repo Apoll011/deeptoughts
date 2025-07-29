@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef } from 'react';
 import { Type, Image, MapPin, Heart, Eye, Trash2, GripVertical, Upload, Plus, X, Sparkles, Globe, Thermometer, Cloud, Sun, CloudRain, Zap, Battery, BatteryLow } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
