@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type {CurrentView, Thought} from './types';
 import {ThoughtVisualizer} from "./components/Thought/ThoughtVisualizer.tsx";
 import {TimelineVisualizer} from "./components/TimelineVisualizer.tsx";
+import ThoughtEditor from "./components/Thought/ThoughtEditor.tsx";
 
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');
@@ -14,7 +15,11 @@ const App: React.FC = () => {
             )}
 
             {currentView === 'editor' && selectedThought && (
-                <ThoughtVisualizer selectedThought={selectedThought} setCurrentView={setCurrentView}/>
+                <ThoughtVisualizer selectedThought={selectedThought} onBack={() => {setCurrentView('timeline')}}/>
+            )}
+
+            {currentView === 'mindstream' && (
+                <ThoughtEditor />
             )}
         </div>
     );

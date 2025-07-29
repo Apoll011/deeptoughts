@@ -1,15 +1,15 @@
 import {ChevronLeft, MapPin} from "lucide-react";
-import type {CurrentView, Thought} from "../../types.ts";
+import type {Thought} from "../../types.ts";
 import {ThoughtBlockRenderer} from "./ThoughBlockRenderer.tsx";
 import React from "react";
 
 
-export const ThoughtVisualizer: React.FC<{selectedThought: Thought, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({selectedThought, setCurrentView}) => {
+export const ThoughtVisualizer: React.FC<{selectedThought: Thought, onBack:  React.MouseEventHandler<HTMLButtonElement>}> = ({selectedThought, onBack}) => {
     return (
         <div className="bg-white min-h-screen">
             <div className="p-6">
                 <button
-                    onClick={() => setCurrentView('timeline')}
+                    onClick={onBack}
                     className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                     <ChevronLeft className="w-6 h-6 text-gray-600" />

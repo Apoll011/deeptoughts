@@ -76,7 +76,7 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
                     </div>
                 )}
                 <button
-                    onClick={() => setCurrentView('editor')}
+                    onClick={() => setCurrentView('mindstream')}
                     className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-5 rounded-3xl transform hover:scale-110 z-50"
                     style={{
                         transform: `translateY(${(1 - headerVisibility) * 112}px) rotate(${(1 - headerVisibility) * 90}deg)`,
