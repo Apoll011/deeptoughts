@@ -3,8 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # your default branch
-
+      - main 
+  workflow_dispatch:  
+  
 permissions:
   pages: write
   id-token: write
