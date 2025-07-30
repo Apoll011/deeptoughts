@@ -1,7 +1,25 @@
-// @ts-nocheck
-import React, { useState, useRef } from 'react';
-import { Type, Image, MapPin, Heart, Eye, Trash2, GripVertical, Upload, Plus, X, Sparkles, Globe, Thermometer, Cloud, Sun, CloudRain, Zap, Battery, BatteryLow } from 'lucide-react';
+import React, {useRef, useState} from 'react';
+import {
+    Battery,
+    BatteryLow,
+    Cloud,
+    Eye,
+    Globe,
+    GripVertical,
+    Heart,
+    Plus,
+    Sparkles,
+    Thermometer,
+    Trash2,
+    Type,
+    Upload,
+    X,
+    Zap
+} from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
+import {ThoughtVisualizer} from "./ThoughtVisualizer.tsx";
+import {ToolBar} from "./ToolBar.tsx";
+import type {blockType, Thought, ThoughtBlock} from "../../types.ts";
 
 const emotions = ['joy', 'contentment', 'excitement', 'gratitude', 'love', 'sadness', 'anxiety', 'frustration', 'anger', 'fear', 'nostalgia', 'wonder'];
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
@@ -12,7 +30,7 @@ const energyLevels = ['low', 'medium', 'high'];
 
 export default function ThoughtEditor() {
     const [isPreview, setIsPreview] = useState(false);
-    const [thought, setThought] = useState({
+    const [thought, setThought] = useState<Thought>({
         id: uuidv4(),
         title: '',
         blocks: [],
@@ -30,8 +48,8 @@ export default function ThoughtEditor() {
     const [newTag, setNewTag] = useState('');
     const fileInputRef = useRef(null);
 
-    const addBlock = (type) => {
-        const newBlock = {
+    const addBlock = (type: blockType, subType:string | null = null ) => {
+        const newBlock: ThoughtBlock = {
             id: uuidv4(),
             type,
             content: '',
@@ -68,7 +86,7 @@ export default function ThoughtEditor() {
         } else if (type === 'media') {
             newBlock.media = {
                 id: uuidv4(),
-                type: 'image',
+                type: subType ? subType : 'image',
                 url: '',
                 caption: ''
             };
@@ -180,23 +198,7 @@ export default function ThoughtEditor() {
 
     if (isPreview) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-pink-50 p-6">
-                <div className="max-w-4xl mx-auto">
-                    <button
-                        onClick={() => setIsPreview(false)}
-                        className="mb-6 flex items-center space-x-2 bg-white/80 backdrop-blur-sm text-gray-700 px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
-                    >
-                        <X className="w-4 h-4" />
-                        <span>Back to Edit</span>
-                    </button>
-                    <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                            {thought.title || 'Untitled Thought'}
-                        </h1>
-                        <p className="text-gray-600">Preview mode - your thought will appear here</p>
-                    </div>
-                </div>
-            </div>
+            <ThoughtVisualizer selectedThought={thought} onBack={() => setIsPreview(false)} />
         );
     }
 
@@ -756,81 +758,7 @@ export default function ThoughtEditor() {
                         ))}
                 </div>
 
-                <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl p-8 border border-white/30">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                            <Plus className="w-5 h-5 text-white" />
-                        </div>
-                        <span>Add Content Block</span>
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <button
-                            onClick={() => addBlock('text')}
-                            className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-2xl p-6 hover:from-blue-100 hover:to-indigo-200 hover:border-blue-300 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <div className="flex flex-col items-center space-y-3">
-                                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <Type className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="text-center">
-                                    <h4 className="font-semibold text-gray-900 mb-1">Text Block</h4>
-                                    <p className="text-xs text-gray-600">Write your thoughts</p>
-                                </div>
-                            </div>
-                        </button>
-
-                        <button
-                            onClick={() => addBlock('media')}
-                            className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-100 border-2 border-purple-200 rounded-2xl p-6 hover:from-purple-100 hover:to-pink-200 hover:border-purple-300 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <div className="flex flex-col items-center space-y-3">
-                                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <Image className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="text-center">
-                                    <h4 className="font-semibold text-gray-900 mb-1">Media Block</h4>
-                                    <p className="text-xs text-gray-600">Add images, videos, audio</p>
-                                </div>
-                            </div>
-                        </button>
-
-                        <button
-                            onClick={() => addBlock('location')}
-                            className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-100 border-2 border-emerald-200 rounded-2xl p-6 hover:from-emerald-100 hover:to-teal-200 hover:border-emerald-300 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <div className="flex flex-col items-center space-y-3">
-                                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <MapPin className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="text-center">
-                                    <h4 className="font-semibold text-gray-900 mb-1">Location Block</h4>
-                                    <p className="text-xs text-gray-600">Capture where you are</p>
-                                </div>
-                            </div>
-                        </button>
-
-                        <button
-                            onClick={() => addBlock('mood')}
-                            className="group relative overflow-hidden bg-gradient-to-br from-rose-50 to-orange-100 border-2 border-rose-200 rounded-2xl p-6 hover:from-rose-100 hover:to-orange-200 hover:border-rose-300 transition-all duration-300 transform hover:scale-105"
-                        >
-                            <div className="flex flex-col items-center space-y-3">
-                                <div className="w-12 h-12 bg-gradient-to-r from-rose-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <Heart className="w-6 h-6 text-white" />
-                                </div>
-                                <div className="text-center">
-                                    <h4 className="font-semibold text-gray-900 mb-1">Mood Block</h4>
-                                    <p className="text-xs text-gray-600">Track your emotions</p>
-                                </div>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
-                <div className="flex justify-center pt-8">
-                    <button className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white px-12 py-4 rounded-2xl hover:from-violet-700 hover:via-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 font-semibold text-lg">
-                        Save Thought ✨
-                    </button>
-                </div>
+                <ToolBar add={addBlock} />
             </div>
         </div>
     );

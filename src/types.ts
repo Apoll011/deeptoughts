@@ -37,9 +37,11 @@ export interface MoodInfo {
     note?: string;
 }
 
+export type blockType = 'text' | 'media' | 'location' | 'mood';
+
 export interface ThoughtBlock {
     id: string;
-    type: 'text' | 'media' | 'location' | 'mood';
+    type: blockType;
     content: string;
     position: number;
     media?: MediaAttachment;
