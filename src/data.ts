@@ -53,7 +53,7 @@ export const mockThoughts: Thought[] = [
                 media: {
                     id: 'm2',
                     type: 'audio',
-                    url: '/music.mp3',
+                    url: 'deeptoughts/music.mp3',
                     caption: "Button click and success chime"
                 }
             },
@@ -153,7 +153,7 @@ export const mockThoughts: Thought[] = [
                 media: {
                     id: 'm3',
                     type: 'video',
-                    url: '/video.mp4',
+                    url: 'deeptoughts/video.mp4',
                     caption: "Children running and laughing"
                 }
             }
