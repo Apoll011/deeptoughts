@@ -13,7 +13,7 @@ import {
     BatteryLow,
     X
 } from 'lucide-react';
-import type {ThoughtBlock, MediaAttachment, LocationInfo, MoodInfo} from '../../types.ts';
+import type {ThoughtBlock, MediaAttachment, LocationInfo, MoodInfo} from '../../../types.ts';
 
 interface ThoughtBlocksProps {
     blocks: ThoughtBlock[];
@@ -107,7 +107,6 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                         key={block.id}
                         className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200"
                     >
-                        {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b border-gray-50">
                             <div className="flex items-center space-x-3">
                                 <GripVertical className="w-4 h-4 text-gray-300" />
@@ -128,7 +127,6 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                             </button>
                         </div>
 
-                        {/* Content */}
                         <div className="p-6">
                             {block.type === 'text' && (
                                 <textarea
@@ -142,7 +140,6 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
 
                             {block.type === 'media' && (
                                 <div className="space-y-4">
-                                    {/* Media Type Selector */}
                                     <div className="flex items-center space-x-1 bg-gray-50 rounded-lg p-1 w-fit">
                                         {(['image', 'video', 'audio'] as const).map((type) => (
                                             <button
@@ -162,7 +159,6 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                                         ))}
                                     </div>
 
-                                    {/* File Upload */}
                                     <div className="space-y-3">
                                         <input
                                             ref={fileInputRef}

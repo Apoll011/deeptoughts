@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { LocationInfo } from "../../types.ts";
+import type { LocationInfo } from "../../../../types.ts";
 
 interface LocationBlockProps {
     location: LocationInfo;

@@ -1,5 +1,5 @@
 import {ChevronLeft, MapPin} from "lucide-react";
-import type {Thought} from "../../types.ts";
+import type {Thought} from "../../../types.ts";
 import {ThoughtBlockRenderer} from "./ThoughBlockRenderer.tsx";
 import React from "react";
 

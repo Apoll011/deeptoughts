@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import type {CurrentView, Thought} from './types';
-import {ThoughtVisualizer} from "./components/Thought/ThoughtVisualizer.tsx";
+import {ThoughtVisualizer} from "./components/Thought/Visualizer/ThoughtVisualizer.tsx";
 import {TimelineVisualizer} from "./components/TimelineVisualizer.tsx";
-import ThoughtEditor from "./components/Thought/ThoughtEditor.tsx";
+import ThoughtEditor from "./components/Thought/Editor/ThoughtEditor.tsx";
 
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');

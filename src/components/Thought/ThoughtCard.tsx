@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import type {MediaAttachment, Thought} from "../types.ts";
+import type {MediaAttachment, Thought} from "../../types.ts";
 import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
 
 const hashString = (str: string): string => {

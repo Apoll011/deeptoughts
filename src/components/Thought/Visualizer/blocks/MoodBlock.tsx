@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { MoodInfo } from "../../types.ts";
+import type { MoodInfo } from "../../../../types.ts";
 import { Sparkles, Activity, ChevronsUpDown, Heart, Zap, Cloud, Sun } from "lucide-react";
 
 interface MoodBlockProps {

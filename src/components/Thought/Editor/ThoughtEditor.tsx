@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {
     Eye,
     Plus,
@@ -6,9 +6,9 @@ import {
     X,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
-import {ThoughtVisualizer} from "./ThoughtVisualizer.tsx";
+import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
-import type {blockType, mediaType, Thought, ThoughtBlock} from "../../types.ts";
+import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import {LocationBlock} from "./LocationBlock.tsx";
-import type {ThoughtBlock} from "../../types.ts";
-import {ImageBlock} from "./ImageBlock.tsx";
-import {VideoBlock} from "./VideoBlock.tsx";
-import {MoodBlock} from "./MoodBlock.tsx";
-import {AudioPlayer} from "./AudioPlayer.tsx";
-import {TextBlock} from "./TextBlock.tsx";
+import {LocationBlock} from "./blocks/LocationBlock.tsx";
+import type {ThoughtBlock} from "../../../types.ts";
+import {ImageBlock} from "./blocks/ImageBlock.tsx";
+import {VideoBlock} from "./blocks/VideoBlock.tsx";
+import {MoodBlock} from "./blocks/MoodBlock.tsx";
+import {AudioPlayer} from "./blocks/AudioPlayer.tsx";
+import {TextBlock} from "./blocks/TextBlock.tsx";
 
 interface ThoughtBlockRendererProps {
     block: ThoughtBlock;

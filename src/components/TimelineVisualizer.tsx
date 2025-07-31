@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import type {CurrentView, Thought, ViewMode} from "../types.ts";
 import {CalendarView} from "./CalendarView.tsx";
-import {ThoughtCard} from "./ThoughtCard.tsx";
+import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 import {Plus} from "lucide-react";
 import {Header} from "./Header.tsx";
 

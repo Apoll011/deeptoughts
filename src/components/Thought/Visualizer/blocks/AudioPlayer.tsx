@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Pause, Play, Volume2, Volume1, VolumeX, SkipBack, SkipForward, Settings } from "lucide-react";
-import type { MediaAttachment } from "../../types.ts";
+import type { MediaAttachment } from "../../../../types.ts";
 
 export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => {
     const [isPlaying, setIsPlaying] = useState(false);
