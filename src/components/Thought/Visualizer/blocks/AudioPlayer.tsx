@@ -97,7 +97,8 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
             const generateWaveform = async () => {
                 try {
-                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    // @ts-ignore
+                    const audioContext = new (window.AudioContext || (window as unknown).webkitAudioContext)();
 
                     const response = await fetch(media.url);
                     const arrayBuffer = await response.arrayBuffer();
