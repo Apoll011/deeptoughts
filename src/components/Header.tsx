@@ -4,10 +4,8 @@ import {Calendar, Grid3X3, List, Search} from "lucide-react";
 import type {Thought, ViewMode} from "../models/types.ts";
 
 
-export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>, filters: FilterType, setFilters: React.Dispatch<React.SetStateAction<FilterType>>, thoughts: Thought[]}> = ({headerVisibility, thoughts, filters, setFilters, viewMode, setViewMode}) => {
+export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>, filters: FilterType, setFilters: React.Dispatch<React.SetStateAction<FilterType>>, thoughts: Thought[], searchQuery:string, setSearchQuery: React.Dispatch<React.SetStateAction<string>>}> = ({headerVisibility, thoughts, filters, setFilters, viewMode, setViewMode, searchQuery, setSearchQuery}) => {
     const [showFilters, setShowFilters] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-
 
     return (
         <div className="fixed top-0 left-0 right-0 z-50 max-w-md mx-auto">

@@ -13,13 +13,26 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
-
+    const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState<FilterType>({
         tags: [],
         categories: [],
         favorites: false,
         moods: []
     });
+
+    const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
+
+    useEffect(() => {
+        let thoughts = manager.filterThoughts(filters);
+
+        if (searchQuery.trim() !== '') {
+            thoughts = manager.searchThoughtsFromList(searchQuery, thoughts);
+        }
+
+        setFilteredThoughts(thoughts);
+    }, [searchQuery, filters, manager]);
+
 
     useEffect(() => {
         const controlScrollElements = () => {
@@ -44,11 +57,9 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
         setCurrentView('editor');
     };
 
-    const filteredThoughts = manager.filterThoughts(filters);
-
     return (
         <>
-            <Header filters={filters} setFilters={setFilters} thoughts={filteredThoughts} headerVisibility={headerVisibility} viewMode={viewMode} setViewMode={setViewMode}/>
+            <Header filters={filters} setFilters={setFilters} thoughts={filteredThoughts} headerVisibility={headerVisibility} viewMode={viewMode} setViewMode={setViewMode} searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
 
             <div className="pt-54"></div>
 

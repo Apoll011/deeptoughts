@@ -88,6 +88,14 @@ export class ThoughtManager {
         );
     }
 
+    searchThoughtsFromList(query: string, thougths: Thought[]): Thought[] {
+        return thougths.filter(t =>
+            t.title.toLowerCase().includes(query.toLowerCase()) ||
+            t.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ||
+            t.blocks.some(b => b.content?.toLowerCase().includes(query.toLowerCase()))
+        );
+    }
+
     toggleFavorite(id: string): void {
         const thought = this.getThought(id);
         if (!thought) return;
