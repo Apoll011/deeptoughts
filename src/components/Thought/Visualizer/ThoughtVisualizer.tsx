@@ -6,7 +6,7 @@ import React from "react";
 
 export const ThoughtVisualizer: React.FC<{selectedThought: Thought, onBack:  React.MouseEventHandler<HTMLButtonElement>}> = ({selectedThought, onBack}) => {
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-gradient-to-br from-violet-50 via-sky-50 to-emerald-50 min-h-screen">
             <div className="p-6">
                 <button
                     onClick={onBack}
