@@ -134,7 +134,7 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                                     onChange={(e) => onUpdateBlock(block.id, { content: e.target.value })}
                                     placeholder="What's on your mind?"
                                     rows={4}
-                                    className="w-full px-0 py-0 border-0 resize-none focus:ring-0 text-gray-700 placeholder-gray-400 bg-transparent"
+                                    className="w-full px-0 py-0 border-0 resize-none focus:outline-none text-gray-700 placeholder-gray-400 bg-transparent"
                                 />
                             )}
 
@@ -213,16 +213,14 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
 
                             {block.type === 'location' && (
                                 <div className="space-y-4">
-                                    {/* Use Current Location Button */}
                                     <button
                                         onClick={() => onUseCurrentLocation(block.id)}
-                                        className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                                        className="flex items-center w-full justify-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
                                     >
                                         <MapPin className="w-4 h-4" />
                                         <span>Use current location</span>
                                     </button>
 
-                                    {/* Location Fields */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         <input
                                             type="text"
@@ -262,7 +260,6 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                                         />
                                     </div>
 
-                                    {/* Weather Section */}
                                     <div className="bg-gray-50 p-4 rounded-lg">
                                         <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center space-x-2">
                                             <Thermometer className="w-4 h-4" />
@@ -290,21 +287,27 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
                                                 ))}
                                             </select>
 
-                                            <input
-                                                type="number"
-                                                value={block.location?.weather?.temperature || ''}
-                                                onChange={(e) => onUpdateBlock(block.id, {
-                                                    location: {
-                                                        ...block.location,
-                                                        weather: {
-                                                            ...block.location?.weather,
-                                                            temperature: parseInt(e.target.value)
-                                                        }
-                                                    } as LocationInfo
-                                                })}
-                                                placeholder="Temperature (°C)"
-                                                className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                            />
+                                            <div className="flex items-center space-x-2 w-full">
+                                                <input
+                                                    type="number"
+                                                    value={block.location?.weather?.temperature ?? ''}
+                                                    onChange={(e) =>
+                                                        onUpdateBlock(block.id, {
+                                                            location: {
+                                                                ...block.location,
+                                                                weather: {
+                                                                    ...block.location?.weather,
+                                                                    temperature: parseInt(e.target.value),
+                                                                },
+                                                            } as LocationInfo,
+                                                        })
+                                                    }
+                                                    placeholder="Temperature"
+                                                    className="w-[100%] pl-3 pr-2 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                                />
+                                                <span className="text-sm font-semibold text-gray-700">°C</span>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
