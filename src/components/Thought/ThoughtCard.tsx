@@ -136,60 +136,76 @@ export const ThoughtCard: React.FC<{
     if (compact) {
         return (
             <div
-                className="bg-white rounded-xl shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-all duration-300 hover:translate-y-[-2px]"
+                className="group bg-white/90 backdrop-blur-sm rounded-xl border border-gray-100 overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-gray-200 hover:bg-white"
                 onClick={() => onSelect(thought)}
             >
-                <div className="p-3 flex items-center">
-                    <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
+                <div className="p-3.5 flex items-center space-x-4">
+                    {/* Emotion Circle */}
+                    <div className="relative flex-shrink-0">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            thought.isFavorite 
+                                ? 'bg-rose-50 text-rose-600'
+                                : 'bg-gray-50 text-gray-600'
+                        } transition-colors duration-300`}>
+                            <span className="text-lg transform transition-transform duration-300 group-hover:scale-110">
+                                {thought.primaryEmotion}
+                            </span>
+                        </div>
+                        {thought.isFavorite && (
+                            <div className="absolute -top-0.5 -right-0.5 bg-rose-500 rounded-full p-1">
+                                <Heart className="w-2 h-2 text-white fill-current" />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-2">
                             <h3 className="font-medium text-gray-900 text-sm leading-tight truncate">
                                 {thought.title}
                             </h3>
-                            <span className="text-lg">{thought.primaryEmotion}</span>
-                            {thought.isFavorite && (
-                                <Heart className="w-3 h-3 text-red-500 fill-current" />
-                            )}
                         </div>
 
-                        <div className="flex items-center text-xs text-gray-500 space-x-2">
-                            <span>{thought.createdAt.toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric'
-                            })}</span>
+                        <div className="flex items-center space-x-3">
+                            <time className="text-xs font-medium text-gray-500">
+                                {thought.createdAt.toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                })}
+                            </time>
 
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide ${
                                 thought.category === 'Family'
-                                    ? 'bg-blue-50 text-blue-700'
+                                    ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-700/10'
                                     : thought.category === 'Nature'
-                                        ? 'bg-green-50 text-green-700'
-                                        : 'bg-amber-50 text-amber-700'
+                                        ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-700/10'
+                                        : 'bg-amber-100 text-amber-700 ring-1 ring-amber-700/10'
                             }`}>
                                 {thought.category}
                             </span>
 
                             {hasAudio && (
-                                <Mic className="w-3 h-3 text-purple-600" />
+                                <span className="flex items-center bg-purple-100 text-purple-600 rounded-full p-1">
+                                    <Mic className="w-3 h-3" />
+                                </span>
                             )}
                         </div>
                     </div>
 
                     {firstImage && (
-                        <div className="w-14 h-14 rounded-lg overflow-hidden ml-2 flex-shrink-0 shadow-sm">
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-black/5">
                             {isLoadingFrame ? (
-                                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                    <div className="w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
+                                <div className="absolute inset-0 bg-gray-50/80 backdrop-blur-sm flex items-center justify-center">
+                                    <div className="w-4 h-4 border-2 border-gray-300/50 border-t-gray-400 rounded-full animate-spin"></div>
                                 </div>
                             ) : (
-                                <img
-                                    src={firstImage.url}
-                                    alt={firstImage.caption}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        const hash = hashString(thought.title);
-                                        target.src = `https://picsum.photos/seed/${hash}/400/300`;
-                                    }}
-                                />
+                                <div className="w-full h-full relative group">
+                                    <img
+                                        src={firstImage.url}
+                                        alt=""
+                                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-[1.02]"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </div>
                             )}
                         </div>
                     )}
