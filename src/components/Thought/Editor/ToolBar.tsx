@@ -99,10 +99,10 @@ export const ToolBar: React.FC<{
 
     return (
         <>
-            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+            <div className="fixed bottom-6 right-6 z-50">
                 <div className="relative">
                     {showMediaMenu && (
-                        <div className="absolute bottom-full left-1/3 transform -translate-x-1/2 mb-4">
+                        <div className="absolute bottom-full right-0 mb-4">
                             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 p-2
                           animate-in slide-in-from-bottom-4 duration-300">
                                 <div className="flex space-x-1">
@@ -137,13 +137,15 @@ export const ToolBar: React.FC<{
           bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-gray-200/50
           transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
           ${isExpanded
-                        ? 'w-76 h-20 px-4 py-3'
-                        : 'w-16 h-16 px-3 py-3'
-                    }
+            ? 'w-76 h-20'
+            : 'w-16 h-16'
+          }
+          transform origin-right
+          flex items-center justify-end
         `}>
 
                         <div className={`
-            absolute left-3 top-3 w-10 h-10 flex items-center justify-center
+            absolute right-3 top-3 w-10 h-10 flex items-center justify-center
             transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
             ${isExpanded ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}
           `}>
@@ -161,9 +163,9 @@ export const ToolBar: React.FC<{
             flex items-center justify-center w-full h-full
             transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
             ${isExpanded
-                            ? 'opacity-100 translate-x-0'
-                            : 'opacity-0 translate-x-4 pointer-events-none'
-                        }
+              ? 'opacity-100 translate-x-0'
+              : 'opacity-0 -translate-x-4 pointer-events-none'
+            }
           `}>
 
                             <div className="flex items-center">
