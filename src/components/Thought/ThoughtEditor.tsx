@@ -8,7 +8,7 @@ import {
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "./ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
-import type {blockType, Thought, ThoughtBlock} from "../../types.ts";
+import type {blockType, mediaType, Thought, ThoughtBlock} from "../../types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
@@ -38,7 +38,7 @@ export default function ThoughtEditor() {
         content.current?.scrollIntoView({ behavior: "smooth" })
     }
 
-    const addBlock = (type: blockType, subType:string | null = null ) => {
+    const addBlock = (type: blockType, subType: mediaType | null = null ) => {
         const newBlock: ThoughtBlock = {
             id: uuidv4(),
             type,
@@ -91,7 +91,8 @@ export default function ThoughtEditor() {
         scrollToBottom();
     };
 
-    const updateBlock = (blockId, updates) => {
+    // @ts-ignore
+    const updateBlock = (blockId: string, updates) => {
         setThought(prev => ({
             ...prev,
             blocks: prev.blocks.map(block =>
@@ -101,7 +102,7 @@ export default function ThoughtEditor() {
         }));
     };
 
-    const deleteBlock = (blockId) => {
+    const deleteBlock = (blockId: string) => {
         setThought(prev => ({
             ...prev,
             blocks: prev.blocks.filter(block => block.id !== blockId),
@@ -119,14 +120,14 @@ export default function ThoughtEditor() {
         }
     };
 
-    const removeTag = (tagToRemove) => {
+    const removeTag = (tagToRemove: string) => {
         setThought(prev => ({
             ...prev,
             tags: prev.tags.filter(tag => tag !== tagToRemove)
         }));
     };
 
-    const handleFileUpload = (blockId, event) => {
+    const handleFileUpload = (blockId: string, event: { target: { files: any[]; }; }) => {
         const file = event.target.files[0];
         if (file) {
             const url = URL.createObjectURL(file);
@@ -144,7 +145,7 @@ export default function ThoughtEditor() {
         }
     };
 
-    const addSecondaryMood = (blockId, mood) => {
+    const addSecondaryMood = (blockId: string, mood: string) => {
         const block = thought.blocks.find(b => b.id === blockId);
         if (block && block.mood) {
             const current = block.mood.secondary || [];
@@ -156,7 +157,7 @@ export default function ThoughtEditor() {
         }
     };
 
-    const removeSecondaryMood = (blockId, moodToRemove) => {
+    const removeSecondaryMood = (blockId: string, moodToRemove: string) => {
         const block = thought.blocks.find(b => b.id === blockId);
         if (block && block.mood) {
             updateBlock(blockId, {

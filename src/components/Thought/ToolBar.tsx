@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Camera, Heart, Image, MapPin, Music, Plus, Type, Video, X} from "lucide-react";
-import type {blockType} from "../../types.ts";
+import {Camera, Heart, Image, MapPin, Music, Plus, Type, Video} from "lucide-react";
+import type {blockType, mediaType} from "../../types.ts";
 
 export const ToolBar: React.FC<{
-    add: (type: blockType, subType?: string) => void,
+    add: (type: blockType, subType?: mediaType) => void,
 }> = ({add}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeBlock, setActiveBlock] = useState<string | null>(null);
@@ -44,14 +44,15 @@ export const ToolBar: React.FC<{
         {id: 'audio', icon: Music, label: 'Audio', color: 'text-green-600'}
     ];
 
-    const addBlock = (type: blockType, subType: string | null = null) => {
+    const addBlock = (type: blockType, subType: mediaType | null = null) => {
         const blockName = subType ? `${subType}` : type;
         setActiveBlock(blockName);
         setShowMediaMenu(false);
         setTimeout(() => {
             setActiveBlock(null);
-        }, 800);
-        add(type, subType ? subType : "");
+            handleCollapse();
+        }, 300);
+        add(type, subType ? subType : undefined);
     };
 
     const handleExpand = () => {
@@ -110,7 +111,7 @@ export const ToolBar: React.FC<{
                                         return (
                                             <button
                                                 key={option.id}
-                                                onClick={() => addBlock('media', option.id)}
+                                                onClick={() => addBlock('media', option.id as mediaType)}
                                                 className="group flex flex-col items-center p-3 rounded-xl hover:bg-gray-50
                                transition-all duration-200 hover:scale-105 min-w-[60px]"
                                                 style={{
@@ -136,7 +137,7 @@ export const ToolBar: React.FC<{
           bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-gray-200/50
           transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
           ${isExpanded
-                        ? 'w-96 h-20 px-4 py-3'
+                        ? 'w-76 h-20 px-4 py-3'
                         : 'w-16 h-16 px-3 py-3'
                     }
         `}>
@@ -157,7 +158,7 @@ export const ToolBar: React.FC<{
                         </div>
 
                         <div className={`
-            flex items-center justify-between w-full h-full
+            flex items-center justify-center w-full h-full
             transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
             ${isExpanded
                             ? 'opacity-100 translate-x-0'
@@ -165,7 +166,7 @@ export const ToolBar: React.FC<{
                         }
           `}>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center">
                                 {blockTypes.map((block, index) => {
                                     const IconComponent = block.icon;
                                     const isActive = activeBlock === block.id ||
@@ -223,17 +224,6 @@ export const ToolBar: React.FC<{
                                     );
                                 })}
                             </div>
-
-                            <button
-                                onClick={handleCollapse}
-                                className="group flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-all duration-200 hover:scale-105 ml-4"
-                                style={{
-                                    transitionDelay: isExpanded ? '400ms' : '0ms'
-                                }}
-                            >
-                                <X className="w-4 h-4 text-gray-500 group-hover:text-gray-700
-                           group-hover:rotate-90 transition-all duration-300"/>
-                            </button>
                         </div>
                     </div>
                 </div>

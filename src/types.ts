@@ -1,6 +1,8 @@
+export type mediaType = 'image' | 'video' | 'audio';
+
 export interface MediaAttachment {
     id: string;
-    type: 'image' | 'audio' | 'video';
+    type: mediaType;
     url: string;
     caption?: string;
 }
