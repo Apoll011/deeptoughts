@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Camera, Heart, Image, MapPin, Music, Plus, Type, Video} from "lucide-react";
-import type {blockType, mediaType} from "../../../types.ts";
+import type {blockType, mediaType} from "../../../models/types.ts";
 
 export const ToolBar: React.FC<{
     add: (type: blockType, subType?: mediaType) => void,

@@ -8,7 +8,7 @@ import {
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
-import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../types.ts";
+import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];

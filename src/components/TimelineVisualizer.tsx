@@ -1,18 +1,25 @@
 import React, {useEffect, useState} from "react";
-import type {CurrentView, Thought, ViewMode} from "../types.ts";
+import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
 import {CalendarView} from "./CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 import {Plus} from "lucide-react";
 import {Header} from "./Header.tsx";
+import type {ThoughtManager} from "../core/ThoughtManager.ts";
+import type {FilterType} from "./FilterPanel.tsx";
 
 
-export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({setSelectedThought, setCurrentView}) => {
+export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({manager, setSelectedThought, setCurrentView}) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
 
-    const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
+    const [filters, setFilters] = useState<FilterType>({
+        tags: [],
+        categories: [],
+        favorites: false,
+        moods: []
+    });
 
     useEffect(() => {
         const controlScrollElements = () => {
@@ -37,9 +44,11 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
         setCurrentView('editor');
     };
 
+    const filteredThoughts = manager.filterThoughts(filters);
+
     return (
         <>
-            <Header headerVisibility={headerVisibility} setFilteredThoughts={setFilteredThoughts} viewMode={viewMode} setViewMode={setViewMode}/>
+            <Header filters={filters} setFilters={setFilters} thoughts={filteredThoughts} headerVisibility={headerVisibility} viewMode={viewMode} setViewMode={setViewMode}/>
 
             <div className="pt-54"></div>
 

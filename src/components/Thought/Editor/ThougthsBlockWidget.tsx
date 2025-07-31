@@ -13,7 +13,7 @@ import {
     BatteryLow,
     X
 } from 'lucide-react';
-import type {ThoughtBlock, MediaAttachment, LocationInfo, MoodInfo} from '../../../types.ts';
+import type {ThoughtBlock, MediaAttachment, LocationInfo, MoodInfo} from '../../../models/types.ts';
 
 interface ThoughtBlocksProps {
     blocks: ThoughtBlock[];

@@ -1,4 +1,4 @@
-import type {MediaBlockProps} from "../../../../types.ts";
+import type {MediaBlockProps} from "../../../../models/types.ts";
 import React, {useState, useEffect, useRef} from "react";
 import { Play, Pause, Volume2, Volume1, VolumeX, Maximize, Minimize, SkipForward, SkipBack, Settings } from "lucide-react";
 

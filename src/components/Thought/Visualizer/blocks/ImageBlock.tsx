@@ -1,4 +1,4 @@
-import type {MediaBlockProps} from "../../../../types.ts";
+import type {MediaBlockProps} from "../../../../models/types.ts";
 import React, {useState} from "react";
 import {FullscreenIcon} from "lucide-react";
 

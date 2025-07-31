@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Thought } from "../types.ts";
+import type { Thought } from "../models/types.ts";
 import {
     ChevronLeft,
     ChevronRight,

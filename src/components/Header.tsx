@@ -1,51 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {mockThoughts} from "../data.ts";
+import React, {useState} from "react";
 import {FilterPanel, type FilterType} from "./FilterPanel.tsx";
 import {Calendar, Grid3X3, List, Search} from "lucide-react";
-import type {Thought, ViewMode} from "../types.ts";
+import type {Thought, ViewMode} from "../models/types.ts";
 
 
-export const Header: React.FC<{headerVisibility: number, setFilteredThoughts: React.Dispatch<React.SetStateAction<Thought[]>>, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>}> = ({headerVisibility, setFilteredThoughts, viewMode, setViewMode}) => {
+export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>, filters: FilterType, setFilters: React.Dispatch<React.SetStateAction<FilterType>>, thoughts: Thought[]}> = ({headerVisibility, thoughts, filters, setFilters, viewMode, setViewMode}) => {
     const [showFilters, setShowFilters] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filters, setFilters] = useState<FilterType>({
-        tags: [],
-        categories: [],
-        favorites: false,
-        moods: []
-    });
-
-    const filteredThoughts = mockThoughts.filter(thought => {
-        const matchesSearch =
-            thought.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            thought.blocks.some(block =>
-                block.content.toLowerCase().includes(searchQuery.toLowerCase())
-            ) ||
-            thought.tags.some(tag =>
-                tag.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-
-        if (!matchesSearch) return false;
-
-        if (filters.tags.length > 0 && !thought.tags.some(tag => filters.tags.includes(tag))) {
-            return false;
-        }
-
-        if (filters.categories.length > 0 && !filters.categories.includes(thought.category)) {
-            return false;
-        }
-
-        if (filters.favorites && !thought.isFavorite) {
-            return false;
-        }
-
-        return !(filters.moods.length > 0 && !filters.moods.includes(thought.mood));
-    });
-
-    useEffect(() => {
-        setFilteredThoughts(filteredThoughts);
-    }, [filters]);
-
 
 
     return (
@@ -128,7 +89,7 @@ export const Header: React.FC<{headerVisibility: number, setFilteredThoughts: Re
 
                             <div className="flex items-center">
                                 <FilterPanel
-                                    thoughts={filteredThoughts}
+                                    thoughts={thoughts}
                                     filters={filters}
                                     setFilters={setFilters}
                                     showFilters={showFilters}
