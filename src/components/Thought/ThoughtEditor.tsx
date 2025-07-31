@@ -127,8 +127,7 @@ export default function ThoughtEditor() {
         }));
     };
 
-    const handleFileUpload = (blockId: string, event: { target: { files: any[]; }; }) => {
-        const file = event.target.files[0];
+    const handleFileUpload = (blockId: string, file: File) => {
         if (file) {
             const url = URL.createObjectURL(file);
             const fileType = file.type.startsWith('image/') ? 'image' :
