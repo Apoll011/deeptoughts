@@ -1,4 +1,4 @@
-import {ChevronLeft, MapPin} from "lucide-react";
+import {ChevronLeft, MapPin, Tag, Folder} from "lucide-react";
 import type {Thought} from "../../../types.ts";
 import {ThoughtBlockRenderer} from "./ThoughBlockRenderer.tsx";
 import React from "react";
@@ -19,7 +19,7 @@ export const ThoughtVisualizer: React.FC<{selectedThought: Thought, onBack:  Rea
                     {selectedThought.title}
                 </h1>
 
-                <div className="flex items-center space-x-3 mb-6 text-sm text-gray-500">
+                <div className="flex items-center space-x-3 mb-4 text-sm text-gray-500">
                     <span>{selectedThought.createdAt.toLocaleDateString()}</span>
                     {selectedThought.location && (
                         <>
@@ -38,11 +38,33 @@ export const ThoughtVisualizer: React.FC<{selectedThought: Thought, onBack:  Rea
                     )}
                 </div>
 
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {selectedThought.category && (
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-sm font-medium">
+                            <Folder className="w-3.5 h-3.5" />
+                            <span>{selectedThought.category}</span>
+                        </div>
+                    )}
+                    {selectedThought.tags && selectedThought.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 items-center">
+                            {selectedThought.tags.map((tag, index) => (
+                                <span
+                                    key={index}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition-colors"
+                                >
+                                    <Tag className="w-3 h-3" />
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 <div className="space-y-4">
                     {selectedThought.blocks
                         .sort((a, b) => a.position - b.position)
                         .map(block => (
-                            <ThoughtBlockRenderer block={block} showTimestamp={true} />
+                            <ThoughtBlockRenderer key={block.id} block={block} showTimestamp={true} />
                         ))}
                 </div>
             </div>
