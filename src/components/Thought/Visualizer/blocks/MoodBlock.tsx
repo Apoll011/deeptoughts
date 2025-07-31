@@ -65,7 +65,7 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
     };
 
     return (
-        <div className={`rounded-2xl border border-gray-200 shadow-lg bg-white overflow-hidden transition-all duration-500 hover:shadow-xl ${className}`}>
+        <div className={`rounded-2xl border border-gray-200 shadow-lg bg-white overflow-hidden hover:shadow-2xl transition-shadow duration-300  ${className}`}>
             <div className="bg-white border-b border-gray-100 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="relative">

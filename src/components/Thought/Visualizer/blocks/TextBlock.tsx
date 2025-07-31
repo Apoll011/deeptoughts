@@ -45,7 +45,7 @@ export const TextBlock: React.FC<{ content: string; timestamp?: Date }> = ({ con
     };
 
     return (
-        <div className="rounded-xl bg-white p-4 shadow-sm border border-gray-100 hover:border-gray-200 transition-colors">
+        <div className="rounded-xl bg-white p-4 shadow-sm border border-gray-100 hover:shadow-2xl transition-shadow duration-300 ">
             <div className="prose prose-gray max-w-none">
                 <p className="text-gray-800 leading-relaxed text-base m-0 whitespace-pre-wrap">
                     {formatText(displayContent)}
