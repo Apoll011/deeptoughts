@@ -5,8 +5,9 @@ import {
     ChevronRight,
     Calendar,
     CalendarDays,
-    CalendarRange, Heart
+    CalendarRange
 } from "lucide-react";
+import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 
 const animationStyles = `
   @keyframes fadeIn {
@@ -87,39 +88,7 @@ export const CalendarView: React.FC<{
         ) : (
           <div className="space-y-3">
             {dayThoughts.map(thought => (
-              <div
-                key={thought.id}
-                className="bg-white rounded-xl p-3 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-3 border-purple-300"
-                onClick={() => onThoughtSelect(thought)}
-              >
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-lg">{thought.primaryEmotion}</span>
-                  <h4 className="font-medium text-gray-800 flex-1">{thought.title}</h4>
-                  {thought.isFavorite && <Heart className="w-4 h-4 text-red-500 fill-current" />}
-                </div>
-
-                <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                  {thought.blocks.find(block => block.type === 'text')?.content || ''}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                    thought.category === 'Family'
-                      ? 'bg-blue-50 text-blue-700'
-                      : thought.category === 'Nature'
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-amber-50 text-amber-700'
-                  }`}>
-                    {thought.category}
-                  </span>
-
-                  {thought.tags.slice(0, 2).map(tag => (
-                    <span key={tag} className="inline-flex items-center space-x-1 bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
-                      <span>{tag}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
+                <ThoughtCard key={thought.id} thought={thought} onSelect={(thought) => onThoughtSelect(thought)} compact={true}/>
             ))}
           </div>
         )}

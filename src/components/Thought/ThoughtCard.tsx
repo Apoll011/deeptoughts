@@ -141,14 +141,14 @@ export const ThoughtCard: React.FC<{
             >
                 <div className="p-3.5 flex items-center space-x-4">
                     <div className="relative flex-shrink-0">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-600 transition-colors duration-300`}>
-                            <span className="text-lg transform transition-transform duration-300 group-hover:scale-110">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-gray-200 text-gray-600 transition-colors duration-300`}>
+                            <span className="text-lg transform transition-transform duration-300 scale-120 group-hover:scale-140">
                                 {thought.primaryEmotion}
                             </span>
                         </div>
                         {thought.isFavorite && (
-                            <div className="absolute -top-0.5 -right-0.5 bg-rose-500 rounded-full p-1">
-                                <Heart className="w-2 h-2 text-white fill-current" />
+                            <div className="absolute -top-1.5 -right-1.5 bg-rose-500 rounded-full p-1">
+                                <Heart className="w-4 h-4 text-white fill-current" />
                             </div>
                         )}
                     </div>
@@ -159,6 +159,10 @@ export const ThoughtCard: React.FC<{
                                 {thought.title}
                             </h3>
                         </div>
+
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                            {thought.blocks.find(block => block.type === 'text')?.content || ''}
+                        </p>
 
                         <div className="flex items-center space-x-3">
                             <time className="text-xs font-medium text-gray-500">
