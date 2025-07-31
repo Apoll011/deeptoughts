@@ -57,21 +57,25 @@ export const ImageBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
                         </div>
                     ) : (
                         <>
-                            <img
-                                src={media.url}
-                                alt="Image"
-                                className="w-full h-auto transition-opacity duration-300"
-                                style={{ opacity: isLoading ? 0 : 1 }}
-                                onLoad={handleImageLoad}
-                                onError={handleImageError}
-                            />
-                            {media.caption && (
-                                <div className="p-4 bg-gray-50 border-t">
-                                    <p className="text-sm text-gray-700 leading-relaxed">
-                                        {media.caption}
-                                    </p>
-                                </div>
-                            )}
+                            <div className="w-full h-full relative group">
+                                <img
+                                    src={media.url}
+                                    alt="Image"
+                                    className="w-full h-auto transition-all duration-500 group-hover:scale-110"
+                                    style={{ opacity: isLoading ? 0 : 1 }}
+                                    onLoad={handleImageLoad}
+                                    onError={handleImageError}
+                                />
+                                {media.caption && (
+                                    <div className="absolute bottom-0 w-full p-4 bg-gray-50 border-t">
+                                        <p className="text-sm text-gray-700 leading-relaxed">
+                                            {media.caption}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+
                             <button
                                 onClick={toggleFullscreen}
                                 className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/70"
