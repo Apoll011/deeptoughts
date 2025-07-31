@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import type {MediaAttachment, Thought} from "../types.ts";
+import React, {useEffect, useState} from "react";
+import type {MediaAttachment, Thought} from "../../types.ts";
 import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
 
 const hashString = (str: string): string => {
@@ -48,8 +48,7 @@ export const ThoughtCard: React.FC<{
 
         video.onloadedmetadata = () => {
             try {
-                const randomTime = Math.random() * video.duration;
-                video.currentTime = randomTime;
+                video.currentTime = Math.random() * video.duration;
             } catch (error) {
                 console.error("Error setting video time:", error);
                 setFrameError(true);

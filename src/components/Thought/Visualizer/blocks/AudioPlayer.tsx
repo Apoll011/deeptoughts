@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Pause, Play, Volume2, Volume1, VolumeX, SkipBack, SkipForward, Settings } from "lucide-react";
-import type { MediaAttachment } from "../../types.ts";
+import type { MediaAttachment } from "../../../../types.ts";
 
 export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -97,7 +97,8 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
 
             const generateWaveform = async () => {
                 try {
-                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    // @ts-ignore
+                    const audioContext = new (window.AudioContext || (window as unknown).webkitAudioContext)();
 
                     const response = await fetch(media.url);
                     const arrayBuffer = await response.arrayBuffer();

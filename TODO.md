@@ -1,0 +1,1 @@
+- [ ] Keep the setting on fileter and display even on change screen

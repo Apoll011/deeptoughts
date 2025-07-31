@@ -1,4 +1,4 @@
-import type {MediaBlockProps} from "../../types.ts";
+import type {MediaBlockProps} from "../../../../types.ts";
 import React, {useState} from "react";
 
 export const ImageBlock: React.FC<MediaBlockProps> = ({ media, className = '' }) => {
