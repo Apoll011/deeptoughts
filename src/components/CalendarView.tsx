@@ -189,18 +189,13 @@ export const CalendarView: React.FC<{
                 {dayThoughts.slice(0, 2).map(thought => (
                   <div
                     key={thought.id}
-                    className="bg-white rounded-lg p-1 sm:p-2 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-2 border-purple-300"
+                    className="bg-white rounded-lg justify-center items-center py-1 px-1 sm:py-2 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 border-l-2 border-purple-300"
                     onClick={(e) => {
                       e.stopPropagation();
                       onThoughtSelect(thought);
                     }}
                   >
-                    <div className="flex items-center space-x-1">
-                      <span className="text-xs">{thought.primaryEmotion}</span>
-                      <span className="text-[10px] sm:text-xs text-gray-700 truncate flex-1 font-medium">
-                        {thought.title}
-                      </span>
-                    </div>
+                    <span className="text-xs">{thought.primaryEmotion}</span>
                   </div>
                 ))}
                 {dayThoughts.length > 2 && (
