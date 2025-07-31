@@ -140,13 +140,8 @@ export const ThoughtCard: React.FC<{
                 onClick={() => onSelect(thought)}
             >
                 <div className="p-3.5 flex items-center space-x-4">
-                    {/* Emotion Circle */}
                     <div className="relative flex-shrink-0">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            thought.isFavorite 
-                                ? 'bg-rose-50 text-rose-600'
-                                : 'bg-gray-50 text-gray-600'
-                        } transition-colors duration-300`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-600 transition-colors duration-300`}>
                             <span className="text-lg transform transition-transform duration-300 group-hover:scale-110">
                                 {thought.primaryEmotion}
                             </span>
