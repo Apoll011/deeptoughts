@@ -19,7 +19,7 @@ const App: React.FC = () => {
             )}
 
             {currentView === 'mindstream' && (
-                <ThoughtEditor />
+                <ThoughtEditor backAction={() => {setCurrentView("timeline")}}/>
             )}
         </div>
     );

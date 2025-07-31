@@ -3,7 +3,7 @@ import {
     Eye,
     Plus,
     X,
-    Save,
+    Save, ChevronLeft,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
@@ -13,7 +13,7 @@ import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
-export default function ThoughtEditor() {
+export default function ThoughtEditor({backAction}: {backAction: () => void}) {
     const [isPreview, setIsPreview] = useState(false);
     const [thought, setThought] = useState<Thought>({
         id: uuidv4(),
@@ -168,6 +168,10 @@ export default function ThoughtEditor() {
         }
     };
 
+    const back = () => {
+        backAction();
+    }
+
     if (isPreview) {
         return (
             <ThoughtVisualizer selectedThought={thought} onBack={() => setIsPreview(false)} />
@@ -176,10 +180,16 @@ export default function ThoughtEditor() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100">
+            <div className="sticky top-0 z-50 items-center bg-white/80 backdrop-blur-sm border-b border-gray-100">
                 <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
+                    <button
+                        onClick={back}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                        <ChevronLeft className="w-6 h-6 text-gray-600" />
+                    </button>
                     <h1 className="text-base font-medium text-gray-600">
-                        {thought.title ? (thought.title.length > 30 ? thought.title.substring(0, 30) + '...' : thought.title) : 'Untitled thought'}
+                        {thought.title ? (thought.title.length > 13 ? thought.title.substring(0, 13).trim() + '...' : thought.title) : 'Untitled thought'}
                     </h1>
                     <div className="flex items-center gap-2">
                         <button
