@@ -6,12 +6,13 @@ import ThoughtEditor from "./components/Thought/Editor/ThoughtEditor.tsx";
 import {InMemoryStorage} from "./storage/inMemoryStorage.ts";
 import {ThoughtManager} from "./core/ThoughtManager.ts";
 
+// Create single instances outside the component
+const storage = new InMemoryStorage();
+const manager = new ThoughtManager(storage);
+
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
-
-    const storage = new InMemoryStorage();
-    const manager = new ThoughtManager(storage);
 
     return (
         <div className="max-w-md mx-auto bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -20,11 +21,16 @@ const App: React.FC = () => {
             )}
 
             {currentView === 'editor' && selectedThought && (
-                <ThoughtVisualizer selectedThought={selectedThought} onBack={() => {setCurrentView('timeline')}}/>
+                <ThoughtVisualizer
+                    selectedThought={selectedThought}
+                    onBack={() => {setCurrentView('timeline')}}
+                />
             )}
 
             {currentView === 'mindstream' && (
-                <ThoughtEditor backAction={() => {setCurrentView("timeline")}}/>
+                <ThoughtEditor
+                    backAction={() => {setCurrentView("timeline")}}
+                />
             )}
         </div>
     );
