@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Pause, Play, Volume2, Volume1, VolumeX, SkipBack, SkipForward, Settings } from "lucide-react";
-import type { MediaAttachment } from "../../../../types.ts";
+import type { MediaAttachment } from "../../../../models/types.ts";
 
 export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -39,7 +39,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         }
     };
 
-    // Handle time update
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -52,12 +51,9 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         };
         const handleEnded = () => setIsPlaying(false);
 
-        // Load metadata and update duration as soon as possible
         const handleLoadedMetadata = () => {
             updateDuration();
 
-            // If we don't have a waveform yet and we're not already loading one,
-            // we can use the audio element's duration
             if (waveform.length === 0 && !isWaveformLoading) {
                 console.log("Audio duration loaded:", audio.duration);
             }
@@ -76,14 +72,12 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         };
     }, [waveform.length, isWaveformLoading]);
 
-    // Update volume
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;
         }
     }, [volume]);
 
-    // Update playback rate
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.playbackRate = playbackRate;
@@ -143,7 +137,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
         }
     }, [media.url]);
 
-    // Handle seeking
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         if (progressRef.current && audioRef.current) {
             const progressRect = progressRef.current.getBoundingClientRect();
@@ -247,7 +240,6 @@ export const AudioPlayer: React.FC<{ media: MediaAttachment }> = ({ media }) => 
                         </div>
                     </div>
                 ) : (
-                    // Actual waveform
                     waveform.map((height, index) => {
                         const isActive = index <= (currentTime / duration) * waveform.length;
                         const barHeight = Math.max(height * 100, 5);

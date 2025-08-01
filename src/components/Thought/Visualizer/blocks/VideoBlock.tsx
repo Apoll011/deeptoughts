@@ -1,4 +1,4 @@
-import type {MediaBlockProps} from "../../../../types.ts";
+import type {MediaBlockProps} from "../../../../models/types.ts";
 import React, {useState, useEffect, useRef} from "react";
 import { Play, Pause, Volume2, Volume1, VolumeX, Maximize, Minimize, SkipForward, SkipBack, Settings } from "lucide-react";
 
@@ -61,21 +61,18 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         };
     }, []);
 
-    // Update volume
     useEffect(() => {
         if (videoRef.current) {
             videoRef.current.volume = isMuted ? 0 : volume;
         }
     }, [volume, isMuted]);
 
-    // Update playback rate
     useEffect(() => {
         if (videoRef.current) {
             videoRef.current.playbackRate = playbackRate;
         }
     }, [playbackRate]);
 
-    // Handle fullscreen changes
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -87,7 +84,6 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         };
     }, []);
 
-    // Show/hide controls on hover
     useEffect(() => {
         if (isHovering) {
             setShowControls(true);
@@ -101,7 +97,6 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         }
     }, [isHovering, isPlaying]);
 
-    // Toggle play/pause
     const togglePlayPause = () => {
         if (videoRef.current) {
             if (isPlaying) {
@@ -115,14 +110,12 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         }
     };
 
-    // Skip forward/backward
     const skipTime = (seconds: number) => {
         if (videoRef.current) {
             videoRef.current.currentTime += seconds;
         }
     };
 
-    // Handle volume change
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
         setVolume(newVolume);
@@ -133,12 +126,10 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         }
     };
 
-    // Toggle mute
     const toggleMute = () => {
         setIsMuted(!isMuted);
     };
 
-    // Toggle fullscreen
     const toggleFullscreen = () => {
         if (!videoContainerRef.current) return;
 
@@ -151,13 +142,11 @@ export const VideoBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
         }
     };
 
-    // Set playback rate
     const setSpeed = (speed: number) => {
         setPlaybackRate(speed);
         setShowPlaybackOptions(false);
     };
 
-    // Handle progress bar click
     const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!progressRef.current || !videoRef.current) return;
 

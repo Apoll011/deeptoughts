@@ -1,4 +1,4 @@
-import type {MediaBlockProps} from "../../../../types.ts";
+import type {MediaBlockProps} from "../../../../models/types.ts";
 import React, {useState} from "react";
 import {FullscreenIcon} from "lucide-react";
 
@@ -19,7 +19,7 @@ export const ImageBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
 
     const toggleFullscreen = () => {
         setIsFullscreen(!isFullscreen);
-        setScale(1); // Reset zoom when toggling fullscreen
+        setScale(1);
     };
 
     const handleZoomIn = () => {

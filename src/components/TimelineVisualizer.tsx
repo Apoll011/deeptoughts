@@ -1,18 +1,43 @@
 import React, {useEffect, useState} from "react";
-import type {CurrentView, Thought, ViewMode} from "../types.ts";
+import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
 import {CalendarView} from "./CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 import {Plus} from "lucide-react";
 import {Header} from "./Header.tsx";
+import type {ThoughtManager} from "../core/ThoughtManager.ts";
+import type {FilterType} from "./FilterPanel.tsx";
 
 
-export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({setSelectedThought, setCurrentView}) => {
+export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({manager, setSelectedThought, setCurrentView}) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filters, setFilters] = useState<FilterType>({
+        tags: [],
+        categories: [],
+        favorites: false,
+        moods: []
+    });
 
+    const [thoughts, setThoughts] = useState<Thought[]>([]);
     const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
+
+    useEffect(() => {
+        setThoughts(manager.getAllThoughts());
+    }, [manager]);
+
+    useEffect(() => {
+        let filtered = manager.filterThoughts(filters);
+
+        if (searchQuery.trim() !== '') {
+            filtered = manager.searchThoughtsFromList(searchQuery, filtered);
+        }
+
+        setFilteredThoughts(filtered);
+    }, [searchQuery, filters, thoughts, manager]);
+
 
     useEffect(() => {
         const controlScrollElements = () => {
@@ -39,7 +64,7 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
 
     return (
         <>
-            <Header headerVisibility={headerVisibility} setFilteredThoughts={setFilteredThoughts} viewMode={viewMode} setViewMode={setViewMode}/>
+            <Header filters={filters} setFilters={setFilters} thoughts={filteredThoughts} headerVisibility={headerVisibility} viewMode={viewMode} setViewMode={setViewMode} searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
 
             <div className="pt-54"></div>
 
@@ -50,6 +75,7 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
                         onDateChange={setSelectedDate}
                         thoughts={filteredThoughts}
                         onThoughtSelect={handleThoughtSelect}
+                        manager={manager}
                     />
                 )}
                 {viewMode === 'grid' && (
@@ -59,6 +85,7 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
                                 key={thought.id}
                                 thought={thought}
                                 onSelect={handleThoughtSelect}
+                                manager={manager}
                             />
                         ))}
                     </div>
@@ -71,6 +98,7 @@ export const TimelineVisualizer: React.FC<{setSelectedThought: React.Dispatch<Re
                                 thought={thought}
                                 onSelect={handleThoughtSelect}
                                 compact={true}
+                                manager={manager}
                             />
                         ))}
                     </div>

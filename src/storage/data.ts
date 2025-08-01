@@ -1,4 +1,4 @@
-import type {Thought} from "./types.ts";
+import type {Thought} from "../models/types.ts";
 
 export const mockThoughts: Thought[] = [
     {
