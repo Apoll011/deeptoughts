@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import type {MediaAttachment, Thought} from "../../models/types.ts";
 import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
+import {ThoughtManager} from "../../core/ThoughtManager.ts";
 
 const hashString = (str: string): string => {
     let hash = 0;
@@ -12,21 +13,19 @@ const hashString = (str: string): string => {
     return Math.abs(hash).toString(16);
 };
 
-const shareThought = (thought: Thought) => {
-    console.log(`Sharing thought: ${thought.title}`);
-    alert(`Sharing: ${thought.title}`);
-};
-
 export const ThoughtCard: React.FC<{
     thought: Thought;
     onSelect: (thought: Thought) => void;
     compact?: boolean;
-}> = ({ thought, onSelect, compact = false }) => {
+    manager: ThoughtManager;
+}> = ({ thought, onSelect, manager, compact = false }) => {
     let firstImage: MediaAttachment | undefined;
     const hasAudio = thought.blocks.some(block => block.media?.type === 'audio');
     const [frameSrc, setFrameSrc] = useState<string | null>(null);
     const [isLoadingFrame, setIsLoadingFrame] = useState<boolean>(false);
     const [frameError, setFrameError] = useState<boolean>(false);
+    const [isFavorite, setIsFavorite] = useState(thought.isFavorite);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const extractRandomFrame = (videoUrl: string | undefined) => {
         if (!videoUrl) {
@@ -108,6 +107,10 @@ export const ThoughtCard: React.FC<{
             extractRandomFrame(url);
         }
     }, [thought.id]);
+
+    useEffect(() => {
+        setIsFavorite(thought.isFavorite);
+    }, [thought.isFavorite]);
 
     if (thought.blocks.find(block => block.media?.type === 'image')) {
         firstImage = thought.blocks.find(block => block.media?.type === 'image')?.media;
@@ -311,19 +314,29 @@ export const ThoughtCard: React.FC<{
 
                     <div className="flex items-center space-x-3 text-gray-400">
                         <div 
-                            className={`heart-button ${thought.isFavorite ? 'bg-red-500' : 'hover:bg-gray-100'} transition-colors duration-200 bg-opacity-90 backdrop-blur-sm rounded-full p-1.5 shadow-lg cursor-pointer`}
+                            className={`heart-button ${isFavorite ? 'bg-red-500' : 'hover:bg-gray-100'} 
+                            transition-all duration-300 ease-in-out transform 
+                            ${isAnimating ? 'scale-125' : 'scale-100'}
+                            bg-opacity-90 backdrop-blur-sm rounded-full p-1.5 shadow-lg cursor-pointer`}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                console.log(`Toggle favorite: ${thought.title}`);
+                                setIsAnimating(true);
+                                manager.toggleFavorite(thought.id);
+                                setIsFavorite(!isFavorite);
+                                setTimeout(() => setIsAnimating(false), 300);
                             }}
                         >
-                            <Heart className={`w-5 h-5 ${thought.isFavorite ? 'fill-current text-white' : 'hover:text-red-500'}`} />
+                            <Heart
+                                className={`w-5 h-5 transition-all duration-300 ease-in-out transform
+                                ${isFavorite ? 'fill-current text-white scale-110' : 'hover:text-red-500 scale-100'}
+                                ${isAnimating ? 'animate-pulse' : ''}`}
+                            />
                         </div>
                         <div 
                             className="share-button hover:bg-gray-100 transition-colors duration-200 rounded-full p-1.5 bg-opacity-90 backdrop-blur-sm rounded-full p-1.5 shadow-lg cursor-pointer`"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                shareThought(thought);
+                                manager.shareThought(thought.id);
                             }}
                         >
                             <Share className="w-5 h-5 hover:text-blue-500" />

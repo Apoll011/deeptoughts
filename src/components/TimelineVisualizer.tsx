@@ -70,6 +70,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                         onDateChange={setSelectedDate}
                         thoughts={filteredThoughts}
                         onThoughtSelect={handleThoughtSelect}
+                        manager={manager}
                     />
                 )}
                 {viewMode === 'grid' && (
@@ -79,6 +80,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                                 key={thought.id}
                                 thought={thought}
                                 onSelect={handleThoughtSelect}
+                                manager={manager}
                             />
                         ))}
                     </div>
@@ -91,6 +93,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                                 thought={thought}
                                 onSelect={handleThoughtSelect}
                                 compact={true}
+                                manager={manager}
                             />
                         ))}
                     </div>

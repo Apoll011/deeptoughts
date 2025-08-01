@@ -100,6 +100,7 @@ export class ThoughtManager {
         const thought = this.getThought(id);
         if (!thought) return;
         this.updateThought(id, { isFavorite: !thought.isFavorite });
+        console.log(this.getThought(id));
     }
 
     filterThoughts(filters: FilterType): Thought[] {
@@ -111,4 +112,11 @@ export class ThoughtManager {
             return tagMatch && categoryMatch && favoriteMatch && moodMatch;
         });
     }
+
+    shareThought(id: string) {
+        const thought = this.getThought(id);
+        if (!thought) return;
+        console.log(`Sharing thought: ${thought.title}`);
+        alert(`Sharing: ${thought.title}`);
+    };
 }

@@ -8,6 +8,7 @@ import {
     CalendarRange
 } from "lucide-react";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
+import type {ThoughtManager} from "../core/ThoughtManager.ts";
 
 const animationStyles = `
   @keyframes fadeIn {
@@ -36,7 +37,8 @@ export const CalendarView: React.FC<{
   onDateChange: (date: Date) => void;
   thoughts: Thought[];
   onThoughtSelect: (thought: Thought) => void;
-}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect}) => {
+  manager: ThoughtManager
+}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect, manager}) => {
   const [viewType, setViewType] = useState<ViewType>('month');
 
   const today = new Date();
@@ -88,7 +90,7 @@ export const CalendarView: React.FC<{
         ) : (
           <div className="space-y-3">
             {dayThoughts.map(thought => (
-                <ThoughtCard key={thought.id} thought={thought} onSelect={(thought) => onThoughtSelect(thought)} compact={true}/>
+                <ThoughtCard manager={manager} key={thought.id} thought={thought} onSelect={(thought) => onThoughtSelect(thought)} compact={true}/>
             ))}
           </div>
         )}
