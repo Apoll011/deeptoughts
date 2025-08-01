@@ -6,7 +6,6 @@ import ThoughtEditor from "./components/Thought/Editor/ThoughtEditor.tsx";
 import {InMemoryStorage} from "./storage/inMemoryStorage.ts";
 import {ThoughtManager} from "./core/ThoughtManager.ts";
 
-// Create single instances outside the component
 const storage = new InMemoryStorage();
 const manager = new ThoughtManager(storage);
 

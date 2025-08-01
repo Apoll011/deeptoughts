@@ -21,11 +21,9 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
         moods: []
     });
 
-    // Add state for all thoughts to trigger re-renders
     const [thoughts, setThoughts] = useState<Thought[]>([]);
     const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
 
-    // Fetch thoughts whenever any thought is modified
     useEffect(() => {
         setThoughts(manager.getAllThoughts());
     }, [manager]);

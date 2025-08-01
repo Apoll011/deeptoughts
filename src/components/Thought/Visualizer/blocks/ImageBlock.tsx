@@ -19,7 +19,7 @@ export const ImageBlock: React.FC<MediaBlockProps> = ({ media, className = '' })
 
     const toggleFullscreen = () => {
         setIsFullscreen(!isFullscreen);
-        setScale(1); // Reset zoom when toggling fullscreen
+        setScale(1);
     };
 
     const handleZoomIn = () => {
