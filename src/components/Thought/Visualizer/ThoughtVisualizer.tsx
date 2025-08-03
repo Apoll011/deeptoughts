@@ -43,20 +43,18 @@ export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.Mous
             <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
                 <button
                     onClick={onBack}
-                    className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
                     <ChevronLeft className="w-6 h-6 text-gray-600" />
                 </button>
                 { showEdit && (
-                    <div className="mb-4">
-                        <button
-                            onClick={() => setIsEdit(true)}
-                            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
-                        >
-                            <Pencil className="w-4 h-4" />
-                            <span>Edit</span>
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setIsEdit(true)}
+                        className="w-[30%] justify-center inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-1 py-1.5 rounded-md border border-gray-200 transition-all duration-200 font-medium"
+                    >
+                        <Pencil className="w-4 h-4" />
+                        <span className={"font-bold text-sm"}>Edit</span>
+                    </button>
                 )}
             </div>
             <div className="px-6 pb-6">
