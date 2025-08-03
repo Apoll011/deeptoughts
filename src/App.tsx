@@ -33,7 +33,6 @@ const App: React.FC = () => {
         };
         manager.createThought(thought);
         setNewThought(thought);
-        console.log(manager.getThought(thought.id));
         setCurrentView('new');
     }
 
@@ -52,7 +51,7 @@ const App: React.FC = () => {
 
             {currentView === 'new' && newThought && (
                 <ThoughtEditor
-                    thought={newThought}
+                    thoughtId={newThought.id}
                     manager={manager}
                     backAction={() => {setCurrentView("timeline")}}
                 />
