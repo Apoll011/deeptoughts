@@ -3,7 +3,7 @@ import {
     Eye,
     Plus,
     X,
-    Save, ChevronLeft,
+    ChevronLeft,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
@@ -162,13 +162,6 @@ export default function ThoughtEditor({backAction, thought, manager}: {backActio
                         {thought.title ? (thought.title.length > 13 ? thought.title.substring(0, 13).trim() + '...' : thought.title) : 'Untitled thought'}
                     </h1>
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => console.log('Saving thought...')}
-                            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span>Save</span>
-                        </button>
                         <button
                             onClick={() => setIsPreview(true)}
                             className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
