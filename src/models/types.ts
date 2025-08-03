@@ -52,6 +52,8 @@ export interface ThoughtBlock {
     timestamp?: Date;
 }
 
+export type thought_Mood = 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'grateful' | 'reflective' | 'neutral';
+
 export interface Thought {
     id: string;
     title: string;
@@ -62,10 +64,10 @@ export interface Thought {
     createdAt: Date;
     updatedAt: Date;
     isFavorite: boolean;
-    mood: 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'grateful' | 'reflective';
+    mood: thought_Mood;
     weather?: string;
     location?: string;
 }
 
 export type ViewMode = 'grid' | 'list' | 'month';
-export type CurrentView = 'timeline' | 'mindstream' | 'editor';
+export type CurrentView = 'timeline' | 'mindstream' | 'editor' | 'new';

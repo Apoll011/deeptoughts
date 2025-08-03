@@ -8,7 +8,7 @@ import type {ThoughtManager} from "../core/ThoughtManager.ts";
 import type {FilterType} from "./FilterPanel.tsx";
 
 
-export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>}> = ({manager, setSelectedThought, setCurrentView}) => {
+export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({manager, setSelectedThought, setCurrentView, startNewThought}) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
@@ -104,7 +104,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                     </div>
                 )}
                 <button
-                    onClick={() => setCurrentView('mindstream')}
+                    onClick={startNewThought}
                     className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-5 rounded-3xl transform hover:scale-110 z-50"
                     style={{
                         transform: `translateY(${(1 - headerVisibility) * 112}px) rotate(${(1 - headerVisibility) * 90}deg)`,

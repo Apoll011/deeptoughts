@@ -10,25 +10,12 @@ import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
 import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
+import type {ThoughtManager} from "../../../core/ThoughtManager.ts";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
-export default function ThoughtEditor({backAction}: {backAction: () => void}) {
+export default function ThoughtEditor({backAction, thought, manager}: {backAction: () => void, thought: Thought, manager: ThoughtManager}) {
     const [isPreview, setIsPreview] = useState(false);
-    const [thought, setThought] = useState<Thought>({
-        id: uuidv4(),
-        title: '',
-        blocks: [],
-        primaryEmotion: '',
-        tags: [],
-        category: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isFavorite: false,
-        mood: 'calm',
-        weather: '',
-        location: ''
-    });
 
     const [newTag, setNewTag] = useState('');
 
@@ -82,49 +69,32 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
             };
         }
 
-        setThought(prev => ({
-            ...prev,
-            blocks: [...prev.blocks, newBlock],
-            updatedAt: new Date()
-        }));
+        manager.addBlock(thought.id, newBlock);
 
         scrollToBottom();
     };
 
-    // @ts-ignore
-    const updateBlock = (blockId: string, updates) => {
-        setThought(prev => ({
-            ...prev,
-            blocks: prev.blocks.map(block =>
-                block.id === blockId ? { ...block, ...updates } : block
-            ),
-            updatedAt: new Date()
-        }));
+    const updateBlock = (blockId: string, updates: Partial<ThoughtBlock>) => {
+        manager.updateBlock(thought.id, blockId, updates);
     };
 
     const deleteBlock = (blockId: string) => {
-        setThought(prev => ({
-            ...prev,
-            blocks: prev.blocks.filter(block => block.id !== blockId),
-            updatedAt: new Date()
-        }));
+        manager.deleteBlock(thought.id, blockId);
     };
 
     const addTag = () => {
         if (newTag.trim() && !thought.tags.includes(newTag.trim())) {
-            setThought(prev => ({
-                ...prev,
-                tags: [...prev.tags, newTag.trim()]
-            }));
+            manager.updateThought(thought.id, {
+                tags: [...thought.tags, newTag.trim()]
+            });
             setNewTag('');
         }
     };
 
     const removeTag = (tagToRemove: string) => {
-        setThought(prev => ({
-            ...prev,
-            tags: prev.tags.filter(tag => tag !== tagToRemove)
-        }));
+        manager.updateThought(thought.id, {
+            tags: thought.tags.filter(tag => tag !== tagToRemove)
+        });
     };
 
     const handleFileUpload = (blockId: string, file: File) => {
@@ -215,7 +185,7 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                         <input
                             type="text"
                             value={thought.title}
-                            onChange={(e) => setThought(prev => ({ ...prev, title: e.target.value }))}
+                            onChange={(e) => manager.updateThought(thought.id, { title: e.target.value })}
                             placeholder="Note title"
                             className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent mb-2 resize-none"
                         />
@@ -223,7 +193,7 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                         <div className="flex items-center mb-6">
                             <select
                                 value={thought.category}
-                                onChange={(e) => setThought(prev => ({ ...prev, category: e.target.value }))}
+                                onChange={(e) => manager.updateThought(thought.id, { category: e.target.value })}
                                 className="text-sm text-gray-500 bg-transparent border-none outline-none cursor-pointer hover:text-blue-600 transition-colors"
                             >
                                 <option value="">No Category</option>
