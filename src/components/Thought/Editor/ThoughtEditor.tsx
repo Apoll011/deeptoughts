@@ -196,7 +196,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                         <ChevronLeft className="w-6 h-6 text-gray-600" />
                     </button>
                     <h1 className="text-base font-medium text-gray-600">
-                        {thought.title ? (thought.title.length > 13 ? thought.title.substring(0, 13).trim() + '...' : thought.title) : 'Untitled thought'}
+                        {thought.title ? (thought.title.length > 20 ? thought.title.substring(0, 20).trim() + '...' : thought.title) : 'Untitled thought'}
                     </h1>
                     <div className="flex items-center gap-2">
                         <button
