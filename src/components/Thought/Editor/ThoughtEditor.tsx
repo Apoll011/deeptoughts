@@ -3,7 +3,7 @@ import {
     Eye,
     Plus,
     X,
-    Save, ChevronLeft,
+    ChevronLeft,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
@@ -23,6 +23,10 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
 
     const refreshThought = () => {
         const currentThought = manager.getThought(thoughtId);
+        if (!currentThought) {
+            console.error(`Thought with ID ${thoughtId} not found.`);
+            return;
+        }
         setThought(currentThought);
     };
 
@@ -117,17 +121,17 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
         manager.updateThought(thought.id, {
             tags: thought.tags.filter(tag => tag !== tagToRemove)
         });
-        refreshThought(); // Refresh thought data after removing tag
+        refreshThought();
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         manager.updateThought(thought.id, { title: e.target.value });
-        refreshThought(); // Refresh thought data after title change
+        refreshThought();
     };
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         manager.updateThought(thought.id, { category: e.target.value });
-        refreshThought(); // Refresh thought data after category change
+        refreshThought();
     };
 
     const handleFileUpload = (blockId: string, file: File) => {
