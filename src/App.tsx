@@ -44,8 +44,10 @@ const App: React.FC = () => {
 
             {currentView === 'editor' && selectedThought && (
                 <ThoughtVisualizer
-                    selectedThought={selectedThought}
+                    thoughtId={selectedThought.id}
+                    manager={manager}
                     onBack={() => {setCurrentView('timeline')}}
+                    showEdit={true}
                 />
             )}
 

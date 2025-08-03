@@ -181,7 +181,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
 
     if (isPreview) {
         return (
-            <ThoughtVisualizer selectedThought={thought} onBack={() => setIsPreview(false)} />
+            <ThoughtVisualizer thoughtId={thought.id} onBack={() => setIsPreview(false)} manager={manager} showEdit={false} />
         );
     }
 
