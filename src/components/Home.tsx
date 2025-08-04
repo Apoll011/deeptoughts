@@ -8,7 +8,7 @@ import type {ThoughtManager} from "../core/ThoughtManager.ts";
 import type {FilterType} from "./FilterPanel.tsx";
 
 
-export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({manager, setSelectedThought, setCurrentView, startNewThought}) => {
+export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({manager, setSelectedThought, setCurrentView, startNewThought}) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
