@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, Tag, Heart, SlidersHorizontal } from "lucide-react";
-import type { Thought } from "../models/types.ts";
+import type { Thought } from "../../models/types.ts";
 
 export type FilterType = {
   tags: string[];

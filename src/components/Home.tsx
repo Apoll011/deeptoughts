@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
-import {CalendarView} from "./CalendarView.tsx";
+import {CalendarView} from "./Calendar/CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 import {Plus} from "lucide-react";
-import {Header} from "./Header.tsx";
+import {Header} from "./UI/Header.tsx";
 import type {ThoughtManager} from "../core/ThoughtManager.ts";
-import type {FilterType} from "./FilterPanel.tsx";
+import type {FilterType} from "./UI/FilterPanel.tsx";
 
 
 export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({manager, setSelectedThought, setCurrentView, startNewThought}) => {

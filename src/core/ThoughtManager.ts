@@ -1,7 +1,7 @@
 import type { Thought, ThoughtBlock } from '../models/types';
 import type {IStorage} from '../storage/storage.interface';
 import { sortBlocksByPosition } from './utils';
-import type {FilterType} from "../components/FilterPanel.tsx";
+import type {FilterType} from "../components/UI/FilterPanel.tsx";
 
 export class ThoughtManager {
     private storage: IStorage;

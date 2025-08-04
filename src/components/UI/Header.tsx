@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FilterPanel, type FilterType} from "./FilterPanel.tsx";
 import {Calendar, Grid3X3, List, Search} from "lucide-react";
-import type {Thought, ViewMode} from "../models/types.ts";
+import type {Thought, ViewMode} from "../../models/types.ts";
 
 
 export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>, filters: FilterType, setFilters: React.Dispatch<React.SetStateAction<FilterType>>, thoughts: Thought[], searchQuery:string, setSearchQuery: React.Dispatch<React.SetStateAction<string>>}> = ({headerVisibility, thoughts, filters, setFilters, viewMode, setViewMode, searchQuery, setSearchQuery}) => {
