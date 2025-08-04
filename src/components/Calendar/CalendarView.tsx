@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Thought } from "../models/types.ts";
+import type { Thought } from "../../models/types.ts";
 import {
     ChevronLeft,
     ChevronRight,
@@ -7,8 +7,8 @@ import {
     CalendarDays,
     CalendarRange
 } from "lucide-react";
-import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
-import type {ThoughtManager} from "../core/ThoughtManager.ts";
+import {ThoughtCard} from "../Thought/ThoughtCard.tsx";
+import type {ThoughtManager} from "../../core/ThoughtManager.ts";
 
 const animationStyles = `
   @keyframes fadeIn {

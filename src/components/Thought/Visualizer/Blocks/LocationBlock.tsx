@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import type { LocationInfo } from "../../../../models/types.ts";
+import React, {useState} from "react";
+import type {LocationInfo} from "../../../../models/types.ts";
 
 interface LocationBlockProps {
     location: LocationInfo;
@@ -48,8 +48,7 @@ export const LocationBlock: React.FC<LocationBlockProps> = ({ location, classNam
 
     const renderLocalTime = () => {
         try {
-            const date = new Date().toLocaleString("en-US", { timeZone: location.timezone });
-            return date;
+            return new Date().toLocaleString("en-US", {timeZone: location.timezone});
         } catch {
             return "Unknown";
         }
