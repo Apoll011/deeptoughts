@@ -1,44 +1,54 @@
-import {useRef, useState} from 'react';
+import {useRef, useState, useEffect} from 'react';
 import {
     Eye,
     Plus,
     X,
-    Save, ChevronLeft,
+    ChevronLeft,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
 import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
+import type {ThoughtManager} from "../../../core/ThoughtManager.ts";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
-export default function ThoughtEditor({backAction}: {backAction: () => void}) {
+export default function ThoughtEditor({backAction, thoughtId, manager}: {backAction: () => void, thoughtId: string, manager: ThoughtManager}) {
     const [isPreview, setIsPreview] = useState(false);
-    const [thought, setThought] = useState<Thought>({
-        id: uuidv4(),
-        title: '',
-        blocks: [],
-        primaryEmotion: '',
-        tags: [],
-        category: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        isFavorite: false,
-        mood: 'calm',
-        weather: '',
-        location: ''
-    });
-
     const [newTag, setNewTag] = useState('');
+    const [thought, setThought] = useState<Thought | null>(null);
 
-    const content = useRef<null | HTMLDivElement>(null)
+    const content = useRef<null | HTMLDivElement>(null);
 
-    const scrollToBottom = () => {
-        content.current?.scrollIntoView({ behavior: "smooth" })
+    const refreshThought = () => {
+        const currentThought = manager.getThought(thoughtId);
+        if (!currentThought) {
+            console.error(`Thought with ID ${thoughtId} not found.`);
+            return;
+        }
+        setThought(currentThought);
+    };
+
+    useEffect(() => {
+        refreshThought();
+    }, [thoughtId, manager]);
+
+    if (!thought) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-gray-500">Loading...</div>
+            </div>
+        );
     }
 
-    const addBlock = (type: blockType, subType: mediaType | null = null ) => {
+    const scrollToBottom = () => {
+        setTimeout(() => {
+            content.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+    };
+
+    const addBlock = (type: blockType, subType: mediaType | null = null) => {
         const newBlock: ThoughtBlock = {
             id: uuidv4(),
             type,
@@ -82,49 +92,46 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
             };
         }
 
-        setThought(prev => ({
-            ...prev,
-            blocks: [...prev.blocks, newBlock],
-            updatedAt: new Date()
-        }));
-
+        manager.addBlock(thought.id, newBlock);
+        refreshThought();
         scrollToBottom();
     };
 
-    // @ts-ignore
-    const updateBlock = (blockId: string, updates) => {
-        setThought(prev => ({
-            ...prev,
-            blocks: prev.blocks.map(block =>
-                block.id === blockId ? { ...block, ...updates } : block
-            ),
-            updatedAt: new Date()
-        }));
+    const updateBlock = (blockId: string, updates: Partial<ThoughtBlock>) => {
+        manager.updateBlock(thought.id, blockId, updates);
+        refreshThought();
     };
 
     const deleteBlock = (blockId: string) => {
-        setThought(prev => ({
-            ...prev,
-            blocks: prev.blocks.filter(block => block.id !== blockId),
-            updatedAt: new Date()
-        }));
+        manager.deleteBlock(thought.id, blockId);
+        refreshThought(); // Refresh thought data after deleting block
     };
 
     const addTag = () => {
         if (newTag.trim() && !thought.tags.includes(newTag.trim())) {
-            setThought(prev => ({
-                ...prev,
-                tags: [...prev.tags, newTag.trim()]
-            }));
+            manager.updateThought(thought.id, {
+                tags: [...thought.tags, newTag.trim()]
+            });
             setNewTag('');
+            refreshThought();
         }
     };
 
     const removeTag = (tagToRemove: string) => {
-        setThought(prev => ({
-            ...prev,
-            tags: prev.tags.filter(tag => tag !== tagToRemove)
-        }));
+        manager.updateThought(thought.id, {
+            tags: thought.tags.filter(tag => tag !== tagToRemove)
+        });
+        refreshThought();
+    };
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        manager.updateThought(thought.id, { title: e.target.value });
+        refreshThought();
+    };
+
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        manager.updateThought(thought.id, { category: e.target.value });
+        refreshThought();
     };
 
     const handleFileUpload = (blockId: string, file: File) => {
@@ -170,11 +177,11 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
 
     const back = () => {
         backAction();
-    }
+    };
 
     if (isPreview) {
         return (
-            <ThoughtVisualizer selectedThought={thought} onBack={() => setIsPreview(false)} />
+            <ThoughtVisualizer thoughtId={thought.id} onBack={() => setIsPreview(false)} manager={manager} showEdit={false} />
         );
     }
 
@@ -189,16 +196,9 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                         <ChevronLeft className="w-6 h-6 text-gray-600" />
                     </button>
                     <h1 className="text-base font-medium text-gray-600">
-                        {thought.title ? (thought.title.length > 13 ? thought.title.substring(0, 13).trim() + '...' : thought.title) : 'Untitled thought'}
+                        {thought.title ? (thought.title.length > 20 ? thought.title.substring(0, 20).trim() + '...' : thought.title) : 'Untitled thought'}
                     </h1>
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => console.log('Saving thought...')}
-                            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span>Save</span>
-                        </button>
                         <button
                             onClick={() => setIsPreview(true)}
                             className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
@@ -214,16 +214,16 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                     <div className="px-6 pt-4">
                         <input
                             type="text"
-                            value={thought.title}
-                            onChange={(e) => setThought(prev => ({ ...prev, title: e.target.value }))}
+                            value={thought.title || ''}
+                            onChange={handleTitleChange}
                             placeholder="Note title"
                             className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent mb-2 resize-none"
                         />
 
                         <div className="flex items-center mb-6">
                             <select
-                                value={thought.category}
-                                onChange={(e) => setThought(prev => ({ ...prev, category: e.target.value }))}
+                                value={thought.category || ''}
+                                onChange={handleCategoryChange}
                                 className="text-sm text-gray-500 bg-transparent border-none outline-none cursor-pointer hover:text-blue-600 transition-colors"
                             >
                                 <option value="">No Category</option>
@@ -234,21 +234,21 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                         </div>
 
                         <div className="mb-6">
-                            {thought.tags.length > 0 && (
+                            {thought.tags && thought.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {thought.tags.map(tag => (
                                         <span
                                             key={tag}
                                             className="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
                                         >
-                                        {tag}
+                                            {tag}
                                             <button
                                                 onClick={() => removeTag(tag)}
                                                 className="ml-1.5 hover:text-blue-900 transition-colors"
                                             >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    </span>
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        </span>
                                     ))}
                                 </div>
                             )}
@@ -273,9 +273,19 @@ export default function ThoughtEditor({backAction}: {backAction: () => void}) {
                     </div>
                 </div>
 
-                <ThoughtBlocks blocks={thought.blocks} onDeleteBlock={deleteBlock} onUpdateBlock={updateBlock} onAddSecondaryMood={addSecondaryMood} onRemoveSecondaryMood={removeSecondaryMood} onFileUpload={handleFileUpload} onUseCurrentLocation={() => {}} />
+                <ThoughtBlocks
+                    blocks={thought.blocks}
+                    onDeleteBlock={deleteBlock}
+                    onUpdateBlock={updateBlock}
+                    onAddSecondaryMood={addSecondaryMood}
+                    onRemoveSecondaryMood={removeSecondaryMood}
+                    onFileUpload={handleFileUpload}
+                    onUseCurrentLocation={() => {}}
+                />
 
                 <ToolBar add={addBlock} />
+
+                <div ref={content} />
             </div>
         </div>
     );

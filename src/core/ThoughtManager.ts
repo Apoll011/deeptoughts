@@ -1,6 +1,6 @@
 import type { Thought, ThoughtBlock } from '../models/types';
 import type {IStorage} from '../storage/storage.interface';
-import { generateUUID, sortBlocksByPosition } from './utils';
+import { sortBlocksByPosition } from './utils';
 import type {FilterType} from "../components/FilterPanel.tsx";
 
 export class ThoughtManager {
@@ -47,11 +47,11 @@ export class ThoughtManager {
         this.storage.deleteThought(id);
     }
 
-    addBlock(thoughtId: string, block: Omit<ThoughtBlock, 'id'>): ThoughtBlock | undefined {
+    addBlock(thoughtId: string, block: ThoughtBlock): ThoughtBlock | undefined {
         const thought = this.getThought(thoughtId);
         if (!thought) return;
 
-        const newBlock: ThoughtBlock = { id: generateUUID(), ...block };
+        const newBlock: ThoughtBlock = block;
         thought.blocks.push(newBlock);
         this.storage.saveThought(thought);
         return newBlock;
