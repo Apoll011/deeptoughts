@@ -13,7 +13,13 @@ import {
     BatteryLow,
     X
 } from 'lucide-react';
-import type {ThoughtBlock, MediaAttachment, LocationInfo, MoodInfo} from '../../../models/types.ts';
+import {
+    type ThoughtBlock,
+    type MediaAttachment,
+    type LocationInfo,
+    type MoodInfo,
+    weatherIcons, weatherConditions, emotions, moodEmojis
+} from '../../../models/types.ts';
 
 interface ThoughtBlocksProps {
     blocks: ThoughtBlock[];
@@ -39,30 +45,7 @@ const ThoughtBlocks: React.FC<ThoughtBlocksProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const prevBlocksLength = useRef(blocks.length);
 
-    const emotions = [
-        'happy', 'sad', 'excited', 'calm', 'anxious', 'grateful', 'reflective',
-        'confident', 'peaceful', 'frustrated', 'hopeful', 'content', 'energetic',
-        'nostalgic', 'curious', 'overwhelmed', 'inspired', 'lonely', 'proud'
-    ];
 
-    const moodEmojis: Record<string, string> = {
-        happy: '😊', sad: '😢', excited: '🤩', calm: '😌', anxious: '😰',
-        grateful: '🙏', reflective: '🤔', confident: '💪', peaceful: '☮️',
-        frustrated: '😤', hopeful: '🌟', content: '😄', energetic: '⚡',
-        nostalgic: '🌅', curious: '🔍', overwhelmed: '🤯', inspired: '💡',
-        lonely: '😞', proud: '🏆'
-    };
-
-    const weatherConditions = [
-        'clear', 'cloudy', 'partly-cloudy', 'rainy', 'stormy', 'snowy',
-        'foggy', 'windy', 'hot', 'cold'
-    ];
-
-    const weatherIcons: Record<string, string> = {
-        clear: '☀️', cloudy: '☁️', 'partly-cloudy': '⛅', rainy: '🌧️',
-        stormy: '⛈️', snowy: '❄️', foggy: '🌫️', windy: '💨',
-        hot: '🔥', cold: '🧊'
-    };
 
     const getEnergyIcon = (energy?: string) => {
         switch (energy) {

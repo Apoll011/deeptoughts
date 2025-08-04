@@ -54,6 +54,31 @@ export interface ThoughtBlock {
 
 export type thought_Mood = 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'grateful' | 'reflective' | 'neutral';
 
+export const emotions = [
+    'happy', 'sad', 'excited', 'calm', 'anxious', 'grateful', 'reflective',
+    'confident', 'peaceful', 'frustrated', 'hopeful', 'content', 'energetic',
+    'nostalgic', 'curious', 'overwhelmed', 'inspired', 'lonely', 'proud'
+];
+
+export const moodEmojis: Record<string, string> = {
+    happy: '😊', sad: '😢', excited: '🤩', calm: '😌', anxious: '😰',
+    grateful: '🙏', reflective: '🤔', confident: '💪', peaceful: '☮️',
+    frustrated: '😤', hopeful: '🌟', content: '😄', energetic: '⚡',
+    nostalgic: '🌅', curious: '🔍', overwhelmed: '🤯', inspired: '💡',
+    lonely: '😞', proud: '🏆'
+};
+
+export const weatherConditions = [
+    'clear', 'cloudy', 'partly-cloudy', 'rainy', 'stormy', 'snowy',
+    'foggy', 'windy', 'hot', 'cold'
+];
+
+export const weatherIcons: Record<string, string> = {
+    clear: '☀️', cloudy: '☁️', 'partly-cloudy': '⛅', rainy: '🌧️',
+    stormy: '⛈️', snowy: '❄️', foggy: '🌫️', windy: '💨',
+    hot: '🔥', cold: '🧊'
+};
+
 export interface Thought {
     id: string;
     title: string;
