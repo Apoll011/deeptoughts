@@ -85,6 +85,7 @@ export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, set
                                 </button>
                             </div>
 
+                            {/*
                             <div className="flex items-center">
                                 <FilterPanel
                                     thoughts={thoughts}
@@ -94,6 +95,7 @@ export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, set
                                     setShowFilters={setShowFilters}
                                 />
                             </div>
+                            */}
                         </div>
                     </div>
                 </div>

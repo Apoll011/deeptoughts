@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
 import {CalendarView} from "./CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
-import {Plus} from "lucide-react";
 import {Header} from "./Header.tsx";
 import type {ThoughtManager} from "../core/ThoughtManager.ts";
 import type {FilterType} from "./FilterPanel.tsx";
@@ -103,6 +102,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                         ))}
                     </div>
                 )}
+                {/*
                 <button
                     onClick={() => setCurrentView('mindstream')}
                     className="fixed bottom-10 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white p-5 rounded-3xl transform hover:scale-110 z-50"
@@ -119,6 +119,7 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                               transition: 'none'
                           }} />
                 </button>
+                */}
             </div>
         </>
 
