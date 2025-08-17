@@ -158,7 +158,7 @@ export const CalendarView: React.FC<{
     const days = [];
 
     for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(<div key={`empty-${i}`} className="h-24"></div>);
+      days.push(<div key={`empty-${i}`} className="h-20 sm:h-24"></div>);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -168,13 +168,13 @@ export const CalendarView: React.FC<{
       const isSelected = date.toDateString() === selectedDate.toDateString();
 
       days.push(
-        <div 
-          key={day} 
-          className={`h-24 p-1 sm:p-2 border border-gray-100 rounded-lg cursor-pointer ${
-            isSelected 
-              ? 'bg-gradient-to-br from-yellow-100 to-orange-100 border-orange-300 shadow-inner' 
-              : isToday 
-                ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200' 
+        <div
+          key={day}
+          className={`h-20 sm:h-24 p-1 sm:p-2 border border-gray-100 rounded-lg cursor-pointer ${
+            isSelected
+              ? 'bg-gradient-to-br from-yellow-100 to-orange-100 border-orange-300 shadow-inner'
+              : isToday
+                ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'
                 : 'hover:bg-gray-50'
           }`}
           onClick={() => {
@@ -218,15 +218,16 @@ export const CalendarView: React.FC<{
 
     return (
       <>
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-center text-sm font-semibold text-gray-500 py-3">
-              {day}
+            <div key={day} className="text-center text-xs sm:text-sm font-semibold text-gray-500 py-3">
+              <span className="hidden sm:inline">{day}</span>
+              <span className="sm:hidden">{day.charAt(0)}</span>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {days}
         </div>
       </>
