@@ -1,6 +1,6 @@
 import type { Thought, ThoughtBlock } from '../models/types';
 import type {IStorage} from '../storage/storage.interface';
-import { sortBlocksByPosition } from './utils';
+import { sortBlocksByPosition, formatLocation, formatWeather } from './utils';
 import type {FilterType} from "../components/FilterPanel.tsx";
 
 export class ThoughtManager {
@@ -37,14 +37,12 @@ export class ThoughtManager {
         if (!thought) return;
 
         if (updates.blocks) {
-            // 1. Update Location
             const firstLocationBlock = updates.blocks.find(b => b.type === 'location');
-            updates.location = firstLocationBlock ? firstLocationBlock.location : undefined;
+            updates.location = firstLocationBlock ? formatLocation(firstLocationBlock.location) : undefined;
+            updates.weather = firstLocationBlock ? formatWeather(firstLocationBlock.location) : undefined;
 
-            // 2. Update Mood
             const moodBlocks = updates.blocks.filter(b => b.type === 'mood' && b.mood);
             if (moodBlocks.length > 0) {
-                // Sort by intensity to find the median
                 moodBlocks.sort((a, b) => (a.mood?.intensity ?? 0) - (b.mood?.intensity ?? 0));
                 const medianIndex = Math.floor(moodBlocks.length / 2);
                 const medianMoodBlock = moodBlocks[medianIndex];

@@ -134,8 +134,6 @@ export const ThoughtCard: React.FC<{
         };
     }
 
-
-
     if (compact) {
         return (
             <div
