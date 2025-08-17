@@ -27,8 +27,8 @@ export function formatLocation(loc: LocationInfo): string {
 export  function formatWeather(loc: LocationInfo): string {
     const parts: string[] = []
 
-    if (loc.weather.condition) parts.push(loc.condition)
-    if (loc.weather.temperature) parts.push("" + loc.weather.temperature + "°C")
+    if (loc.weather?.condition) parts.push(loc.weather.condition)
+    if (loc.weather?.temperature) parts.push("" + loc.weather.temperature + "°C")
 
     return parts.join(", ")
 }

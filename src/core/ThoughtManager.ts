@@ -1,4 +1,4 @@
-import type { Thought, ThoughtBlock } from '../models/types';
+import type {Thought, thought_Mood, ThoughtBlock} from '../models/types';
 import type {IStorage} from '../storage/storage.interface';
 import { sortBlocksByPosition, formatLocation, formatWeather } from './utils';
 import type {FilterType} from "../components/UI/FilterPanel.tsx";
@@ -36,6 +36,27 @@ export class ThoughtManager {
     updateThought(id: string, updates: Partial<Thought>): void {
         const thought = this.getThought(id);
         if (!thought) return;
+
+        if (updates.blocks) {
+            const firstLocationBlock = updates.blocks.find(b => b.type === 'location');
+            updates.location = firstLocationBlock && firstLocationBlock.location ? formatLocation(firstLocationBlock.location) : undefined;
+            updates.weather = firstLocationBlock && firstLocationBlock.location ? formatWeather(firstLocationBlock.location) : undefined;
+
+            const moodBlocks = updates.blocks.filter(b => b.type === 'mood' && b.mood);
+            if (moodBlocks.length > 0) {
+                moodBlocks.sort((a, b) => (a.mood?.intensity ?? 0) - (b.mood?.intensity ?? 0));
+                const medianIndex = Math.floor(moodBlocks.length / 2);
+                const medianMoodBlock = moodBlocks[medianIndex];
+                if (medianMoodBlock.mood) {
+                    updates.mood = medianMoodBlock.mood.primary as thought_Mood;
+                    updates.primaryEmotion = medianMoodBlock.mood.emoji;
+                }
+            } else {
+                updates.mood = "calm";
+                updates.primaryEmotion = '';
+            }
+        }
+
         const updated = {
             ...thought,
             ...updates,
@@ -118,6 +139,12 @@ export class ThoughtManager {
         const thought = this.getThought(id);
         if (!thought) return;
         console.log(`Sharing thought: ${thought.title}`);
-        alert(`Sharing: ${thought.title}`);
+        void Swal.fire({
+            icon: 'success',
+            title: 'Shared',
+            text: `Sharing: ${thought.title}`,
+            timer: 1500,
+            showConfirmButton: false
+        });
     };
 }

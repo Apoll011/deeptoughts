@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
-import type { Thought } from "../models/types.ts";
+import type { Thought } from "../../models/types.ts";
 import {
     ChevronLeft,
     ChevronRight,
 } from "lucide-react";
 import { ThoughtCard } from "../Thought/ThoughtCard.tsx";
-import type { ThoughtManager } from "../core/ThoughtManager.ts";
+import type { ThoughtManager } from "../../core/ThoughtManager.ts";
 
 type ViewType = 'day' | 'week' | 'month';
 
