@@ -1,7 +1,4 @@
-- [ ] Keep the setting on fileter and display even on change screen
-
-
-Perfect. Here's a detailed **implementation-focused TODO list** for the following blocks in your app: **Sketch**, **Calendar Event**, **Hidden Block**, **Timer**, **Link**, **Reflection Prompt**, and **Date/Time**. Each task includes key sub-features for MVP-level integration, keeping scalability in mind.
+- [ ] Keep the setting on filter and display even on change screen
 
 ---
 

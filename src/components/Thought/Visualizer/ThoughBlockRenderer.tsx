@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import {LocationBlock} from "./blocks/LocationBlock.tsx";
+import {LocationBlock} from "./Blocks/LocationBlock.tsx";
 import type {ThoughtBlock} from "../../../models/types.ts";
-import {ImageBlock} from "./blocks/ImageBlock.tsx";
-import {VideoBlock} from "./blocks/VideoBlock.tsx";
-import {MoodBlock} from "./blocks/MoodBlock.tsx";
-import {AudioPlayer} from "./blocks/AudioPlayer.tsx";
-import {TextBlock} from "./blocks/TextBlock.tsx";
+import {ImageBlock} from "./Blocks/ImageBlock.tsx";
+import {VideoBlock} from "./Blocks/VideoBlock.tsx";
+import {MoodBlock} from "./Blocks/MoodBlock.tsx";
+import {AudioBlock} from "./Blocks/AudioBlock.tsx";
+import {TextBlock} from "./Blocks/TextBlock.tsx";
 
 interface ThoughtBlockRendererProps {
     block: ThoughtBlock;
@@ -109,7 +109,7 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                             <VideoBlock media={block.media} />
                         )}
                         {block.media.type === 'audio' && (
-                            <AudioPlayer media={block.media} />
+                            <AudioBlock media={block.media} />
                         )}
                     </div>
                 )}
