@@ -62,6 +62,18 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
         setCurrentView('editor');
     };
 
+    const NoThoughtsMessage = () => (
+        <div className="text-center py-20 text-gray-500">
+            <h3 className="text-lg font-semibold">No Thoughts Found</h3>
+            <p className="mt-2">
+                {thoughts.length === 0
+                    ? "You haven't created any thoughts yet. Tap the '+' button to start."
+                    : "Try adjusting your search or filters."
+                }
+            </p>
+        </div>
+    );
+
     return (
         <>
             <Header filters={filters} setFilters={setFilters} thoughts={filteredThoughts} headerVisibility={headerVisibility} viewMode={viewMode} setViewMode={setViewMode} searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>
@@ -79,29 +91,33 @@ export const TimelineVisualizer: React.FC<{manager: ThoughtManager, setSelectedT
                     />
                 )}
                 {viewMode === 'grid' && (
-                    <div className="grid grid-cols-1 gap-6">
-                        {filteredThoughts.map(thought => (
-                            <ThoughtCard
-                                key={thought.id}
-                                thought={thought}
-                                onSelect={handleThoughtSelect}
-                                manager={manager}
-                            />
-                        ))}
-                    </div>
+                    filteredThoughts.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-6">
+                            {filteredThoughts.map(thought => (
+                                <ThoughtCard
+                                    key={thought.id}
+                                    thought={thought}
+                                    onSelect={handleThoughtSelect}
+                                    manager={manager}
+                                />
+                            ))}
+                        </div>
+                    ) : <NoThoughtsMessage />
                 )}
                 {viewMode === 'list' && (
-                    <div className="space-y-6">
-                        {filteredThoughts.map(thought => (
-                            <ThoughtCard
-                                key={thought.id}
-                                thought={thought}
-                                onSelect={handleThoughtSelect}
-                                compact={true}
-                                manager={manager}
-                            />
-                        ))}
-                    </div>
+                    filteredThoughts.length > 0 ? (
+                        <div className="space-y-6">
+                            {filteredThoughts.map(thought => (
+                                <ThoughtCard
+                                    key={thought.id}
+                                    thought={thought}
+                                    onSelect={handleThoughtSelect}
+                                    compact={true}
+                                    manager={manager}
+                                />
+                            ))}
+                        </div>
+                    ) : <NoThoughtsMessage />
                 )}
                 <button
                     onClick={startNewThought}
