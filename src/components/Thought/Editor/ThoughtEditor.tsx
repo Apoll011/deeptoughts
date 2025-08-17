@@ -4,6 +4,7 @@ import {
     Plus,
     X,
     ChevronLeft,
+    Save,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
@@ -18,6 +19,8 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
     const [isPreview, setIsPreview] = useState(false);
     const [newTag, setNewTag] = useState('');
     const [thought, setThought] = useState<Thought | null>(null);
+    const [draftThought, setDraftThought] = useState<Thought | null>(null);
+    const [isDirty, setIsDirty] = useState(false);
 
     const content = useRef<null | HTMLDivElement>(null);
 
@@ -28,13 +31,15 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
             return;
         }
         setThought(currentThought);
+        setDraftThought(JSON.parse(JSON.stringify(currentThought)));
+        setIsDirty(false);
     };
 
     useEffect(() => {
         refreshThought();
     }, [thoughtId, manager]);
 
-    if (!thought) {
+    if (!thought || !draftThought) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-gray-500">Loading...</div>
@@ -53,7 +58,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
             id: uuidv4(),
             type,
             content: '',
-            position: thought.blocks.length,
+            position: draftThought.blocks.length,
             timestamp: new Date()
         };
 
@@ -92,46 +97,54 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
             };
         }
 
-        manager.addBlock(thought.id, newBlock);
-        refreshThought();
+        setDraftThought({...draftThought, blocks: [...draftThought.blocks, newBlock]});
+        setIsDirty(true);
         scrollToBottom();
     };
 
     const updateBlock = (blockId: string, updates: Partial<ThoughtBlock>) => {
-        manager.updateBlock(thought.id, blockId, updates);
-        refreshThought();
+        setDraftThought({
+            ...draftThought,
+            blocks: draftThought.blocks.map(b => b.id === blockId ? {...b, ...updates} : b)
+        });
+        setIsDirty(true);
     };
 
     const deleteBlock = (blockId: string) => {
-        manager.deleteBlock(thought.id, blockId);
-        refreshThought(); // Refresh thought data after deleting block
+        setDraftThought({
+            ...draftThought,
+            blocks: draftThought.blocks.filter(b => b.id !== blockId)
+        });
+        setIsDirty(true);
     };
 
     const addTag = () => {
-        if (newTag.trim() && !thought.tags.includes(newTag.trim())) {
-            manager.updateThought(thought.id, {
-                tags: [...thought.tags, newTag.trim()]
+        if (newTag.trim() && !draftThought.tags.includes(newTag.trim())) {
+            setDraftThought({
+                ...draftThought,
+                tags: [...draftThought.tags, newTag.trim()]
             });
             setNewTag('');
-            refreshThought();
+            setIsDirty(true);
         }
     };
 
     const removeTag = (tagToRemove: string) => {
-        manager.updateThought(thought.id, {
-            tags: thought.tags.filter(tag => tag !== tagToRemove)
+        setDraftThought({
+            ...draftThought,
+            tags: draftThought.tags.filter(tag => tag !== tagToRemove)
         });
-        refreshThought();
+        setIsDirty(true);
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        manager.updateThought(thought.id, { title: e.target.value });
-        refreshThought();
+        setDraftThought({ ...draftThought, title: e.target.value });
+        setIsDirty(true);
     };
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        manager.updateThought(thought.id, { category: e.target.value });
-        refreshThought();
+        setDraftThought({ ...draftThought, category: e.target.value });
+        setIsDirty(true);
     };
 
     const handleFileUpload = (blockId: string, file: File) => {
@@ -152,7 +165,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
     };
 
     const addSecondaryMood = (blockId: string, mood: string) => {
-        const block = thought.blocks.find(b => b.id === blockId);
+        const block = draftThought.blocks.find(b => b.id === blockId);
         if (block && block.mood) {
             const current = block.mood.secondary || [];
             if (!current.includes(mood)) {
@@ -164,7 +177,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
     };
 
     const removeSecondaryMood = (blockId: string, moodToRemove: string) => {
-        const block = thought.blocks.find(b => b.id === blockId);
+        const block = draftThought.blocks.find(b => b.id === blockId);
         if (block && block.mood) {
             updateBlock(blockId, {
                 mood: {
@@ -175,8 +188,27 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
         }
     };
 
+    const handleSave = () => {
+        if (!draftThought) return;
+
+        const hasMoodBlock = draftThought.blocks.some(b => b.type === 'mood');
+        if (!hasMoodBlock) {
+            alert("A thought can only be saved if it contains at least one emotion block.");
+            return;
+        }
+
+        manager.updateThought(draftThought.id, draftThought);
+        refreshThought(); // This will reset dirty state and update the main thought
+    };
+
     const back = () => {
-        backAction();
+        if (isDirty) {
+            if (window.confirm("You have unsaved changes. Are you sure you want to leave?")) {
+                backAction();
+            }
+        } else {
+            backAction();
+        }
     };
 
     if (isPreview) {
@@ -196,7 +228,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                         <ChevronLeft className="w-6 h-6 text-gray-600" />
                     </button>
                     <h1 className="text-base font-medium text-gray-600">
-                        {thought.title ? (thought.title.length > 20 ? thought.title.substring(0, 20).trim() + '...' : thought.title) : 'Untitled thought'}
+                        {draftThought.title ? (draftThought.title.length > 20 ? draftThought.title.substring(0, 20).trim() + '...' : draftThought.title) : 'Untitled thought'}
                     </h1>
                     <div className="flex items-center gap-2">
                         <button
@@ -204,7 +236,15 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                             className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
                         >
                             <Eye className="w-4 h-4" />
-                            <span>Preview</span>
+                            <span className="hidden sm:inline">Preview</span>
+                        </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={!isDirty}
+                            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        >
+                            <Save className="w-4 h-4" />
+                            <span className="hidden sm:inline">Save</span>
                         </button>
                     </div>
                 </div>
@@ -214,7 +254,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                     <div className="px-6 pt-4">
                         <input
                             type="text"
-                            value={thought.title || ''}
+                            value={draftThought.title || ''}
                             onChange={handleTitleChange}
                             placeholder="Note title"
                             className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent mb-2 resize-none"
@@ -222,7 +262,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
 
                         <div className="flex items-center mb-6">
                             <select
-                                value={thought.category || ''}
+                                value={draftThought.category || ''}
                                 onChange={handleCategoryChange}
                                 className="text-sm text-gray-500 bg-transparent border-none outline-none cursor-pointer hover:text-blue-600 transition-colors"
                             >
@@ -234,9 +274,9 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                         </div>
 
                         <div className="mb-6">
-                            {thought.tags && thought.tags.length > 0 && (
+                            {draftThought.tags && draftThought.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mb-3">
-                                    {thought.tags.map(tag => (
+                                    {draftThought.tags.map(tag => (
                                         <span
                                             key={tag}
                                             className="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
@@ -274,7 +314,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                 </div>
 
                 <ThoughtBlocks
-                    blocks={thought.blocks}
+                    blocks={draftThought.blocks}
                     onDeleteBlock={deleteBlock}
                     onUpdateBlock={updateBlock}
                     onAddSecondaryMood={addSecondaryMood}

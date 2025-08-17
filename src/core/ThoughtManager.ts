@@ -35,6 +35,29 @@ export class ThoughtManager {
     updateThought(id: string, updates: Partial<Thought>): void {
         const thought = this.getThought(id);
         if (!thought) return;
+
+        if (updates.blocks) {
+            // 1. Update Location
+            const firstLocationBlock = updates.blocks.find(b => b.type === 'location');
+            updates.location = firstLocationBlock ? firstLocationBlock.location : undefined;
+
+            // 2. Update Mood
+            const moodBlocks = updates.blocks.filter(b => b.type === 'mood' && b.mood);
+            if (moodBlocks.length > 0) {
+                // Sort by intensity to find the median
+                moodBlocks.sort((a, b) => (a.mood?.intensity ?? 0) - (b.mood?.intensity ?? 0));
+                const medianIndex = Math.floor(moodBlocks.length / 2);
+                const medianMoodBlock = moodBlocks[medianIndex];
+                if (medianMoodBlock.mood) {
+                    updates.mood = medianMoodBlock.mood.primary;
+                    updates.primaryEmotion = medianMoodBlock.mood.emoji;
+                }
+            } else {
+                updates.mood = '';
+                updates.primaryEmotion = '';
+            }
+        }
+
         const updated = {
             ...thought,
             ...updates,
