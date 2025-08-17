@@ -2,6 +2,7 @@ import type { Thought, ThoughtBlock } from '../models/types';
 import type {IStorage} from '../storage/storage.interface';
 import { sortBlocksByPosition, formatLocation, formatWeather } from './utils';
 import type {FilterType} from "../components/FilterPanel.tsx";
+import Swal from 'sweetalert2';
 
 export class ThoughtManager {
     private storage: IStorage;
@@ -138,6 +139,12 @@ export class ThoughtManager {
         const thought = this.getThought(id);
         if (!thought) return;
         console.log(`Sharing thought: ${thought.title}`);
-        alert(`Sharing: ${thought.title}`);
+        void Swal.fire({
+            icon: 'success',
+            title: 'Shared',
+            text: `Sharing: ${thought.title}`,
+            timer: 1500,
+            showConfirmButton: false
+        });
     };
 }

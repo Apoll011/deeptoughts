@@ -12,6 +12,7 @@ import {ToolBar} from "./ToolBar.tsx";
 import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 import type {ThoughtManager} from "../../../core/ThoughtManager.ts";
+import Swal from 'sweetalert2';
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
@@ -188,22 +189,65 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
         }
     };
 
+    const isEmptyThought = (t: Thought | null): boolean => {
+        if (!t) return true;
+        const titleEmpty = !t.title || t.title.trim() === '';
+        const noBlocks = !t.blocks || t.blocks.length === 0;
+        return titleEmpty && noBlocks;
+    };
+
     const handleSave = () => {
         if (!draftThought) return;
 
-        const hasMoodBlock = draftThought.blocks.some(b => b.type === 'mood');
-        if (!hasMoodBlock) {
-            alert("A thought can only be saved if it contains at least one emotion block.");
+        // Validate title presence
+        if (!draftThought.title || draftThought.title.trim() === '') {
+            void Swal.fire({
+                icon: 'warning',
+                title: 'Missing title',
+                text: 'Please add a title before saving your thought.',
+                confirmButtonText: 'Got it',
+            });
             return;
         }
 
-        manager.updateThought(draftThought.id, draftThought);
-        refreshThought(); // This will reset dirty state and update the main thought
+        // Validate at least one mood block
+        const hasMoodBlock = draftThought.blocks.some(b => b.type === 'mood');
+        if (!hasMoodBlock) {
+            void Swal.fire({
+                icon: 'info',
+                title: 'Add an emotion',
+                text: 'Add at least one emotion block to save this thought.',
+                confirmButtonText: 'Understood',
+            });
+            return;
+        }
+
+        const { createdAt, updatedAt, ...thoughtToSave } = draftThought;
+        void createdAt; // avoid eslint unused-var while excluding from updates
+        void updatedAt; // avoid eslint unused-var while excluding from updates
+        manager.updateThought(draftThought.id, thoughtToSave);
+        refreshThought();
     };
 
-    const back = () => {
+    const back = async () => {
+        // If the thought is empty (no title and no blocks), delete it silently when leaving
+        if (isEmptyThought(draftThought)) {
+            manager.deleteThought(thought.id);
+            backAction();
+            return;
+        }
+
         if (isDirty) {
-            if (window.confirm("You have unsaved changes. Are you sure you want to leave?")) {
+            const result = await Swal.fire({
+                title: 'Unsaved changes',
+                text: 'You have unsaved changes. Leave without saving?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Leave',
+                cancelButtonText: 'Stay',
+                reverseButtons: true,
+            });
+            if (result.isConfirmed) {
                 backAction();
             }
         } else {

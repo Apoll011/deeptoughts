@@ -6,6 +6,7 @@ import ThoughtEditor from "./components/Thought/Editor/ThoughtEditor.tsx";
 import {InMemoryStorage} from "./storage/inMemoryStorage.ts";
 import {ThoughtManager} from "./core/ThoughtManager.ts";
 import {v4 as uuidv4} from "uuid";
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const storage = new InMemoryStorage();
 const manager = new ThoughtManager(storage);
