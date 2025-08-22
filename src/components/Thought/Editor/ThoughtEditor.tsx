@@ -279,6 +279,12 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                 reverseButtons: true,
             });
             if (result.isConfirmed) {
+                const t = manager.getThought(thoughtId);
+                if (t && isEmptyThought(t)) {
+                    manager.deleteThought(thought.id);
+                    backAction();
+                    return;
+                }
                 backAction();
             }
         } else {
