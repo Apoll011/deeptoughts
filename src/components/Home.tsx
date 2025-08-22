@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
 import {CalendarView} from "./Calendar/CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
 import {Plus} from "lucide-react";
 import {Header} from "./UI/Header.tsx";
-import type {ThoughtManager} from "../core/ThoughtManager.ts";
 import type {FilterType} from "./UI/FilterPanel.tsx";
+import {useAppContext} from "../context/AppContext.tsx";
 
 
-export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({manager, setSelectedThought, setCurrentView, startNewThought}) => {
+export const Home: React.FC<{ setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({setSelectedThought, setCurrentView, startNewThought}) => {
+    const { manager } = useAppContext();
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [headerVisibility, setHeaderVisibility] = useState(1);
@@ -24,7 +26,7 @@ export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.
     const [thoughts, setThoughts] = useState<Thought[]>([]);
     const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
 
-    useEffect(() => {
+    useMemo(() => {
         setThoughts(manager.getAllThoughts());
     }, [manager]);
 
@@ -87,7 +89,6 @@ export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.
                         onDateChange={setSelectedDate}
                         thoughts={filteredThoughts}
                         onThoughtSelect={handleThoughtSelect}
-                        manager={manager}
                     />
                 )}
                 {viewMode === 'grid' && (
@@ -98,7 +99,6 @@ export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.
                                     key={thought.id}
                                     thought={thought}
                                     onSelect={handleThoughtSelect}
-                                    manager={manager}
                                 />
                             ))}
                         </div>
@@ -113,7 +113,6 @@ export const Home: React.FC<{manager: ThoughtManager, setSelectedThought: React.
                                     thought={thought}
                                     onSelect={handleThoughtSelect}
                                     compact={true}
-                                    manager={manager}
                                 />
                             ))}
                         </div>

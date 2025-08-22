@@ -3,10 +3,12 @@ import type {Thought} from "../../../models/types.ts";
 import {ThoughtBlockRenderer} from "./ThoughBlockRenderer.tsx";
 import React, {useEffect, useState} from "react";
 import ThoughtEditor from "../Editor/ThoughtEditor.tsx";
-import type {ThoughtManager} from "../../../core/ThoughtManager.ts";
+import {useAppContext} from "../../../context/AppContext.tsx";
 
 
-export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.MouseEventHandler<HTMLButtonElement>, manager: ThoughtManager, showEdit: boolean}> = ({thoughtId, onBack, manager, showEdit = true}) => {
+export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.MouseEventHandler<HTMLButtonElement>, showEdit: boolean}> = ({thoughtId, onBack, showEdit = true}) => {
+    const { manager } = useAppContext();
+
     const [isEdit, setIsEdit] = useState(false);
     const [thought, setThought] = useState<Thought | null>(null);
 
@@ -34,7 +36,7 @@ export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.Mous
 
     if (isEdit && showEdit) {
         return (
-            <ThoughtEditor backAction={() => { refreshThought(); setIsEdit(false);}} thoughtId={thoughtId} manager={manager} />
+            <ThoughtEditor backAction={() => { refreshThought(); setIsEdit(false);}} thoughtId={thoughtId} />
         );
     }
 

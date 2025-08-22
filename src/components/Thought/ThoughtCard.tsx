@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import type {MediaAttachment, Thought} from "../../models/types.ts";
 import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
-import {ThoughtManager} from "../../core/ThoughtManager.ts";
+import {useAppContext} from "../../context/AppContext.tsx";
 
 const hashString = (str: string): string => {
     let hash = 0;
@@ -17,8 +17,8 @@ export const ThoughtCard: React.FC<{
     thought: Thought;
     onSelect: (thought: Thought) => void;
     compact?: boolean;
-    manager: ThoughtManager;
-}> = ({ thought, onSelect, manager, compact = false }) => {
+}> = ({ thought, onSelect, compact = false }) => {
+    const { manager } = useAppContext();
     let firstImage: MediaAttachment | undefined;
     const hasAudio = thought.blocks.some(block => block.media?.type === 'audio');
     const [frameSrc, setFrameSrc] = useState<string | null>(null);

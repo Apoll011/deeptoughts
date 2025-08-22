@@ -5,7 +5,6 @@ import {
     ChevronRight,
 } from "lucide-react";
 import { ThoughtCard } from "../Thought/ThoughtCard.tsx";
-import type { ThoughtManager } from "../../core/ThoughtManager.ts";
 
 type ViewType = 'day' | 'week' | 'month';
 
@@ -14,8 +13,7 @@ export const CalendarView: React.FC<{
     onDateChange: (date: Date) => void;
     thoughts: Thought[];
     onThoughtSelect: (thought: Thought) => void;
-    manager: ThoughtManager
-}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect, manager }) => {
+}> = ({ selectedDate, onDateChange, thoughts, onThoughtSelect }) => {
     const [viewType, setViewType] = useState<ViewType>('month');
 
     const today = new Date();
@@ -82,7 +80,7 @@ export const CalendarView: React.FC<{
                 ) : (
                     <div className="space-y-3 mt-2">
                         {dayThoughts.map(thought => (
-                            <ThoughtCard manager={manager} key={thought.id} thought={thought} onSelect={onThoughtSelect}
+                            <ThoughtCard key={thought.id} thought={thought} onSelect={onThoughtSelect}
                                          compact={true}/>
                         ))}
                     </div>
@@ -126,7 +124,7 @@ export const CalendarView: React.FC<{
                                         </h3>
                                         <div className="space-y-3">
                                             {thoughts.map(thought => (
-                                                <ThoughtCard manager={manager} key={thought.id} thought={thought} onSelect={onThoughtSelect}
+                                                <ThoughtCard key={thought.id} thought={thought} onSelect={onThoughtSelect}
                                                              compact={true}/>
                                             ))}
                                         </div>
@@ -173,7 +171,7 @@ export const CalendarView: React.FC<{
                                         </h3>
                                         <div className="space-y-3">
                                             {thoughts.map(thought => (
-                                                <ThoughtCard manager={manager} key={thought.id} thought={thought} onSelect={onThoughtSelect}
+                                                <ThoughtCard key={thought.id} thought={thought} onSelect={onThoughtSelect}
                                                              compact={true}/>
                                             ))}
                                         </div>

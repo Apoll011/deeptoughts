@@ -9,12 +9,14 @@ import {v4 as uuidv4} from 'uuid';
 import {ToolBar} from "./ToolBar.tsx";
 import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
-import type {ThoughtManager} from "../../../core/ThoughtManager.ts";
 import Swal from 'sweetalert2';
+import {useAppContext} from "../../../context/AppContext.tsx";
 
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
-export default function ThoughtEditor({backAction, thoughtId, manager}: {backAction: () => void, thoughtId: string, manager: ThoughtManager}) {
+export default function ThoughtEditor({backAction, thoughtId}: {backAction: () => void, thoughtId: string}) {
+    const { manager } = useAppContext();
+
     const [newTag, setNewTag] = useState('');
     const [thought, setThought] = useState<Thought | null>(null);
     const [draftThought, setDraftThought] = useState<Thought | null>(null);

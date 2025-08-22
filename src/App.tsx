@@ -3,18 +3,13 @@ import type {CurrentView, Thought} from './models/types.ts';
 import {ThoughtVisualizer} from "./components/Thought/Visualizer/ThoughtVisualizer.tsx";
 import {Home} from "./components/Home.tsx";
 import ThoughtEditor from "./components/Thought/Editor/ThoughtEditor.tsx";
-import {InMemoryStorage} from "./storage/inMemoryStorage.ts";
-import {ThoughtManager} from "./core/ThoughtManager.ts";
 import {v4 as uuidv4} from "uuid";
 import 'sweetalert2/dist/sweetalert2.min.css';
-import {LocalStorage} from "./storage/LocalStorage.ts";
 import {Onboarding} from "./components/Onboarding/Onboarding.tsx";
+import { AppProvider, useAppContext } from './context/AppContext.tsx';
 
-const thoughtStorage = new InMemoryStorage();
-const userStorage = new LocalStorage();
-const manager = new ThoughtManager(thoughtStorage);
-
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+    const { userStorage, manager } = useAppContext();
     const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(userStorage.isOnboardingCompleted());
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
@@ -47,13 +42,12 @@ const App: React.FC = () => {
     return (
         <div className="max-w-md mx-auto bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
             {currentView === 'timeline' && (
-                <Home startNewThought={startNewThought} manager={manager} setCurrentView={setCurrentView} setSelectedThought={setSelectedThought} />
+                <Home startNewThought={startNewThought} setCurrentView={setCurrentView} setSelectedThought={setSelectedThought} />
             )}
 
             {currentView === 'editor' && selectedThought && (
                 <ThoughtVisualizer
                     thoughtId={selectedThought.id}
-                    manager={manager}
                     onBack={() => {setCurrentView('timeline')}}
                     showEdit={true}
                 />
@@ -62,11 +56,18 @@ const App: React.FC = () => {
             {currentView === 'new' && newThought && (
                 <ThoughtEditor
                     thoughtId={newThought.id}
-                    manager={manager}
                     backAction={() => {setCurrentView("timeline")}}
                 />
             )}
         </div>
+    );
+}
+
+const App: React.FC = () => {
+    return (
+        <AppProvider>
+            <AppContent />
+        </AppProvider>
     );
 };
 
