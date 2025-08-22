@@ -2,11 +2,12 @@ import React, {useState} from "react";
 import {FilterPanel, type FilterType} from "./FilterPanel.tsx";
 import {Calendar, Grid3X3, List, Search} from "lucide-react";
 import type {Thought, ViewMode} from "../../models/types.ts";
+import {useAppContext} from "../../context/AppContext.tsx";
 
 
 export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>, filters: FilterType, setFilters: React.Dispatch<React.SetStateAction<FilterType>>, thoughts: Thought[], searchQuery:string, setSearchQuery: React.Dispatch<React.SetStateAction<string>>}> = ({headerVisibility, thoughts, filters, setFilters, viewMode, setViewMode, searchQuery, setSearchQuery}) => {
     const [showFilters, setShowFilters] = useState(false);
-
+    const { userStorage } = useAppContext();
     return (
         <div className="fixed top-0 left-0 right-0 z-50 max-w-md mx-auto">
             <div className="bg-white shadow-xl rounded-b-3xl backdrop-blur-sm "
@@ -28,7 +29,7 @@ export const Header: React.FC<{headerVisibility: number, viewMode: ViewMode, set
                             <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-600 bg-clip-text text-transparent">
                                 DeepThoughts
                             </h1>
-                            <p className="text-sm text-gray-500 mt-1 italic">Your mindful journal</p>
+                            <p className="text-sm text-gray-500 mt-1 italic">Hi {userStorage.getUser()?.name}</p>
                         </div>
                     </div>
 
