@@ -204,11 +204,11 @@ export const CalendarView: React.FC<{
             endOfWeek.setDate(startOfWeek.getDate() + 6);
 
             if (startOfWeek.getMonth() === endOfWeek.getMonth()) {
-                return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${startOfWeek.getFullYear()}`;
+                return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.toLocaleDateString('en-US', { day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { day: 'numeric' })}, ${startOfWeek.getFullYear()}`;
             }
-            return `${startOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', {
+            return `${startOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${startOfWeek.toLocaleDateString('en-US', { day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', {
                 month: 'short'
-            })} ${endOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${endOfWeek.getFullYear()}`;
+            })} ${endOfWeek.toLocaleDateString('en-US', { day: 'numeric' })}, ${endOfWeek.getFullYear()}`;
         }
         return selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }, [selectedDate, viewType]);

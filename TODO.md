@@ -1,5 +1,5 @@
 - [ ] Keep the setting on filter and display even on change screen
-
+- [ ] Fix the compact thougth component (Category none existent)
 ---
 
 ## ✅ TODO List: New Blocks for **DeepTHoughts**
