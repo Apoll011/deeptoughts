@@ -100,7 +100,7 @@ export const UserRegistration: React.FC<{ onComplete: (user: User) => void; onBa
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 }}
                     onClick={handleSubmit}
-                    className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform flex items-center gap-2"
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-orange-500 hover:to-yellow-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-transform flex items-center gap-2"
                 >
                     Complete
                     <Check className="w-5 h-5" />
