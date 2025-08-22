@@ -299,10 +299,10 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                     <button
                         onClick={handleSave}
                         disabled={!isDirty}
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        className={`inline-flex items-center gap-2 ${!isDirty ? '' : 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600'} text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed`}
                     >
                         <Save className="w-4 h-4" />
-                        <span className="hidden sm:inline">Save</span>
+                        <span className="sm:inline">Save</span>
                     </button>
                 </div>
             </div>
