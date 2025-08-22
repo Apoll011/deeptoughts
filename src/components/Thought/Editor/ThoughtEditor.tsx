@@ -1,4 +1,4 @@
-import {useRef, useState, useEffect} from 'react';
+import {useRef, useState, useEffect, useMemo} from 'react';
 import {
     Plus,
     X,
@@ -21,8 +21,37 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     const [thought, setThought] = useState<Thought | null>(null);
     const [draftThought, setDraftThought] = useState<Thought | null>(null);
     const [isDirty, setIsDirty] = useState(false);
+    const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [wordList, setWordList] = useState<string[]>([]);
+
+    useMemo(() => {
+          setWordList(manager.allTags().map(tag => tag.toLowerCase()));
+    }, []);
+    useEffect(() => {
+        if (newTag.length > 0) {
+            const suggestions = wordList.filter(word =>
+                word.toLowerCase().startsWith(newTag.toLowerCase())
+            );
+            setFilteredSuggestions(suggestions);
+            setShowSuggestions(true);
+        } else {
+            setFilteredSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, [newTag, wordList]);
+
+    const handleSuggestionClick = (suggestion: string) => {
+        setNewTag(suggestion);
+        setShowSuggestions(false);
+    };
+
+    const handleInputBlur = () => {
+        setTimeout(() => setShowSuggestions(false), 100);
+    };
 
     const content = useRef<null | HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const refreshThought = () => {
         const currentThought = manager.getThought(thoughtId);
@@ -198,7 +227,6 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     const handleSave = () => {
         if (!draftThought) return;
 
-        // Validate title presence
         if (!draftThought.title || draftThought.title.trim() === '') {
             void Swal.fire({
                 icon: 'warning',
@@ -209,7 +237,6 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
             return;
         }
 
-        // Validate at least one mood block
         const hasMoodBlock = draftThought.blocks.some(b => b.type === 'mood');
         if (!hasMoodBlock) {
             void Swal.fire({
@@ -321,15 +348,46 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                                 </div>
                             )}
 
-                            <div className="flex w-full items-center space-x-2">
-                                <input
-                                    type="text"
-                                    value={newTag}
-                                    onChange={(e) => setNewTag(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                                    placeholder="Add a descriptive tag"
-                                    className="flex-1 min-w-0 h-12 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 bg-gray-50/50"
-                                />
+                            <div className="flex w-full relative items-center space-x-2">
+                                <div className="flex-1 relative">
+                                    <input
+                                        ref={inputRef}
+                                        type="text"
+                                        value={newTag}
+                                        onChange={(e) => setNewTag(e.target.value)}
+                                        onBlur={handleInputBlur}
+                                        onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                                        placeholder="Add a descriptive tag"
+                                        className="w-full h-12 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 bg-gray-50/50"
+                                    />
+                                    {showSuggestions && filteredSuggestions.length > 0 && (
+                                        <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'none' }}>
+                                            <ul
+                                                className="absolute bg-white border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto min-w-[200px] backdrop-blur-sm bg-white/95"
+                                                style={{
+                                                    pointerEvents: 'auto',
+                                                    left: `${inputRef.current?.getBoundingClientRect()?.left || 0}px`,
+                                                    top: `${(inputRef.current?.getBoundingClientRect()?.bottom || 0) + 4}px`,
+                                                    width: `${inputRef.current?.getBoundingClientRect()?.width || 200}px`,
+                                                    zIndex: 9999
+                                                }}
+                                            >
+                                                {filteredSuggestions.map((suggestion, index) => (
+                                                    <li
+                                                        key={index}
+                                                        onClick={() => handleSuggestionClick(suggestion)}
+                                                        className="px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 cursor-pointer transition-all duration-200 text-gray-800 hover:text-blue-700 font-medium first:rounded-t-xl last:rounded-b-xl border-b border-gray-100 last:border-b-0 hover:shadow-sm"
+                                                    >
+                                                        <span className="flex items-center">
+                                                            <span className="w-2 h-2 bg-blue-400 rounded-full mr-3 opacity-60"></span>
+                                                            {suggestion}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
                                 <button
                                     onClick={addTag}
                                     className="shrink-0 w-12 h-12 inline-flex items-center justify-center bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl transition-all duration-300 font-medium shadow-lg"

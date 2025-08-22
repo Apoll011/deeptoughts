@@ -147,4 +147,24 @@ export class ThoughtManager {
             showConfirmButton: false
         });
     };
+
+    allTags() {
+       return [...new Set(this.getAllThoughts().flatMap(thought => thought.tags))];
+    };
+
+    allCategories() {
+        return [...new Set(this.getAllThoughts().map(thought => thought.category))];
+    };
+
+    allMoods() {
+        return [...new Set(this.getAllThoughts().map(thought => thought.mood))];
+    };
+
+    allLocations() {
+        return [...new Set(this.getAllThoughts().flatMap(thought => thought.blocks.filter(block => block.type === 'location').map(block => block.location)))];
+    };
+
+    allWeather() {
+        return [...new Set(this.getAllThoughts().flatMap(thought => thought.blocks.filter(block => block.type === 'location').map(block => block.location)))];
+    };
 }
