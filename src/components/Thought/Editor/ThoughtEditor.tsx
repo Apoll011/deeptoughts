@@ -27,7 +27,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
 
     useMemo(() => {
           setWordList(manager.allTags().map(tag => tag.toLowerCase()));
-    }, []);
+    }, [manager]);
     useEffect(() => {
         if (newTag.length > 0) {
             const suggestions = wordList.filter(word =>
