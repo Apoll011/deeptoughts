@@ -72,21 +72,17 @@ export const ToolBar: React.FC<{
         }
     };
 
-    const handleMediaRelease = (e: { type: string; }) => {
+    const handleMediaRelease = () => {
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;
         }
-
-        if (!showMediaMenu && (e.type === 'mouseup' || e.type === 'touchend')) {
-            addBlock('media');
-        }
+        // Do not add default media on short press; menu will be opened by click or long-press
     };
 
     const handleMediaClick = () => {
-        if (!showMediaMenu) {
-            addBlock('media');
-        }
+        // On normal click, open the media type menu instead of adding default media
+        setShowMediaMenu(true);
     };
 
     useEffect(() => {
@@ -101,37 +97,6 @@ export const ToolBar: React.FC<{
         <>
             <div className="fixed bottom-6 right-6 z-50">
                 <div className="relative">
-                    {showMediaMenu && (
-                        <div className="absolute bottom-full right-0 mb-4">
-                            <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/50 p-2
-                          animate-in slide-in-from-bottom-4 duration-300">
-                                <div className="flex space-x-1">
-                                    {mediaOptions.map((option, index) => {
-                                        const IconComponent = option.icon;
-                                        return (
-                                            <button
-                                                key={option.id}
-                                                onClick={() => addBlock('media', option.id as mediaType)}
-                                                className="group flex flex-col items-center p-3 rounded-xl hover:bg-gray-50
-                               transition-all duration-200 hover:scale-105 min-w-[60px]"
-                                                style={{
-                                                    animationDelay: `${index * 50}ms`
-                                                }}
-                                            >
-                                                <IconComponent className={`w-5 h-5 ${option.color} group-hover:scale-110 
-                                               transition-transform duration-200`}/>
-                                                <span
-                                                    className="text-xs font-medium text-gray-700 mt-1">{option.label}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                {/* Arrow pointing down */}
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2
-                            border-l-4 border-r-4 border-t-4 border-transparent border-t-white/95"/>
-                            </div>
-                        </div>
-                    )}
 
                     <div className={`
           bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-gray-200/50
@@ -212,13 +177,40 @@ export const ToolBar: React.FC<{
                                                 </div>
                                             </button>
 
+                                            {isMediaBlock && showMediaMenu && (
+                                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 z-50">
+                                                    <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200/60 p-2 animate-in slide-in-from-bottom-4 duration-200">
+                                                        <div className="flex space-x-1">
+                                                            {mediaOptions.map((option, index) => {
+                                                                const IconComponent = option.icon;
+                                                                return (
+                                                                    <button
+                                                                        key={option.id}
+                                                                        onClick={() => addBlock('media', option.id as mediaType)}
+                                                                        className="group flex flex-col items-center p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-105 min-w-[60px]"
+                                                                        style={{
+                                                                            animationDelay: `${index * 50}ms`
+                                                                        }}
+                                                                    >
+                                                                        <IconComponent className={`w-5 h-5 ${option.color} group-hover:scale-110 transition-transform duration-200`} />
+                                                                        <span className="text-xs font-medium text-gray-700 mt-1">{option.label}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                        {/* Arrow pointing down to the media icon */}
+                                                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-b-4 border-transparent border-b-white/95" />
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className={`
                       absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2                     px-2 py-1 bg-gray-900 text-white text-xs rounded-md
                       opacity-0 group-hover:opacity-100 transition-all duration-200
                       pointer-events-none whitespace-nowrap
                       group-hover:translate-y-0 translate-y-1
                     `}>
-                                                {isMediaBlock ? 'Tap or hold for options' : block.description}
+                                                {isMediaBlock ? 'Tap to choose media type' : block.description}
                                                 <div className="absolute top-full left-1/2 transform -translate-x-1/2
                                     border-l-2 border-r-2 border-t-2 border-transparent border-t-gray-900"/>
                                             </div>
