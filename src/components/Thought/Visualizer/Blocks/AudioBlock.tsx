@@ -177,7 +177,7 @@ export const AudioBlock: React.FC<{ media: MediaAttachment }> = ({ media }) => {
                 </div>
             </div>
         )
-    };
+    }
 
     if (duration == 0) { //TODO: change it to on error or something
         return (
@@ -188,7 +188,8 @@ export const AudioBlock: React.FC<{ media: MediaAttachment }> = ({ media }) => {
                 </div>
             </div>
         )
-    };
+    }
+
     return (
         <div 
             ref={playerRef}

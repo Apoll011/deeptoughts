@@ -368,7 +368,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                                     {showSuggestions && filteredSuggestions.length > 0 && (
                                         <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'none' }}>
                                             <ul
-                                                className="absolute bg-white border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto min-w-[200px] backdrop-blur-sm bg-white/95"
+                                                className="absolute  border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto min-w-[200px] backdrop-blur-sm bg-white/95"
                                                 style={{
                                                     pointerEvents: 'auto',
                                                     left: `${inputRef.current?.getBoundingClientRect()?.left || 0}px`,
