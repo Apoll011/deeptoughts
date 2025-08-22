@@ -285,7 +285,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                         <button
                             onClick={handleSave}
                             disabled={!isDirty}
-                            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="inline-flex items-center gap-2 from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             <Save className="w-4 h-4" />
                             <span className="hidden sm:inline">Save</span>
@@ -348,7 +348,7 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                                 />
                                 <button
                                     onClick={addTag}
-                                    className="shrink-0 w-12 h-12 inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 font-medium shadow-lg"
+                                    className="shrink-0 w-12 h-12 inline-flex items-center justify-center bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl transition-all duration-300 font-medium shadow-lg"
                                 >
                                     <Plus className="w-5 h-5" />
                                 </button>
