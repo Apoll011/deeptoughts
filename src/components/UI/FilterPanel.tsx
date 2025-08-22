@@ -206,7 +206,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {category}
+                    {category == "" ? 'No Category' : category}
                   </button>
                 ))}
               </div>
