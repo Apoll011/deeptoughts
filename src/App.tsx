@@ -7,14 +7,17 @@ import {InMemoryStorage} from "./storage/inMemoryStorage.ts";
 import {ThoughtManager} from "./core/ThoughtManager.ts";
 import {v4 as uuidv4} from "uuid";
 import 'sweetalert2/dist/sweetalert2.min.css';
+import {LocalStorage} from "./storage/LocalStorage.ts";
+import {Onboarding} from "./components/Onboarding/Onboarding.tsx";
 
-const storage = new InMemoryStorage();
-const manager = new ThoughtManager(storage);
+const thoughtStorage = new InMemoryStorage();
+const userStorage = new LocalStorage();
+const manager = new ThoughtManager(thoughtStorage);
 
 const App: React.FC = () => {
+    const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(userStorage.isOnboardingCompleted());
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
-
     const [newThought, setNewThought] = useState<Thought | null>(null);
 
     const startNewThought = () => {
@@ -35,6 +38,10 @@ const App: React.FC = () => {
         manager.createThought(thought);
         setNewThought(thought);
         setCurrentView('new');
+    }
+
+    if (!isOnboardingCompleted) {
+        return <Onboarding storage={userStorage} onComplete={() => setIsOnboardingCompleted(true)} />;
     }
 
     return (
