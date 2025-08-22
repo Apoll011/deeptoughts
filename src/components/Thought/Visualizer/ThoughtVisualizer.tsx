@@ -39,7 +39,7 @@ export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.Mous
     }
 
     return (
-        <div className="bg-gradient-to-br from-violet-50 via-sky-50 to-emerald-50 min-h-screen">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
             <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
                 <button
                     onClick={onBack}
