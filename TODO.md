@@ -1,5 +1,7 @@
 - [ ] Keep the setting on filter and display even on change screen
-- [ ] Fix the compact thougth component (Category none existent)
+- [x] Fix the compact thougth component (Category none existent)
+- [ ] Fix the preview on a new thought
+- [ ] In thohtg visualizer add a text converter from th etypes to an User frendly version like mood energy, location weather climate etc
 ---
 
 ## ✅ TODO List: New Blocks for **DeepTHoughts**

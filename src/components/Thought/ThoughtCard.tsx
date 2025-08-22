@@ -88,8 +88,7 @@ export const ThoughtCard: React.FC<{
         video.onload = () => {
             if (video.readyState >= 2) {
                 try {
-                    const randomTime = Math.random() * video.duration;
-                    video.currentTime = randomTime;
+                    video.currentTime = Math.random() * video.duration;
                 } catch (error) {
                     console.error("Error in onload:", error);
                     setFrameError(true);
@@ -173,15 +172,17 @@ export const ThoughtCard: React.FC<{
                                 })}
                             </time>
 
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide ${
-                                thought.category === 'Family'
-                                    ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-700/10'
-                                    : thought.category === 'Nature'
-                                        ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-700/10'
-                                        : 'bg-amber-100 text-amber-700 ring-1 ring-amber-700/10'
-                            }`}>
+                            {thought.category && (
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide ${
+                                    thought.category === 'Family'
+                                        ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-700/10'
+                                        : thought.category === 'Nature'
+                                            ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-700/10'
+                                            : 'bg-amber-100 text-amber-700 ring-1 ring-amber-700/10'
+                                }`}>
                                 {thought.category}
                             </span>
+                            )}
 
                             {hasAudio && (
                                 <span className="flex items-center bg-purple-100 text-purple-600 rounded-full p-1">
@@ -294,15 +295,17 @@ export const ThoughtCard: React.FC<{
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            thought.category === 'Family'
-                                ? 'bg-blue-100 text-blue-800'
-                                : thought.category === 'Nature'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {thought.category}
-                        </span>
+                        {thought.category && (
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide ${
+                                thought.category === 'Family'
+                                    ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-700/10'
+                                    : thought.category === 'Nature'
+                                        ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-700/10'
+                                        : 'bg-amber-100 text-amber-700 ring-1 ring-amber-700/10'
+                            }`}>
+                                {thought.category}
+                            </span>
+                        )}
                         {hasAudio && (
                             <div className="bg-purple-100 rounded-full p-1.5">
                                 <Mic className="w-3 h-3 text-purple-600" />
@@ -331,7 +334,7 @@ export const ThoughtCard: React.FC<{
                             />
                         </div>
                         <div 
-                            className="share-button hover:bg-gray-100 transition-colors duration-200 rounded-full p-1.5 bg-opacity-90 backdrop-blur-sm rounded-full p-1.5 shadow-lg cursor-pointer`"
+                            className="share-button hover:bg-gray-100 transition-colors duration-200 bg-opacity-90 backdrop-blur-sm rounded-full p-1.5 shadow-lg cursor-pointer`"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 manager.shareThought(thought.id);
