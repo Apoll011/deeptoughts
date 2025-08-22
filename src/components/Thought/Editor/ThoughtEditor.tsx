@@ -163,8 +163,11 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     };
 
     const handleSuggestionClick = (suggestion: string) => {
-        setNewTag(suggestion);
-        addTag();
+        setDraftThought({
+            ...draftThought,
+            tags: [...draftThought.tags, suggestion.trim()]
+        });
+        setNewTag('');
         setShowSuggestions(false);
     };
 
