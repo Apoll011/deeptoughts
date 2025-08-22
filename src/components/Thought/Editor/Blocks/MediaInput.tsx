@@ -1,5 +1,5 @@
 import type {MediaAttachment, ThoughtBlock, mediaType} from "../../../../models/types.ts";
-import {Music, Upload, Video, Image, Mic, StopCircle} from "lucide-react";
+import {Upload, Mic, StopCircle} from "lucide-react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 
 export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: ThoughtBlock, onUpdateBlock: (id: string, updates: Partial<ThoughtBlock>) => void, onFileUpload: (blockId: string, file: File) => void}) {
@@ -17,29 +17,17 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const [recError, setRecError] = useState<string | null>(null);
-    const [showAllTypes, setShowAllTypes] = useState(false);
 
     const hasUrl = !!block.media?.url && block.media.url.trim() !== '';
 
-    const getMediaIcon = (type: string) => {
-        switch (type) {
-            case 'video': return <Video className="w-4 h-4" />;
-            case 'audio': return <Music className="w-4 h-4" />;
-            default: return <Image className="w-4 h-4" />;
-        }
-    };
-
-    // Helper: creates a local URL and triggers upload callback
     const uploadMediaAndGetUrl = async (file: File, type: mediaType): Promise<string> => {
         const localUrl = URL.createObjectURL(file);
-        // Update block with a temporary URL for immediate preview
         onUpdateBlock(block.id, { media: { id: block.media?.id || block.id, type, url: localUrl, caption: block.media?.caption } as MediaAttachment });
-        // Trigger external upload handler
         try { onFileUpload(block.id, file); } catch (e) { console.warn('onFileUpload failed:', e); }
         return localUrl;
     };
 
-    const handleFileUpload = async (blockId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const type: mediaType = (block.media?.type || 'image');
@@ -220,43 +208,8 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     const showUploader = block.media?.type !== 'audio' && !hasUrl;
     const showUrlInput = block.media?.type !== 'audio' && !hasUrl;
 
-    const typeSelected = !!block.media?.type;
-    const selectionLocked = isRecording || hasUrl || (typeSelected && !showAllTypes);
-    const typesToShow = (selectionLocked && block.media?.type ? [block.media.type] : ['image', 'video', 'audio']) as readonly mediaType[];
-
     return (
         <div className="space-y-4">
-            <div className="flex items-center space-x-1 bg-gray-50 rounded-lg p-1 w-fit">
-                {typesToShow.map((type) => (
-                    <button
-                        key={type}
-                        onClick={() => {
-                            setShowAllTypes(false);
-                            onUpdateBlock(block.id, {
-                                media: { id: block.media?.id || block.id, url: block.media?.url || '', caption: block.media?.caption, type } as MediaAttachment
-                            })
-                        }}
-                        className={`flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm transition-colors ${
-                            block.media?.type === type
-                                ? 'bg-white text-gray-700 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
-                        }`}
-                    >
-                        {getMediaIcon(type)}
-                        <span className="capitalize">{type}</span>
-                    </button>
-                ))}
-                {selectionLocked && (
-                    <button
-                        onClick={() => setShowAllTypes(true)}
-                        className="ml-2 px-2 py-1 text-xs text-blue-600 hover:text-blue-700"
-                        title="Change media type"
-                    >
-                        Change
-                    </button>
-                )}
-            </div>
-
             <div className="space-y-3">
                 {/* File input kept hidden */}
                 <input
@@ -266,7 +219,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                         block.media?.type === 'image' ? 'image/*' :
                             block.media?.type === 'video' ? 'video/*' : 'audio/*'
                     }
-                    onChange={(e) => handleFileUpload(block.id, e)}
+                    onChange={(e) => handleFileUpload(e)}
                     className="hidden"
                 />
 
