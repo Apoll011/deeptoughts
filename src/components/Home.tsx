@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import type {CurrentView, Thought, ViewMode} from "../models/types.ts";
 import {CalendarView} from "./Calendar/CalendarView.tsx";
 import {ThoughtCard} from "./Thought/ThoughtCard.tsx";
@@ -8,7 +8,7 @@ import type {FilterType} from "./UI/FilterPanel.tsx";
 import {useAppContext} from "../context/AppContext.tsx";
 
 
-export const Home: React.FC<{ setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void}> = ({setSelectedThought, setCurrentView, startNewThought}) => {
+export const Home: React.FC<{ setSelectedThought: React.Dispatch<React.SetStateAction<Thought | null>>, setCurrentView: React.Dispatch<React.SetStateAction<CurrentView>>, startNewThought: () => void, thoughts: Thought[]}> = ({setSelectedThought, setCurrentView, startNewThought, thoughts}) => {
     const { manager } = useAppContext();
 
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,12 +23,7 @@ export const Home: React.FC<{ setSelectedThought: React.Dispatch<React.SetStateA
         moods: []
     });
 
-    const [thoughts, setThoughts] = useState<Thought[]>([]);
-    const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>([]);
-
-    useMemo(() => {
-        setThoughts(manager.getAllThoughts());
-    }, [manager]);
+    const [filteredThoughts, setFilteredThoughts] = useState<Thought[]>(thoughts);
 
     useEffect(() => {
         let filtered = manager.filterThoughts(filters);

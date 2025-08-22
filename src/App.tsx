@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import type {CurrentView, Thought} from './models/types.ts';
 import {ThoughtVisualizer} from "./components/Thought/Visualizer/ThoughtVisualizer.tsx";
 import {Home} from "./components/Home.tsx";
@@ -14,6 +14,11 @@ const AppContent: React.FC = () => {
     const [currentView, setCurrentView] = useState<CurrentView>('timeline');
     const [selectedThought, setSelectedThought] = useState<Thought | null>(null);
     const [newThought, setNewThought] = useState<Thought | null>(null);
+
+    const [thoughts, setThoughts] = useState<Thought[]>([]);
+    useMemo(() => {
+        setThoughts(manager.getAllThoughts());
+    }, [manager]);
 
     const startNewThought = () => {
         const thought: Thought = {
@@ -42,7 +47,7 @@ const AppContent: React.FC = () => {
     return (
         <div className="max-w-md mx-auto bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
             {currentView === 'timeline' && (
-                <Home startNewThought={startNewThought} setCurrentView={setCurrentView} setSelectedThought={setSelectedThought} />
+                <Home startNewThought={startNewThought} setCurrentView={setCurrentView} setSelectedThought={setSelectedThought} thoughts={thoughts} />
             )}
 
             {currentView === 'editor' && selectedThought && (

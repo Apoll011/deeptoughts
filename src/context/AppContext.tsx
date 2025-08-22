@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, type ReactNode } from 'react';
 import { ThoughtManager } from '../core/ThoughtManager';
 import { LocalStorage } from '../storage/LocalStorage';
 import { InMemoryStorage } from '../storage/inMemoryStorage';

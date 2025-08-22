@@ -74,7 +74,7 @@ export const UserRegistration: React.FC<{ onComplete: (user: User) => void; onBa
                     <select
                         id="gender"
                         value={gender}
-                        onChange={(e) => setGender(e.target.value as any)}
+                        onChange={(e) => setGender(e.target.value as 'male' | 'female')}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500"
                     >
                         <option value="male">Male</option>
