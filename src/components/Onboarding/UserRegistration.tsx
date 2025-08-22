@@ -6,7 +6,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 export const UserRegistration: React.FC<{ onComplete: (user: User) => void; onBack: () => void }> = ({ onComplete, onBack }) => {
     const [name, setName] = useState('');
     const [birthdate, setBirthdate] = useState('');
-    const [gender, setGender] = useState<'male' | 'female' | 'other' | 'prefer-not-to-say'>('prefer-not-to-say');
+    const [gender, setGender] = useState<'male' | 'female'>('male');
     const [error, setError] = useState('');
 
     const handleSubmit = () => {
@@ -77,10 +77,8 @@ export const UserRegistration: React.FC<{ onComplete: (user: User) => void; onBa
                         onChange={(e) => setGender(e.target.value as any)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500"
                     >
-                        <option value="prefer-not-to-say">Prefer not to say</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
-                        <option value="other">Other</option>
                     </select>
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
