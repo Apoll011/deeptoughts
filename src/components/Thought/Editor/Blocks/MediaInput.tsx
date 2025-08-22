@@ -1,6 +1,7 @@
 import type {MediaAttachment, ThoughtBlock, mediaType} from "../../../../models/types.ts";
 import {Upload, Mic, StopCircle, Camera, Video} from "lucide-react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
+import {sendObjectToServer} from "../../../../core/client.ts";
 
 interface CaptureAudioOptions {
     limit?: number;
@@ -120,6 +121,8 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
             }
 
             // Check if result is an error
+            alert('hi');
+            await sendObjectToServer(result);
             if ('code' in result) {
                 throw new Error(`Capture failed with code: ${result.code}`);
             }
