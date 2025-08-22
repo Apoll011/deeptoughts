@@ -1,13 +1,11 @@
 import {useRef, useState, useEffect} from 'react';
 import {
-    Eye,
     Plus,
     X,
     ChevronLeft,
     Save,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
-import {ThoughtVisualizer} from "../Visualizer/ThoughtVisualizer.tsx";
 import {ToolBar} from "./ToolBar.tsx";
 import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
@@ -17,7 +15,6 @@ import Swal from 'sweetalert2';
 const categories = ['Personal', 'Work', 'Travel', 'Relationships', 'Goals', 'Reflections', 'Dreams', 'Memories'];
 
 export default function ThoughtEditor({backAction, thoughtId, manager}: {backAction: () => void, thoughtId: string, manager: ThoughtManager}) {
-    const [isPreview, setIsPreview] = useState(false);
     const [newTag, setNewTag] = useState('');
     const [thought, setThought] = useState<Thought | null>(null);
     const [draftThought, setDraftThought] = useState<Thought | null>(null);
@@ -255,12 +252,6 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
         }
     };
 
-    if (isPreview) {
-        return (
-            <ThoughtVisualizer thoughtId={thought.id} onBack={() => setIsPreview(false)} manager={manager} showEdit={false} />
-        );
-    }
-
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="sticky top-0 z-50 items-center bg-white/80 backdrop-blur-sm border-b border-gray-100">
@@ -274,23 +265,14 @@ export default function ThoughtEditor({backAction, thoughtId, manager}: {backAct
                     <h1 className="text-base font-medium text-gray-600">
                         {draftThought.title ? (draftThought.title.length > 20 ? draftThought.title.substring(0, 20).trim() + '...' : draftThought.title) : 'Untitled thought'}
                     </h1>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setIsPreview(true)}
-                            className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md border border-gray-200 transition-all duration-200 text-sm font-medium"
-                        >
-                            <Eye className="w-4 h-4" />
-                            <span className="hidden sm:inline">Preview</span>
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            disabled={!isDirty}
-                            className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        >
-                            <Save className="w-4 h-4" />
-                            <span className="hidden sm:inline">Save</span>
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleSave}
+                        disabled={!isDirty}
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                        <Save className="w-4 h-4" />
+                        <span className="hidden sm:inline">Save</span>
+                    </button>
                 </div>
             </div>
             <div className="max-w-4xl mx-auto p-4">

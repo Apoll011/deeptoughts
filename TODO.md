@@ -1,6 +1,6 @@
 - [ ] Keep the setting on filter and display even on change screen
 - [x] Fix the compact thougth component (Category none existent)
-- [ ] Fix the preview on a new thought
+- [x] Fix the preview on a new thought
 - [ ] In thohtg visualizer add a text converter from th etypes to an User frendly version like mood energy, location weather climate etc
 ---
 
