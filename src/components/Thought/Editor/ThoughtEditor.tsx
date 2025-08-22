@@ -28,6 +28,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     useMemo(() => {
           setWordList(manager.allTags().map(tag => tag.toLowerCase()));
     }, [manager]);
+
     useEffect(() => {
         if (newTag.length > 0) {
             const suggestions = wordList.filter(word =>
@@ -40,11 +41,6 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
             setShowSuggestions(false);
         }
     }, [newTag, wordList]);
-
-    const handleSuggestionClick = (suggestion: string) => {
-        setNewTag(suggestion);
-        setShowSuggestions(false);
-    };
 
     const handleInputBlur = () => {
         setTimeout(() => setShowSuggestions(false), 100);
@@ -164,6 +160,12 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
             tags: draftThought.tags.filter(tag => tag !== tagToRemove)
         });
         setIsDirty(true);
+    };
+
+    const handleSuggestionClick = (suggestion: string) => {
+        setNewTag(suggestion);
+        addTag();
+        setShowSuggestions(false);
     };
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
