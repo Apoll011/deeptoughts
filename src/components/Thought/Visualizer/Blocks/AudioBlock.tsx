@@ -44,29 +44,20 @@ export const AudioBlock: React.FC<{ media: MediaAttachment }> = ({ media }) => {
         if (!audio) return;
 
         const updateTime = () => setCurrentTime(audio.currentTime);
-        const updateDuration = () => {
-            if (!isNaN(audio.duration)) {
-                setDuration(audio.duration);
-            }
-        };
         const handleEnded = () => setIsPlaying(false);
 
         const handleLoadedMetadata = () => {
-            updateDuration();
-
             if (waveform.length === 0 && !isWaveformLoading) {
                 console.log("Audio duration loaded:", audio.duration);
             }
         };
 
         audio.addEventListener('timeupdate', updateTime);
-        audio.addEventListener('durationchange', updateDuration);
         audio.addEventListener('ended', handleEnded);
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
 
         return () => {
             audio.removeEventListener('timeupdate', updateTime);
-            audio.removeEventListener('durationchange', updateDuration);
             audio.removeEventListener('ended', handleEnded);
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
         };
