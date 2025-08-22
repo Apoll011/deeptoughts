@@ -114,39 +114,6 @@ export const CalendarView: React.FC<{
 
         return (
             <div>
-                <div className="grid grid-cols-7 gap-2 pb-3">
-                    {weekDays.map((date) => {
-                        const isSelected = date.toDateString() === selectedDate.toDateString();
-                        const dayThoughts = getThoughtsForDate(date);
-
-                        return (
-                            <div
-                                key={date.toISOString()}
-                                className={`flex-shrink-0 w-full h-24 p-2 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all duration-200 ${
-                                    isSelected
-                                        ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg'
-                                        : 'bg-white hover:bg-gray-50 border'
-                                }`}
-                                onClick={() => onDateChange(date)}
-                            >
-                                <div className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                                    {date.toLocaleDateString('en-US', { weekday: 'short' })}
-                                </div>
-                                <div className={`text-2xl font-bold mt-1 ${isSelected ? 'text-white' : 'text-gray-800'}`}>
-                                    {date.getDate()}
-                                </div>
-                                {dayThoughts.length > 0 && (
-                                    <div className="flex space-x-0.5 mt-1.5">
-                                        {dayThoughts.slice(0, 3).map((_, i) => (
-                                            <div key={i}
-                                                 className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white/70' : 'bg-gray-300'}`}></div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
                 <div className="mt-6 space-y-6">
                     {weekHasThoughts ? (
                         weekDays.map(date => {
@@ -248,11 +215,11 @@ export const CalendarView: React.FC<{
             endOfWeek.setDate(startOfWeek.getDate() + 6);
 
             if (startOfWeek.getMonth() === endOfWeek.getMonth()) {
-                return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.getFullYear()}`;
+                return `${startOfWeek.toLocaleDateString('en-US', { month: 'long' })} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${startOfWeek.getFullYear()}`;
             }
-            return `${startOfWeek.toLocaleDateString('en-US', { month: 'short' })} - ${endOfWeek.toLocaleDateString('en-US', {
+            return `${startOfWeek.toLocaleDateString('en-US', { month: 'short' })} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', {
                 month: 'short'
-            })} ${endOfWeek.getFullYear()}`;
+            })} ${endOfWeek.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${endOfWeek.getFullYear()}`;
         }
         return selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }, [selectedDate, viewType]);
