@@ -40,23 +40,29 @@ export const ThoughtVisualizer: React.FC<{thoughtId: string, onBack:  React.Mous
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-            <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
-                <button
-                    onClick={onBack}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                    <ChevronLeft className="w-6 h-6 text-gray-600" />
-                </button>
-                { showEdit && (
+            <div className="sticky top-0 z-50 items-center bg-white/80 backdrop-blur-sm border-b border-gray-100">
+                <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
                     <button
-                        onClick={() => setIsEdit(true)}
-                        className="w-[30%] justify-center inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-1 py-1.5 rounded-md border border-gray-200 transition-all duration-200 font-medium"
+                        onClick={onBack}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                        <Pencil className="w-4 h-4" />
-                        <span className={"font-bold text-sm"}>Edit</span>
+                        <ChevronLeft className="w-6 h-6 text-gray-600" />
                     </button>
-                )}
+                    <h1 className="text-base font-medium text-gray-600">
+                        {thought.title ? (thought.title.length > 20 ? thought.title.substring(0, 20).trim() + '...' : thought.title) : 'Untitled thought'}
+                    </h1>
+                    { showEdit && (
+                        <button
+                            onClick={() => setIsEdit(true)}
+                            className="w-[30%] justify-center inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-1 py-1.5 rounded-md border border-gray-200 transition-all duration-200 font-medium"
+                        >
+                            <Pencil className="w-4 h-4" />
+                            <span className={"font-bold text-sm"}>Edit</span>
+                        </button>
+                    )}
+                </div>
             </div>
+
             <div className="px-6 pb-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">
                     {thought.title}
