@@ -150,56 +150,45 @@ export const CalendarView: React.FC<{
         const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
         const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
         const daysInMonth = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay();
 
-        const days = [];
+        const monthDays = Array.from({ length: daysInMonth }).map((_, i) => {
+            const date = new Date(firstDay);
+            date.setDate(firstDay.getDate() + i);
+            return date;
+        });
 
-        for (let i = 0; i < startingDayOfWeek; i++) {
-            days.push(<div key={`empty-${i}`}></div>);
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
-            date.setHours(0, 0, 0, 0);
-            const dayThoughts = getThoughtsForDate(date);
-            const isToday = date.toDateString() === today.toDateString();
-            const isSelected = date.toDateString() === selectedDate.toDateString();
-
-            days.push(
-                <div
-                    key={day}
-                    className={`relative flex items-center justify-center h-11 rounded-full cursor-pointer transition-colors duration-200 ${
-                        isSelected
-                            ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white font-bold shadow-md'
-                            : isToday
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'hover:bg-gray-100'
-                    }`}
-                    onClick={() => onDateChange(date)}
-                >
-                    <span className="text-sm">{day}</span>
-                    {dayThoughts.length > 0 && !isSelected && (
-                        <div className="absolute bottom-1.5 w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                    )}
-                </div>
-            );
-        }
+        const monthHasThoughts = monthDays.some(date => getThoughtsForDate(date).length > 0);
 
         return (
             <div>
-                <div className="grid grid-cols-7 gap-y-1 gap-x-2 mb-4">
-                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                        <div key={i} className="text-center text-xs font-semibold text-gray-500 py-2">
-                            {day}
+                <div className="mt-6 space-y-6">
+                    {monthHasThoughts ? (
+                        monthDays.map(date => {
+                            const thoughts = getThoughtsForDate(date);
+                            if (thoughts.length > 0) {
+                                return (
+                                    <div key={date.toISOString()}>
+                                        <h3 className="text-lg font-bold text-gray-800 px-1 mb-2">
+                                            {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {thoughts.map(thought => (
+                                                <ThoughtCard manager={manager} key={thought.id} thought={thought} onSelect={onThoughtSelect}
+                                                             compact={true}/>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })
+                    ) : (
+                        <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl mt-2">
+                            <p>No thoughts recorded for this Month.</p>
+                            <p className="text-sm text-gray-400">A fresh start, a new month to capture your moments.</p>
                         </div>
-                    ))}
+                    )}
                 </div>
-
-                <div className="grid grid-cols-7 gap-y-2 gap-x-1">
-                    {days}
-                </div>
-
-                {renderThoughtsForDate(selectedDate)}
             </div>
         );
     };
