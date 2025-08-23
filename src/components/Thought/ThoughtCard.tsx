@@ -104,7 +104,7 @@ export const ThoughtCard: React.FC<{
         const media = thought.blocks.find(block => block.media?.type === 'video');
         if (media && media.media) {
             validateMediaBlock(media).then((newBlock) => {
-                const url: string | undefined = media.media.url;
+                const url: string | undefined = newBlock.media.url;
                 extractRandomFrame(url);
             });
         }
