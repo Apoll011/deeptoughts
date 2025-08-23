@@ -104,11 +104,11 @@ export const ThoughtCard: React.FC<{
         const media = thought.blocks.find(block => block.media?.type === 'video');
         if (media && media.media) {
             validateMediaBlock(media).then((newBlock) => {
-                const url: string | undefined = newBlock.media.url;
+                const url: string | undefined = newBlock.media?.url;
                 extractRandomFrame(url);
             });
         }
-    }, [thought.id]);
+    }, [thought.blocks, thought.id]);
 
     useEffect(() => {
         setIsFavorite(thought.isFavorite);
@@ -117,7 +117,6 @@ export const ThoughtCard: React.FC<{
     useEffect(() => {
         const media = thought.blocks.find(block => block.media?.type === 'image');
         if (media) {
-            console.log("Validating media block for image:", media);
             validateMediaBlock(media).then((newBlock) => {
                 setFirtImage(newBlock.media || undefined);
             });
@@ -140,7 +139,7 @@ export const ThoughtCard: React.FC<{
                 url: `https://picsum.photos/seed/${hash}/400/300`
             });
         }
-    }, [thought.id]);
+    }, [frameError, frameSrc, isLoadingFrame, thought.blocks, thought.id, thought.title]);
 
     if (compact) {
         return (
