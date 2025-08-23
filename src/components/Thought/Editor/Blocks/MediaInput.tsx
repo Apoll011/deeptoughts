@@ -2,6 +2,7 @@ import type {MediaAttachment, ThoughtBlock, mediaType} from "../../../../models/
 import {Upload, Mic, StopCircle} from "lucide-react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {saveFile} from "../../../../storage/db.ts";
+import {validateMediaBlock} from "../../../../core/url-validator.ts";
 
 export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: ThoughtBlock, onUpdateBlock: (id: string, updates: Partial<ThoughtBlock>) => void, onFileUpload: (blockId: string, file: File) => void}) {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -15,20 +16,28 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     const dataArrayRef = useRef<Uint8Array | null>(null);
     const animationRef = useRef<number | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [mediaAttachment, setMediaAttachment] = useState<MediaAttachment | undefined>(block.media);
 
+    useEffect(() => {
+        if (block.type == 'media') {
+            validateMediaBlock(block).then((newBlock) => {
+                setMediaAttachment(newBlock.media || undefined);
+            });
+        }
+    }, []);
     const [recError, setRecError] = useState<string | null>(null);
 
-    const hasUrl = !!block.media?.url && block.media.url.trim() !== '';
+    const hasUrl = !!mediaAttachment?.url && mediaAttachment.url.trim() !== '';
 
     const uploadMediaAndGetUrl = async (file: File, type: mediaType): Promise<string> => {
         const localUrl = URL.createObjectURL(file);
 
         onUpdateBlock(block.id, {
             media: {
-                id: block.media?.id || block.id,
+                id: mediaAttachment?.id || block.id,
                 type,
                 url: localUrl,
-                caption: block.media?.caption
+                caption: mediaAttachment?.caption
             } as MediaAttachment
         });
 
@@ -46,7 +55,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const type: mediaType = (block.media?.type || 'image');
+            const type: mediaType = (mediaAttachment?.type || 'image');
             await uploadMediaAndGetUrl(file, type);
         }
     };
@@ -195,34 +204,34 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
 
     // Rendering helpers
     const renderPreview = () => {
-        if (!block.media?.url) return null;
-        const t = block.media.type;
+        if (!mediaAttachment?.url) return null;
+        const t = mediaAttachment.type;
         if (t === 'image') {
             return (
                 <div className="mt-2">
-                    <img src={block.media.url} alt={block.media.caption || 'preview'} className="max-h-64 rounded-lg border border-gray-200 object-contain w-full" />
+                    <img src={mediaAttachment.url} alt={mediaAttachment.caption || 'preview'} className="max-h-64 rounded-lg border border-gray-200 object-contain w-full" />
                 </div>
             );
         }
         if (t === 'video') {
             return (
                 <div className="mt-2">
-                    <video src={block.media.url} controls className="w-full max-h-80 rounded-lg border border-gray-200" />
+                    <video src={mediaAttachment.url} controls className="w-full max-h-80 rounded-lg border border-gray-200" />
                 </div>
             );
         }
         if (t === 'audio') {
             return (
                 <div className="mt-2">
-                    <audio src={block.media.url} controls className="w-full" />
+                    <audio src={mediaAttachment.url} controls className="w-full" />
                 </div>
             );
         }
         return null;
     };
 
-    const showUploader = block.media?.type !== 'audio' && !hasUrl;
-    const showUrlInput = block.media?.type !== 'audio' && !hasUrl;
+    const showUploader = mediaAttachment?.type !== 'audio' && !hasUrl;
+    const showUrlInput = mediaAttachment?.type !== 'audio' && !hasUrl;
 
     return (
         <div className="space-y-4">
@@ -232,15 +241,15 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                     ref={fileInputRef}
                     type="file"
                     accept={
-                        block.media?.type === 'image' ? 'image/*' :
-                            block.media?.type === 'video' ? 'video/*' : 'audio/*'
+                        mediaAttachment?.type === 'image' ? 'image/*' :
+                            mediaAttachment?.type === 'video' ? 'video/*' : 'audio/*'
                     }
                     onChange={(e) => handleFileUpload(e)}
                     className="hidden"
                 />
 
                 {/* Audio recorder UI */}
-                {block.media?.type === 'audio' ? (
+                {mediaAttachment?.type === 'audio' ? (
                     <div className="w-full border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center space-x-2 text-gray-700">
@@ -279,9 +288,9 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                         </div>
 
                         {/* After recording, show simple audio preview */}
-                        {block.media?.url && (
+                        {mediaAttachment?.url && (
                             <div className="mt-3">
-                                <audio src={block.media.url} controls className="w-full" />
+                                <audio src={mediaAttachment.url} controls className="w-full" />
                             </div>
                         )}
                     </div>
@@ -294,7 +303,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                                 className="flex items-center justify-center space-x-2 w-full py-3 border-2 border-dashed border-gray-200 rounded-lg hover:border-gray-300 transition-colors text-gray-500 hover:text-gray-600"
                             >
                                 <Upload className="w-4 h-4" />
-                                <span>Upload {block.media?.type || 'file'}</span>
+                                <span>Upload {mediaAttachment?.type || 'file'}</span>
                             </button>
                         )}
 
@@ -314,25 +323,24 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                         {showUrlInput && (
                             <input
                                 type="url"
-                                value={block.media?.url || ''}
+                                value={mediaAttachment?.url || ''}
                                 onChange={(e) => onUpdateBlock(block.id, {
-                                    media: { ...block.media, url: e.target.value } as MediaAttachment
+                                    media: { ...mediaAttachment, url: e.target.value } as MediaAttachment
                                 })}
                                 placeholder="Paste URL"
                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                             />
                         )}
 
-                        {block.media?.url}
                         {renderPreview()}
                     </>
                 )}
 
                 <input
                     type="text"
-                    value={block.media?.caption || ''}
+                    value={mediaAttachment?.caption || ''}
                     onChange={(e) => onUpdateBlock(block.id, {
-                        media: { ...block.media, caption: e.target.value } as MediaAttachment
+                        media: { ...mediaAttachment, caption: e.target.value } as MediaAttachment
                     })}
                     placeholder="Add a caption..."
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
