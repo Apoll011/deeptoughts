@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import type {MediaAttachment, Thought} from "../../models/types.ts";
 import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
 import {useAppContext} from "../../context/AppContext.tsx";
-import {validateMediaBlock} from "../../core/url-validator.ts";
 
 const hashString = (str: string): string => {
     let hash = 0;
@@ -20,7 +19,7 @@ export const ThoughtCard: React.FC<{
     compact?: boolean;
 }> = ({ thought, onSelect, compact = false }) => {
     const { manager } = useAppContext();
-    const [firstImage, setFirtImage] = useState<MediaAttachment | undefined>();
+    let firstImage: MediaAttachment | undefined;
     const hasAudio = thought.blocks.some(block => block.media?.type === 'audio');
     const [frameSrc, setFrameSrc] = useState<string | null>(null);
     const [isLoadingFrame, setIsLoadingFrame] = useState<boolean>(false);
@@ -103,10 +102,8 @@ export const ThoughtCard: React.FC<{
     useEffect(() => {
         const media = thought.blocks.find(block => block.media?.type === 'video');
         if (media && media.media) {
-            validateMediaBlock(media).then((newBlock) => {
-                const url: string | undefined = media.media.url;
-                extractRandomFrame(url);
-            });
+            const url: string | undefined = media.media.url;
+            extractRandomFrame(url);
         }
     }, [thought.id]);
 
@@ -114,33 +111,27 @@ export const ThoughtCard: React.FC<{
         setIsFavorite(thought.isFavorite);
     }, [thought.isFavorite]);
 
-    useEffect(() => {
-        const media = thought.blocks.find(block => block.media?.type === 'image');
-        if (media) {
-            console.log("Validating media block for image:", media);
-            validateMediaBlock(media).then((newBlock) => {
-                setFirtImage(newBlock.media || undefined);
-            });
-        }
+    if (thought.blocks.find(block => block.media?.type === 'image')) {
+        firstImage = thought.blocks.find(block => block.media?.type === 'image')?.media;
+    }
 
-        else if (frameSrc) {
-            setFirtImage({
-                caption: "Video frame",
-                id: "video-frame",
-                type: "image",
-                url: frameSrc
-            });
-        }
-        else if (!isLoadingFrame || frameError) {
-            const hash = hashString(thought.title);
-            setFirtImage({
-                caption: "Generated image",
-                id: "generated",
-                type: "image",
-                url: `https://picsum.photos/seed/${hash}/400/300`
-            });
-        }
-    }, [thought.id]);
+    else if (frameSrc) {
+        firstImage = {
+            caption: "Video frame",
+            id: "video-frame",
+            type: "image",
+            url: frameSrc
+        };
+    }
+    else if (!isLoadingFrame || frameError) {
+        const hash = hashString(thought.title);
+        firstImage = {
+            caption: "Generated image",
+            id: "generated",
+            type: "image",
+            url: `https://picsum.photos/seed/${hash}/400/300`
+        };
+    }
 
     if (compact) {
         return (
