@@ -40,6 +40,12 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                 caption: mediaAttachment?.caption
             } as MediaAttachment
         });
+        setMediaAttachment(prevState => {
+            if (prevState) {
+                return { ...prevState, url: localUrl };
+            }
+            return { id: block.id, type, url: localUrl };
+        })
 
         try {
             await saveFile(block.id, file);
@@ -54,6 +60,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+
         if (file) {
             const type: mediaType = (mediaAttachment?.type || 'image');
             await uploadMediaAndGetUrl(file, type);
@@ -208,21 +215,21 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
         const t = mediaAttachment.type;
         if (t === 'image') {
             return (
-                <div className="mt-2">
+                <div className="mt-1">
                     <img src={mediaAttachment.url} alt={mediaAttachment.caption || 'preview'} className="max-h-64 rounded-lg border border-gray-200 object-contain w-full" />
                 </div>
             );
         }
         if (t === 'video') {
             return (
-                <div className="mt-2">
+                <div className="mt-1">
                     <video src={mediaAttachment.url} controls className="w-full max-h-80 rounded-lg border border-gray-200" />
                 </div>
             );
         }
         if (t === 'audio') {
             return (
-                <div className="mt-2">
+                <div className="mt-1">
                     <audio src={mediaAttachment.url} controls className="w-full" />
                 </div>
             );
@@ -319,7 +326,6 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                             </div>
                         )}
 
-                        {/* URL input hidden if an upload/record provided a URL */}
                         {showUrlInput && (
                             <input
                                 type="url"
