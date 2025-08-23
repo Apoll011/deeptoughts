@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {LocationBlock} from "./Blocks/LocationBlock.tsx";
 import type {ThoughtBlock} from "../../../models/types.ts";
 import {ImageBlock} from "./Blocks/ImageBlock.tsx";
@@ -6,6 +6,7 @@ import {VideoBlock} from "./Blocks/VideoBlock.tsx";
 import {MoodBlock} from "./Blocks/MoodBlock.tsx";
 import {AudioBlock} from "./Blocks/AudioBlock.tsx";
 import {TextBlock} from "./Blocks/TextBlock.tsx";
+import { validateMediaBlock} from "../../../core/url-validator.ts";
 
 interface ThoughtBlockRendererProps {
     block: ThoughtBlock;
@@ -26,6 +27,15 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                                                                           }) => {
     const [isLongPressing, setIsLongPressing] = useState(false);
     let longPressTimer: ReturnType<typeof setTimeout>;
+    const [mediaAttachement, setMediaAttachement] = useState<MediaAttachment | null>(null);
+
+    useEffect(() => {
+        if (block.type == 'media') {
+           validateMediaBlock(block).then((newBlock) => {
+                setMediaAttachement(newBlock.media || null);
+           });
+        }
+    }, []);
 
     const handleMouseDown = () => {
         longPressTimer = setTimeout(() => {
@@ -100,16 +110,16 @@ export const ThoughtBlockRenderer: React.FC<ThoughtBlockRendererProps> = ({
                     />
                 )}
 
-                {block.type === 'media' && block.media && (
+                {block.type === 'media' && mediaAttachement && (
                     <div className="my-2">
                         {block.media.type === 'image' && (
-                            <ImageBlock media={block.media} />
+                            <ImageBlock media={mediaAttachement} />
                         )}
                         {block.media.type === 'video' && (
-                            <VideoBlock media={block.media} />
+                            <VideoBlock media={mediaAttachement} />
                         )}
                         {block.media.type === 'audio' && (
-                            <AudioBlock media={block.media} />
+                            <AudioBlock media={mediaAttachement} />
                         )}
                     </div>
                 )}
