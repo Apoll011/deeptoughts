@@ -1,55 +1,28 @@
 import type {Thought, ThoughtBlock} from '../models/types';
-import {fileURL} from "./db.ts";
+import {fileURL} from "../storage/db.ts";
 
 class MediaUrlValidator {
-    private urlValidityCache = new Map<string, boolean>();
+    private urlCache = new Map<string, string>(); // Changed to store blockId -> url mapping
 
-    private isUrlValid(url: string): boolean {
-        if (this.urlValidityCache.has(url)) {
-            return this.urlValidityCache.get(url)!;
+    private async getOrGenerateUrl(blockId: string): Promise<string> {
+        if (this.urlCache.has(blockId)) {
+            return this.urlCache.get(blockId)!;
         }
 
         try {
-            if (url.startsWith('blob:')) {
-                const isValid = this.testBlobUrl(url);
-                this.urlValidityCache.set(url, isValid);
-                return isValid;
-            }
-
-            new URL(url);
-            this.urlValidityCache.set(url, true);
-            return true;
+            const newUrl = await fileURL(blockId);
+            this.urlCache.set(blockId, newUrl);
+            return newUrl;
         } catch (error) {
-            this.urlValidityCache.set(url, false);
-            return false;
+            console.warn(`Failed to generate URL for block ${blockId}:`, error);
+            throw error;
         }
     }
 
-    private testBlobUrl(url: string): boolean {
-        try {
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 10); // 10ms timeout
-
-            fetch(url, {
-                method: 'HEAD',
-                signal: controller.signal
-            }).catch(() => {});
-
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    private validateMediaBlock(block: ThoughtBlock): ThoughtBlock {
+    async fixBlockMediaUrl(block: ThoughtBlock): Promise<ThoughtBlock> {
         if (!block.media?.url) return block;
-
-        if (this.isUrlValid(block.media.url)) {
-            return block;
-        }
-
         try {
-            const newUrl = fileURL(block.id);
+            const newUrl = await this.getOrGenerateUrl(block.id);
             return {
                 ...block,
                 media: {
@@ -63,13 +36,32 @@ class MediaUrlValidator {
         }
     }
 
-    validateAndFixMediaUrls(thought: Thought): Thought {
-        const updatedBlocks = thought.blocks.map(block => {
-            if (block.type === 'media' && block.media?.url) {
-                return this.validateMediaBlock(block);
-            }
+    async validateMediaBlock(block: ThoughtBlock): Promise<ThoughtBlock> {
+        if (!block.media?.url) return block;
+
+        try {
+            const url = await this.getOrGenerateUrl(block.id);
+            return {
+                ...block,
+                media: {
+                    ...block.media,
+                    url: url
+                }
+            };
+        } catch (error) {
             return block;
-        });
+        }
+    }
+
+    async validateAndFixMediaUrls(thought: Thought): Promise<Thought> {
+        const updatedBlocks = await Promise.all(
+            thought.blocks.map(async block => {
+                if (block.type === 'media' && block.media?.url) {
+                    return await this.validateMediaBlock(block);
+                }
+                return block;
+            })
+        );
 
         return {
             ...thought,
@@ -78,14 +70,18 @@ class MediaUrlValidator {
     }
 
     clearCache(): void {
-        this.urlValidityCache.clear();
+        this.urlCache.clear();
     }
 }
 
 const mediaUrlValidator = new MediaUrlValidator();
 
-export const validateAndFixMediaUrls = (thought: Thought): Thought => {
-    return mediaUrlValidator.validateAndFixMediaUrls(thought);
+export const validateAndFixMediaUrls = async (thought: Thought): Promise<Thought> => {
+    return await mediaUrlValidator.validateAndFixMediaUrls(thought);
+};
+
+export const validateMediaBlock = async (block: ThoughtBlock): Promise<ThoughtBlock> => {
+    return await mediaUrlValidator.validateMediaBlock(block);
 };
 
 export const clearMediaUrlCache = (): void => {
