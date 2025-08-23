@@ -17,7 +17,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     const animationRef = useRef<number | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [mediaAttachment, setMediaAttachment] = useState<MediaAttachment | undefined>(block.media);
-
+    const [hasUrl, setHasUrl] = useState<boolean>(!!mediaAttachment?.url && mediaAttachment.url.trim() !== '');
     useEffect(() => {
         if (block.type == 'media') {
             validateMediaBlock(block).then((newBlock) => {
@@ -27,7 +27,9 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     }, []);
     const [recError, setRecError] = useState<string | null>(null);
 
-    const hasUrl = !!mediaAttachment?.url && mediaAttachment.url.trim() !== '';
+    useEffect(() => {
+        setHasUrl(!!mediaAttachment?.url && mediaAttachment.url.trim() !== '');
+    }, [mediaAttachment])
 
     const uploadMediaAndGetUrl = async (file: File, type: mediaType): Promise<string> => {
         const localUrl = URL.createObjectURL(file);
