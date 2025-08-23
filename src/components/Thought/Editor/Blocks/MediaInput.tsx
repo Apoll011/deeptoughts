@@ -1,62 +1,11 @@
 import type {MediaAttachment, ThoughtBlock, mediaType} from "../../../../models/types.ts";
-import {Upload, Mic, StopCircle, Camera, Video} from "lucide-react";
+import {Upload, Mic, StopCircle} from "lucide-react";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import {sendObjectToServer} from "../../../../core/client.ts";
+import {saveFile} from "../../../../storage/db.ts";
 
-interface CaptureAudioOptions {
-    limit?: number;
-    duration?: number;
-}
-
-interface CaptureImageOptions {
-    limit?: number;
-}
-
-interface CaptureVideoOptions {
-    duration?: number;
-    limit?: number;
-    quality?: number;
-}
-
-interface MediaFile {
-    fullPath: string;
-    lastModifiedDate: Date;
-    name: string;
-    size: number;
-    type: string;
-    getFormatData?(successCallback: (data: MediaFileData) => void, errorCallback?: () => void): void;
-}
-
-interface MediaFileData {
-    bitrate: number;
-    codecs: string;
-    duration: number;
-    height: number;
-    width: number;
-}
-
-interface CaptureError {
-    code: number;
-}
-
-declare global {
-    interface Window {
-        MediaCapture?: {
-            captureAudio: (options?: CaptureAudioOptions) => Promise<MediaFile[] | CaptureError>;
-            captureImage: (options?: CaptureImageOptions) => Promise<MediaFile[] | CaptureError>;
-            captureVideo: (options?: CaptureVideoOptions) => Promise<MediaFile[] | CaptureError>;
-        };
-    }
-}
-
-export function MediaInput({block, onUpdateBlock, onFileUpload}: {
-    block: ThoughtBlock,
-    onUpdateBlock: (id: string, updates: Partial<ThoughtBlock>) => void,
-    onFileUpload: (blockId: string, file: File) => void
-}) {
+export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: ThoughtBlock, onUpdateBlock: (id: string, updates: Partial<ThoughtBlock>) => void, onFileUpload: (blockId: string, file: File) => void}) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // State for audio recording
     const [isRecording, setIsRecording] = useState(false);
     const mediaStreamRef = useRef<MediaStream | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -68,15 +17,29 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const [recError, setRecError] = useState<string | null>(null);
-    const [isCapturing, setIsCapturing] = useState(false);
 
     const hasUrl = !!block.media?.url && block.media.url.trim() !== '';
-    const hasNativeCapture = typeof window !== 'undefined' && window.MediaCapture;
 
     const uploadMediaAndGetUrl = async (file: File, type: mediaType): Promise<string> => {
         const localUrl = URL.createObjectURL(file);
-        onUpdateBlock(block.id, { media: { id: block.media?.id || block.id, type, url: localUrl, caption: block.media?.caption } as MediaAttachment });
-        try { onFileUpload(block.id, file); } catch (e) { console.warn('onFileUpload failed:', e); }
+
+        onUpdateBlock(block.id, {
+            media: {
+                id: block.media?.id || block.id,
+                type,
+                url: localUrl,
+                caption: block.media?.caption
+            } as MediaAttachment
+        });
+
+        try {
+            await saveFile(block.id, file);
+
+            onFileUpload(block.id, file);
+        } catch (e) {
+            console.warn('onFileUpload/saveFile failed:', e);
+        }
+
         return localUrl;
     };
 
@@ -88,72 +51,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
         }
     };
 
-    const captureWithNative = async (mediaType: 'audio' | 'image' | 'video') => {
-        if (!hasNativeCapture) return;
-
-        setIsCapturing(true);
-        setRecError(null);
-
-        try {
-            let result: MediaFile[] | CaptureError;
-
-            switch (mediaType) {
-                case 'audio':
-                    result = await window.MediaCapture!.captureAudio({
-                        limit: 1,
-                        duration: 300 // 5 minutes max
-                    });
-                    break;
-                case 'image':
-                    result = await window.MediaCapture!.captureImage({
-                        limit: 1
-                    });
-                    break;
-                case 'video':
-                    result = await window.MediaCapture!.captureVideo({
-                        limit: 1,
-                        duration: 300, // 5 minutes max
-                        quality: 1 // High quality
-                    });
-                    break;
-                default:
-                    throw new Error(`Unsupported media type: ${mediaType}`);
-            }
-
-            // Check if result is an error
-            alert('hi');
-            await sendObjectToServer(result);
-            if ('code' in result) {
-                throw new Error(`Capture failed with code: ${result.code}`);
-            }
-
-            // Process the captured media files
-            const mediaFiles = result as MediaFile[];
-            if (mediaFiles.length > 0) {
-                const mediaFile = mediaFiles[0];
-
-                // Create a file URL that can be used directly
-                const fileUrl = `file://${mediaFile.fullPath}`;
-
-                // Update the block with the native file path
-                onUpdateBlock(block.id, {
-                    media: {
-                        id: block.media?.id || block.id,
-                        type: mediaType,
-                        url: fileUrl,
-                        caption: block.media?.caption
-                    } as MediaAttachment
-                });
-            } else {
-                throw new Error('No media files captured');
-            }
-        } catch (error) {
-            console.error(`${mediaType} capture error:`, error);
-            setRecError(error instanceof Error ? error.message : `${mediaType} capture failed`);
-        } finally {
-            setIsCapturing(false);
-        }
-    };
+    // Audio recording logic
     const stopVisualization = () => {
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
         animationRef.current = null;
@@ -165,6 +63,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
         dataArrayRef.current = null;
     };
 
+    // Cross-browser helper to get audio stream
     const getAudioStream = async (): Promise<MediaStream> => {
         if (typeof navigator === 'undefined') {
             throw new Error('Recording is only available in the browser.');
@@ -217,7 +116,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
             const sliceWidth = WIDTH / dataArray.length;
             let x = 0;
             for (let i = 0; i < dataArray.length; i++) {
-                const v = dataArray[i] / 128.0;
+                const v = dataArray[i] / 128.0; // 0..2
                 const y = (v * HEIGHT) / 2;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 x += sliceWidth;
@@ -230,7 +129,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
         render();
     }, []);
 
-    const startWebRecording = async () => {
+    const startRecording = async () => {
         try {
             setRecError(null);
             if (typeof window === 'undefined') {
@@ -245,6 +144,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
             const stream = await getAudioStream();
             mediaStreamRef.current = stream;
 
+            // Setup analyser for waveform
             const audioCtx = new (window.AudioContext ?? (window as unknown as { webkitAudioContext: { new(): AudioContext } }).webkitAudioContext)();
             audioCtxRef.current = audioCtx;
             const source = audioCtx.createMediaStreamSource(stream);
@@ -256,6 +156,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
             source.connect(analyser);
             drawWaveform();
 
+            // Setup recorder
             const recorder = new MediaRecorder(stream);
             recordedChunksRef.current = [];
             recorder.ondataavailable = (e) => {
@@ -292,6 +193,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
         };
     }, []);
 
+    // Rendering helpers
     const renderPreview = () => {
         if (!block.media?.url) return null;
         const t = block.media.type;
@@ -325,6 +227,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
     return (
         <div className="space-y-4">
             <div className="space-y-3">
+                {/* File input kept hidden */}
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -336,6 +239,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                     className="hidden"
                 />
 
+                {/* Audio recorder UI */}
                 {block.media?.type === 'audio' ? (
                     <div className="w-full border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <div className="flex items-center justify-between mb-3">
@@ -345,37 +249,22 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                                         <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                                         <span>Recording...</span>
                                     </>
-                                ) : isCapturing ? (
-                                    <>
-                                        <span className="inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                                        <span>Opening recorder...</span>
-                                    </>
                                 ) : (
                                     <span>Record audio</span>
                                 )}
                             </div>
                             <div className="flex items-center space-x-2">
-                                {hasNativeCapture && !isRecording && !isCapturing && (
-                                    <button
-                                        onClick={() => captureWithNative('audio')}
-                                        className="px-3 py-2 bg-green-500 text-white rounded-md flex items-center space-x-2 hover:bg-green-600"
-                                        disabled={isCapturing}
-                                    >
+                                {!isRecording ? (
+                                    <button onClick={startRecording} className="px-3 py-2 bg-blue-500 text-white rounded-md flex items-center space-x-2 hover:bg-blue-600">
                                         <Mic className="w-4 h-4" />
-                                        <span>Native</span>
+                                        <span>Start</span>
                                     </button>
-                                )}
-                                {!isRecording && !isCapturing ? (
-                                    <button onClick={startWebRecording} className="px-3 py-2 bg-blue-500 text-white rounded-md flex items-center space-x-2 hover:bg-blue-600">
-                                        <Mic className="w-4 h-4" />
-                                        <span>Web</span>
-                                    </button>
-                                ) : isRecording ? (
+                                ) : (
                                     <button onClick={stopRecording} className="px-3 py-2 bg-red-500 text-white rounded-md flex items-center space-x-2 hover:bg-red-600">
                                         <StopCircle className="w-4 h-4" />
                                         <span>Stop</span>
                                     </button>
-                                ) : null}
+                                )}
                             </div>
                         </div>
 
@@ -385,12 +274,11 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                             </div>
                         )}
 
-                        {isRecording && (
-                            <div className="bg-white rounded-md border border-gray-200 p-2">
-                                <canvas ref={canvasRef} height={120} className="w-full" />
-                            </div>
-                        )}
+                        <div className="bg-white rounded-md border border-gray-200 p-2">
+                            <canvas ref={canvasRef} height={120} className="w-full" />
+                        </div>
 
+                        {/* After recording, show simple audio preview */}
                         {block.media?.url && (
                             <div className="mt-3">
                                 <audio src={block.media.url} controls className="w-full" />
@@ -399,44 +287,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                     </div>
                 ) : (
                     <>
-                        {/* Native capture buttons for image/video */}
-                        {hasNativeCapture && !hasUrl && (
-                            <div className="flex space-x-2">
-                                {block.media?.type === 'image' && (
-                                    <button
-                                        onClick={() => captureWithNative('image')}
-                                        className="flex-1 flex items-center justify-center space-x-2 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                                        disabled={isCapturing}
-                                    >
-                                        <Camera className="w-4 h-4" />
-                                        <span>{isCapturing ? 'Opening...' : 'Take Photo'}</span>
-                                    </button>
-                                )}
-                                {block.media?.type === 'video' && (
-                                    <button
-                                        onClick={() => captureWithNative('video')}
-                                        className="flex-1 flex items-center justify-center space-x-2 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                                        disabled={isCapturing}
-                                    >
-                                        <Video className="w-4 h-4" />
-                                        <span>{isCapturing ? 'Opening...' : 'Record Video'}</span>
-                                    </button>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Divider between native and upload options */}
-                        {hasNativeCapture && showUploader && !hasUrl && (
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-200" />
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-400">or</span>
-                                </div>
-                            </div>
-                        )}
-
+                        {/* Upload button shown only when URL isn't used */}
                         {showUploader && (
                             <button
                                 onClick={() => fileInputRef.current?.click()}
@@ -447,6 +298,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                             </button>
                         )}
 
+                        {/* Divider shown only if both options are available */}
                         {showUploader && showUrlInput && (
                             <div className="relative">
                                 <div className="absolute inset-0 flex items-center">
@@ -458,6 +310,7 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                             </div>
                         )}
 
+                        {/* URL input hidden if an upload/record provided a URL */}
                         {showUrlInput && (
                             <input
                                 type="url"
@@ -470,14 +323,9 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: {
                             />
                         )}
 
+                        {block.media?.url}
                         {renderPreview()}
                     </>
-                )}
-
-                {recError && !isRecording && (
-                    <div className="mt-2 text-sm text-red-600">
-                        {recError}
-                    </div>
                 )}
 
                 <input
