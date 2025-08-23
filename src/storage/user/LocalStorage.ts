@@ -1,5 +1,5 @@
-import type {IUserStorage} from "./userStorage.interface.ts";
-import type {User} from "../models/user.ts";
+import type {IUserStorage} from "../interface/userStorage.interface.ts";
+import type {User} from "../../models/user.ts";
 
 export class LocalStorage implements IUserStorage {
     private readonly USER_KEY = 'deep-thoughts-user';

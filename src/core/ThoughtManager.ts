@@ -1,5 +1,5 @@
 import type {Thought, thought_Mood, ThoughtBlock} from '../models/types';
-import type {IStorage} from '../storage/storage.interface';
+import type {IStorage} from '../storage/interface/storage.interface.ts';
 import { sortBlocksByPosition, formatLocation, formatWeather } from './utils';
 import type {FilterType} from "../components/UI/FilterPanel.tsx";
 import Swal from 'sweetalert2';

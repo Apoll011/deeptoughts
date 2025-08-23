@@ -5,7 +5,7 @@ import { FeatureShowcase } from './FeatureShowcase.tsx';
 import { AppTour } from './AppTour.tsx';
 import { UserRegistration } from './UserRegistration.tsx';
 import type { User } from '../../models/user.ts';
-import type { IUserStorage } from '../../storage/userStorage.interface.ts';
+import type { IUserStorage } from '../../storage/interface/userStorage.interface.ts';
 
 const pages = ['welcome', 'features', 'tour', 'registration'];
 

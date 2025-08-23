@@ -1,6 +1,6 @@
-import type {IStorage} from './storage.interface';
-import type {Thought} from '../models/types';
-import {fileURL} from "./db.ts";
+import type {IStorage} from '../interface/storage.interface.ts';
+import type {Thought} from '../../models/types.ts';
+import {fileURL} from "../db.ts";
 
 export class LocalStorageThoughts implements IStorage {
     private readonly storageKey = 'thoughts-storage';

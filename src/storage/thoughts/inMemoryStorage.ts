@@ -1,5 +1,5 @@
-import type {IStorage} from './storage.interface';
-import type {Thought} from '../models/types';
+import type {IStorage} from '../interface/storage.interface.ts';
+import type {Thought} from '../../models/types.ts';
 import {mockThoughts} from "./data.ts";
 
 export class InMemoryStorage implements IStorage {

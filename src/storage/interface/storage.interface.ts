@@ -1,4 +1,4 @@
-import type {Thought} from '../models/types';
+import type {Thought} from '../../models/types.ts';
 
 export interface IStorage {
     getThought(id: string): Thought | undefined;

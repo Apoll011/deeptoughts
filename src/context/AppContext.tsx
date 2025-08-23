@@ -1,8 +1,8 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { ThoughtManager } from '../core/ThoughtManager';
-import { LocalStorage } from '../storage/LocalStorage';
-import {type IUserStorage} from '../storage/userStorage.interface.ts';
-import {LocalStorageThoughts} from "../storage/LocalStorageThoughts.ts";
+import { LocalStorage } from '../storage/user/LocalStorage.ts';
+import {type IUserStorage} from '../storage/interface/userStorage.interface.ts';
+import {LocalStorageThoughts} from "../storage/thoughts/LocalStorageThoughts.ts";
 
 interface AppContextType {
   userStorage: IUserStorage;
