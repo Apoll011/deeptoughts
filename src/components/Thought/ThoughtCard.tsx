@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import type {MediaAttachment, Thought} from "../../models/types.ts";
-import {Heart, MapPin, Mic, Share, Tag} from "lucide-react";
+import {Edit3, Heart, MapPin, Mic, Share, Tag, Trash2} from "lucide-react";
 import {useAppContext} from "../../context/AppContext.tsx";
 import {validateMediaBlock} from "../../core/url-validator.ts";
+import Swal from 'sweetalert2';
 
 const hashString = (str: string): string => {
     let hash = 0;
@@ -27,6 +28,24 @@ export const ThoughtCard: React.FC<{
     const [frameError, setFrameError] = useState<boolean>(false);
     const [isFavorite, setIsFavorite] = useState(thought.isFavorite);
     const [isAnimating, setIsAnimating] = useState(false);
+
+    // Context menu state and long-press handling
+    const [showMenu, setShowMenu] = useState(false);
+    const cardRef = useRef<HTMLDivElement | null>(null);
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const longPressTimerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!showMenu) return;
+        const onDocClick = (ev: MouseEvent) => {
+            const target = ev.target as Node;
+            if (menuRef.current && !menuRef.current.contains(target)) {
+                setShowMenu(false);
+            }
+        };
+        document.addEventListener('click', onDocClick);
+        return () => document.removeEventListener('click', onDocClick);
+    }, [showMenu]);
 
     const extractRandomFrame = (videoUrl: string | undefined) => {
         if (!videoUrl) {
@@ -225,8 +244,29 @@ export const ThoughtCard: React.FC<{
 
     return (
         <div
-            className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+            ref={cardRef}
+            className="relative bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+            onContextMenu={(e) => {
+                e.preventDefault();
+                if ((e.target as Element).closest('.share-button') || (e.target as Element).closest('.heart-button')) return;
+                setShowMenu(true);
+            }}
+            onTouchStart={(e) => {
+                if ((e.target as Element).closest('.share-button') || (e.target as Element).closest('.heart-button')) return;
+                if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
+                longPressTimerRef.current = window.setTimeout(() => setShowMenu(true), 500);
+            }}
+            onTouchEnd={() => {
+                if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
+            }}
+            onTouchCancel={() => {
+                if (longPressTimerRef.current) window.clearTimeout(longPressTimerRef.current);
+            }}
             onClick={(e) => {
+                if (showMenu) {
+                    // If menu is open, do not trigger select by simple click on card body
+                    return;
+                }
                 if (e.target instanceof Element &&
                     (e.target.closest('.share-button') || e.target.closest('.heart-button'))) {
                     e.stopPropagation();
@@ -367,6 +407,95 @@ export const ThoughtCard: React.FC<{
                     </div>
                 )}
             </div>
+
+            {showMenu && (
+                <div ref={menuRef} className="absolute bottom-4 right-4 z-20 select-none">
+                    {/* Arrow facing left from bottom-right corner */}
+                    <div className="absolute bottom-10 right-2 w-3 h-3 bg-white rotate-45 shadow-[0_2px_8px_rgba(0,0,0,0.08)]"></div>
+                    <div className="relative bg-white/95 backdrop-blur-md rounded-2xl shadow-xl ring-1 ring-black/5 overflow-hidden animate-[fadeIn_120ms_ease-out]">
+                        <ul className="min-w-[190px] p-1">
+                            <li>
+                                <button
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        onSelect(thought);
+                                    }}
+                                >
+                                    <Edit3 className="w-4 h-4 text-blue-500"/>
+                                    <span className="text-sm font-medium">Edit</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        manager.shareThought(thought.id);
+                                    }}
+                                >
+                                    <Share className="w-4 h-4 text-emerald-500"/>
+                                    <span className="text-sm font-medium">Share</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        manager.toggleFavorite(thought.id);
+                                        setIsFavorite(prev => !prev);
+                                    }}
+                                >
+                                    <Heart className={`w-4 h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-500'}`}/>
+                                    <span className="text-sm font-medium">{isFavorite ? 'Unfavorite' : 'Favorite'}</span>
+                                </button>
+                            </li>
+                            <li aria-hidden="true" className="my-1">
+                                <div className="h-px bg-gray-100 mx-1"></div>
+                            </li>
+                            <li>
+                                <button
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 text-gray-700"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        setShowMenu(false);
+                                        const result = await Swal.fire({
+                                            title: 'Delete this thought?',
+                                            text: 'This action cannot be undone.',
+                                            icon: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonColor: '#ef4444',
+                                            cancelButtonColor: '#6b7280',
+                                            confirmButtonText: 'Yes, delete it',
+                                            cancelButtonText: 'Cancel',
+                                            reverseButtons: true
+                                        });
+                                        if (result.isConfirmed) {
+                                            manager.deleteThought(thought.id);
+                                            // Notify the app to refresh lists
+                                            window.dispatchEvent(new CustomEvent('thoughts:changed'));
+                                            void Swal.fire({
+                                                icon: 'success',
+                                                title: 'Deleted',
+                                                text: 'Your thought has been deleted.',
+                                                timer: 1400,
+                                                showConfirmButton: false
+                                            });
+                                        }
+                                    }}
+                                >
+                                    <Trash2 className="w-4 h-4 text-red-500"/>
+                                    <span className="text-sm font-medium">Delete</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

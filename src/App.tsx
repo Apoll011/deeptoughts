@@ -20,6 +20,12 @@ const AppContent: React.FC = () => {
         setThoughts(manager.getAllThoughts());
     }, [manager]);
 
+    React.useEffect(() => {
+        const refresh = () => setThoughts(manager.getAllThoughts());
+        window.addEventListener('thoughts:changed', refresh);
+        return () => window.removeEventListener('thoughts:changed', refresh);
+    }, [manager]);
+
     const startNewThought = () => {
         const thought: Thought = {
             id: uuidv4(),
