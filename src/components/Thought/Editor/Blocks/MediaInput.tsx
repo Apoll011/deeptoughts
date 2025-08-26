@@ -240,12 +240,10 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
     };
 
     const showUploader = mediaAttachment?.type !== 'audio' && !hasUrl;
-    const showUrlInput = mediaAttachment?.type !== 'audio' && !hasUrl;
 
     return (
         <div className="space-y-4">
             <div className="space-y-3">
-                {/* File input kept hidden */}
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -257,7 +255,6 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                     className="hidden"
                 />
 
-                {/* Audio recorder UI */}
                 {mediaAttachment?.type === 'audio' ? (
                     <div className="w-full border border-gray-200 rounded-lg p-4 bg-gray-50">
                         <div className="flex items-center justify-between mb-3">
@@ -305,7 +302,6 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                     </div>
                 ) : (
                     <>
-                        {/* Upload button shown only when URL isn't used */}
                         {showUploader && (
                             <button
                                 onClick={() => fileInputRef.current?.click()}
@@ -316,43 +312,24 @@ export function MediaInput({block, onUpdateBlock, onFileUpload}: { block: Though
                             </button>
                         )}
 
-                        {/* Divider shown only if both options are available */}
-                        {showUploader && showUrlInput && (
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-200" />
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-400">or</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {showUrlInput && (
-                            <input
-                                type="url"
-                                value={mediaAttachment?.url || ''}
-                                onChange={(e) => onUpdateBlock(block.id, {
-                                    media: { ...mediaAttachment, url: e.target.value } as MediaAttachment
-                                })}
-                                placeholder="Paste URL"
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                            />
-                        )}
-
                         {renderPreview()}
                     </>
                 )}
 
-                <input
-                    type="text"
-                    value={mediaAttachment?.caption || ''}
-                    onChange={(e) => onUpdateBlock(block.id, {
-                        media: { ...mediaAttachment, caption: e.target.value } as MediaAttachment
-                    })}
-                    placeholder="Add a caption..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                />
+                {!showUploader && mediaAttachment && (
+                    <input
+                        type="text"
+                        value={mediaAttachment?.caption || ''}
+                        onChange={(e) => {
+                            mediaAttachment.caption = e.target.value;
+                            onUpdateBlock(block.id, {
+                                media: {...mediaAttachment, caption: e.target.value} as MediaAttachment
+                            })
+                        }}
+                        placeholder="Add a caption..."
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    />
+                )}
             </div>
         </div>
     );
