@@ -30,7 +30,7 @@ export class ThoughtManager {
         return this.storage.getAllThoughts().map(t => ({
             ...t,
             blocks: sortBlocksByPosition(t.blocks),
-        }));
+        })).filter((thought) => thought.title.trim() !== '' || thought.blocks.length > 0);
     }
 
     updateThought(id: string, updates: Partial<Thought>): void {
