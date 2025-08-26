@@ -2,8 +2,6 @@ import {useRef, useState, useEffect, useMemo} from 'react';
 import {
     Plus,
     X,
-    ChevronLeft,
-    Save,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ToolBar} from "./ToolBar.tsx";
@@ -24,6 +22,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [wordList, setWordList] = useState<string[]>([]);
+    const haveToHaveABlockForHeader = false;
 
     useMemo(() => {
           setWordList(manager.allTags().map(tag => tag.toLowerCase()));
@@ -295,120 +294,108 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="sticky top-0 z-50 items-center bg-white/80 backdrop-blur-sm border-b border-gray-100">
-                <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
-                    <button
-                        onClick={back}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                        <ChevronLeft className="w-6 h-6 text-gray-600" />
-                    </button>
+                <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-center">
                     <h1 className="text-base font-medium text-gray-600">
                         {draftThought.title ? (draftThought.title.length > 20 ? draftThought.title.substring(0, 20).trim() + '...' : draftThought.title) : 'Untitled thought'}
                     </h1>
-                    <button
-                        onClick={handleSave}
-                        disabled={!isDirty}
-                        className={`inline-flex items-center gap-2 ${!isDirty ? '' : 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600'} text-white px-3 py-1.5 rounded-md transition-all duration-200 text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed`}
-                    >
-                        <Save className="w-4 h-4" />
-                        <span className="sm:inline">Save</span>
-                    </button>
                 </div>
             </div>
             <div className="max-w-4xl mx-auto p-4">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
-                    <div className="px-6 pt-4">
-                        <input
-                            type="text"
-                            value={draftThought.title || ''}
-                            onChange={handleTitleChange}
-                            placeholder="Note title"
-                            className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent mb-2 resize-none"
-                        />
+                {(draftThought.blocks.length > 0 || !haveToHaveABlockForHeader) && (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-4">
+                        <div className="px-6 pt-4">
+                            <input
+                                type="text"
+                                value={draftThought.title || ''}
+                                onChange={handleTitleChange}
+                                placeholder="Thought title"
+                                className="w-full text-2xl font-semibold text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent mb-2 resize-none"
+                            />
 
-                        <div className="flex items-center mb-6">
-                            <select
-                                value={draftThought.category || ''}
-                                onChange={handleCategoryChange}
-                                className="text-sm text-gray-500 bg-transparent border-none outline-none cursor-pointer hover:text-blue-600 transition-colors"
-                            >
-                                <option value="">No Category</option>
-                                {categories.map(category => (
-                                    <option key={category} value={category}>{category}</option>
-                                ))}
-                            </select>
-                        </div>
+                            <div className="flex items-center mb-6">
+                                <select
+                                    value={draftThought.category || ''}
+                                    onChange={handleCategoryChange}
+                                    className="text-sm text-gray-500 bg-transparent border-none outline-none cursor-pointer hover:text-blue-600 transition-colors"
+                                >
+                                    <option value="">No Category</option>
+                                    {categories.map(category => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div className="mb-6">
-                            {draftThought.tags && draftThought.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mb-3">
-                                    {draftThought.tags.map(tag => (
-                                        <span
-                                            key={tag}
-                                            className="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-                                        >
-                                            {tag}
-                                            <button
-                                                onClick={() => removeTag(tag)}
-                                                className="ml-1.5 hover:text-blue-900 transition-colors"
+                            <div className="mb-6">
+                                {draftThought.tags && draftThought.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                        {draftThought.tags.map(tag => (
+                                            <span
+                                                key={tag}
+                                                className="inline-flex items-center bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
                                             >
+                                            {tag}
+                                                <button
+                                                    onClick={() => removeTag(tag)}
+                                                    className="ml-1.5 hover:text-blue-900 transition-colors"
+                                                >
                                                 <X className="w-3 h-3" />
                                             </button>
                                         </span>
-                                    ))}
-                                </div>
-                            )}
+                                        ))}
+                                    </div>
+                                )}
 
-                            <div className="flex w-full relative items-center space-x-2">
-                                <div className="flex-1 relative">
-                                    <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={newTag}
-                                        onChange={(e) => setNewTag(e.target.value)}
-                                        onBlur={handleInputBlur}
-                                        onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                                        placeholder="Add a descriptive tag"
-                                        className="w-full h-12 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 bg-gray-50/50"
-                                    />
-                                    {showSuggestions && filteredSuggestions.length > 0 && (
-                                        <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'none' }}>
-                                            <ul
-                                                className="absolute  border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto min-w-[200px] backdrop-blur-sm bg-white/95"
-                                                style={{
-                                                    pointerEvents: 'auto',
-                                                    left: `${inputRef.current?.getBoundingClientRect()?.left || 0}px`,
-                                                    top: `${(inputRef.current?.getBoundingClientRect()?.bottom || 0) + 4}px`,
-                                                    width: `${inputRef.current?.getBoundingClientRect()?.width || 200}px`,
-                                                    zIndex: 9999
-                                                }}
-                                            >
-                                                {filteredSuggestions.map((suggestion, index) => (
-                                                    <li
-                                                        key={index}
-                                                        onClick={() => handleSuggestionClick(suggestion)}
-                                                        className="px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 cursor-pointer transition-all duration-200 text-gray-800 hover:text-blue-700 font-medium first:rounded-t-xl last:rounded-b-xl border-b border-gray-100 last:border-b-0 hover:shadow-sm"
-                                                    >
+                                <div className="flex w-full relative items-center space-x-2">
+                                    <div className="flex-1 relative">
+                                        <input
+                                            ref={inputRef}
+                                            type="text"
+                                            value={newTag}
+                                            onChange={(e) => setNewTag(e.target.value)}
+                                            onBlur={handleInputBlur}
+                                            onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                                            placeholder="Add a descriptive tag"
+                                            className="w-full h-12 px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all duration-300 bg-gray-50/50"
+                                        />
+                                        {showSuggestions && filteredSuggestions.length > 0 && (
+                                            <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'none' }}>
+                                                <ul
+                                                    className="absolute  border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto min-w-[200px] backdrop-blur-sm bg-white/95"
+                                                    style={{
+                                                        pointerEvents: 'auto',
+                                                        left: `${inputRef.current?.getBoundingClientRect()?.left || 0}px`,
+                                                        top: `${(inputRef.current?.getBoundingClientRect()?.bottom || 0) + 4}px`,
+                                                        width: `${inputRef.current?.getBoundingClientRect()?.width || 200}px`,
+                                                        zIndex: 9999
+                                                    }}
+                                                >
+                                                    {filteredSuggestions.map((suggestion, index) => (
+                                                        <li
+                                                            key={index}
+                                                            onClick={() => handleSuggestionClick(suggestion)}
+                                                            className="px-4 py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 cursor-pointer transition-all duration-200 text-gray-800 hover:text-blue-700 font-medium first:rounded-t-xl last:rounded-b-xl border-b border-gray-100 last:border-b-0 hover:shadow-sm"
+                                                        >
                                                         <span className="flex items-center">
                                                             <span className="w-2 h-2 bg-blue-400 rounded-full mr-3 opacity-60"></span>
                                                             {suggestion}
                                                         </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={addTag}
+                                        className="shrink-0 w-12 h-12 inline-flex items-center justify-center bg-gray-300 text-gray-800 rounded-xl transition-all duration-300 font-medium shadow-lg"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={addTag}
-                                    className="shrink-0 w-12 h-12 inline-flex items-center justify-center bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white rounded-xl transition-all duration-300 font-medium shadow-lg"
-                                >
-                                    <Plus className="w-5 h-5" />
-                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 <ThoughtBlocks
                     blocks={draftThought.blocks}
@@ -419,11 +406,10 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                     onFileUpload={handleFileUpload}
                     onUseCurrentLocation={() => {}}
                 />
-
-                <ToolBar add={addBlock} />
-
-                <div ref={content} />
             </div>
+
+
+            <ToolBar add={addBlock} back={back} handleSave={handleSave} isDirty={isDirty}/>
         </div>
     );
 }
