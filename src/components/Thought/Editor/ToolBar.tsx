@@ -14,6 +14,28 @@ export const ToolBar: React.FC<{
     const longPressTimer = useRef<number | null>(null);
     const longPressDelay = 500;
 
+    // Scroll hide/show state
+    const [isHidden, setIsHidden] = useState(false);
+    const lastScrollY = useRef(typeof window !== 'undefined' ? window.scrollY : 0);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const currentY = window.scrollY;
+            const delta = currentY - lastScrollY.current;
+            // Small threshold to avoid jitter
+            if (delta > 4) {
+                // Scrolling down -> hide toolbar
+                setIsHidden(true);
+            } else if (delta < -4) {
+                // Scrolling up -> show toolbar
+                setIsHidden(false);
+            }
+            lastScrollY.current = currentY;
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
     const blockTypes: {id: blockType, icon: ElementType, label: string, description: string}[] = [
         {
             id: 'text',
@@ -98,7 +120,7 @@ export const ToolBar: React.FC<{
 
     return (
         <>
-            <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+            <div className={`fixed left-1/2 transform -translate-x-1/2 z-50 transition-transform duration-500 ease-out ${isHidden ? 'translate-y-[160%] bottom-0' : 'translate-y-0 bottom-6'}`}>
                 <div className={` relative transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isExpanded ? 'w-80 h-20 rounded-full overflow-hidden' : 'w-80 h-16 rounded-full overflow-visible'} bg-white backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-gray-200/50 transform origin-center`}>
                     <div className={`absolute inset-0 flex items-center justify-between px-4 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isExpanded ? 'opacity-0 scale-50 pointer-events-none' : 'opacity-100 scale-100'}`}>
                         <button
