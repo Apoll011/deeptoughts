@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { MoodInfo } from "../../../../models/types.ts";
-import { Sparkles, Activity, ChevronsUpDown, Heart, Zap, Cloud, Sun } from "lucide-react";
+import { Sparkles, Activity, ChevronsUpDown, Heart } from "lucide-react";
 
 interface MoodBlockProps {
     mood: MoodInfo;
@@ -32,24 +32,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
         if (intensity <= 3) return 'text-emerald-600';
         if (intensity <= 6) return 'text-amber-600';
         return 'text-rose-600';
-    };
-
-    const getEnergyColor = (energy?: string): string => {
-        switch (energy) {
-            case 'low': return 'bg-blue-100 text-blue-700 border-blue-200';
-            case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
-            case 'high': return 'bg-red-100 text-red-700 border-red-200';
-            default: return 'bg-gray-100 text-gray-600 border-gray-200';
-        }
-    };
-
-    const getEnergyIcon = (energy?: string) => {
-        switch (energy) {
-            case 'low': return <Cloud className="w-3 h-3" />;
-            case 'medium': return <Sun className="w-3 h-3" />;
-            case 'high': return <Zap className="w-3 h-3" />;
-            default: return <Activity className="w-3 h-3" />;
-        }
     };
 
     const intensityBars = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -91,12 +73,6 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                             <span className={`text-sm font-semibold ${getIntensityColor(mood.intensity)}`}>
                                 {mood.intensity}/10
                             </span>
-                            {mood.energy && (
-                                <span className={`px-2 py-1 text-xs rounded-full font-medium border flex items-center gap-1 ${getEnergyColor(mood.energy)}`}>
-                                    {getEnergyIcon(mood.energy)}
-                                    {mood.energy}
-                                </span>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -222,18 +198,10 @@ export const MoodBlock: React.FC<MoodBlockProps> = ({ mood, className = '' }) =>
                                     <Activity className="w-3 h-3" />
                                     Mood Analysis
                                 </h4>
-                                <div className="grid grid-cols-2 gap-3 text-xs">
-                                    <div className="text-center">
-                                        <div className={`font-bold text-lg ${getIntensityColor(mood.intensity)}`}>
-                                            {mood.intensity <= 3 ? 'Calm' : mood.intensity <= 6 ? 'Moderate' : 'Intense'}
-                                        </div>
-                                        <div className="text-gray-600">Level</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="font-bold text-lg text-gray-700">
-                                            {mood.energy || 'Neutral'}
-                                        </div>
-                                        <div className="text-gray-600">Energy</div>
+                                <div className="text-center flex items-center justify-evenly px-4">
+                                    <div className="text-gray-600">Level</div>
+                                    <div className={`font-bold text-lg ${getIntensityColor(mood.intensity)}`}>
+                                        {mood.intensity <= 3 ? 'Calm' : mood.intensity <= 6 ? 'Moderate' : 'Intense'}
                                     </div>
                                 </div>
                             </div>

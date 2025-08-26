@@ -33,7 +33,6 @@ export interface MoodInfo {
     primary: string;
     intensity: number;
     secondary?: string[];
-    energy?: 'low' | 'medium' | 'high';
     color?: string;
     emoji?: string;
     note?: string;
@@ -56,7 +55,7 @@ export type thought_Mood = 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'g
 
 export const emotions = [
     'happy', 'sad', 'excited', 'calm', 'anxious', 'grateful', 'reflective',
-    'confident', 'peaceful', 'frustrated', 'hopeful', 'content', 'energetic',
+    'confident', 'frustrated', 'hopeful', 'content', 'energetic',
     'nostalgic', 'curious', 'overwhelmed', 'inspired', 'lonely', 'proud'
 ];
 

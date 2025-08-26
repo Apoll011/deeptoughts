@@ -92,7 +92,6 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                 primary: 'content',
                 intensity: 5,
                 secondary: [],
-                energy: 'medium',
                 emoji: '😊',
                 color: '#10B981',
                 note: ''
