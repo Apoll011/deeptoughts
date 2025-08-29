@@ -128,15 +128,15 @@ export const ToolBar: React.FC<{
                             className="flex items-center gap-2 px-3 py-2 rounded-full text-gray-700 hover:bg-gray-50 transition-all duration-200 text-sm font-medium"
                         >
                             <ChevronLeft className="w-5 h-5" />
-                            <span>Cancel</span>
+                            <span>Back</span>
                         </button>
 
                         <div className="relative -my-2">
                             <button
                                 onClick={handleExpand}
-                                className="w-18 h-18 rounded-full bg-gray-100 border border-gray-200/50 hover:bg-gray-50 transition-all duration-300 flex items-center justify-center group shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_25px_rgba(0,0,0,0.15)]"
+                                className="w-18 h-18 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 border  transition-all duration-300 flex items-center justify-center group shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_25px_rgba(0,0,0,0.15)]"
                             >
-                                <Plus className="w-8 h-8 text-gray-700 group-hover:text-gray-900 group-hover:rotate-45 transition-all duration-300" />
+                                <Plus className="w-8 h-8 text-white/80 group-hover:rotate-45 transition-all duration-300" />
                             </button>
                         </div>
 
