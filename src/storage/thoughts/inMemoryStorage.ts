@@ -1,15 +1,8 @@
 import type {IStorage} from '../interface/storage.interface.ts';
 import type {Thought} from '../../models/types.ts';
-import {mockThoughts} from "./data.ts";
 
 export class InMemoryStorage implements IStorage {
     private thoughts = new Map<string, Thought>();
-
-    constructor() {
-        mockThoughts.forEach(thought => {
-            this.thoughts.set(thought.id, thought);
-        });
-    }
 
     getThought(id: string): Thought | undefined {
         return this.thoughts.get(id);
