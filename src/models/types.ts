@@ -51,7 +51,7 @@ export interface ThoughtBlock {
     timestamp?: Date;
 }
 
-export type thought_Mood = 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'grateful' | 'reflective' | 'neutral';
+export type thought_Mood = 'happy' | 'sad' | 'excited' | 'calm' | 'anxious' | 'grateful' | 'reflective' | 'neutral' | '';
 
 export const emotions = [
     'happy', 'sad', 'excited', 'calm', 'anxious', 'grateful', 'reflective',

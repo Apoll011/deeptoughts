@@ -43,7 +43,7 @@ export class ThoughtManager {
             updates.weather = firstLocationBlock && firstLocationBlock.location ? formatWeather(firstLocationBlock.location) : undefined;
 
             const moodBlocks = updates.blocks.filter(b => b.type === 'mood' && b.mood);
-            if (moodBlocks.length > 0) {
+            if (moodBlocks.length > 0 && ((updates.mood === undefined && updates.primaryEmotion === undefined) || (updates.mood === '' && updates.primaryEmotion === ''))) {
                 moodBlocks.sort((a, b) => (a.mood?.intensity ?? 0) - (b.mood?.intensity ?? 0));
                 const medianIndex = Math.floor(moodBlocks.length / 2);
                 const medianMoodBlock = moodBlocks[medianIndex];
@@ -51,9 +51,6 @@ export class ThoughtManager {
                     updates.mood = medianMoodBlock.mood.primary as thought_Mood;
                     updates.primaryEmotion = medianMoodBlock.mood.emoji;
                 }
-            } else {
-                updates.mood = "calm";
-                updates.primaryEmotion = '';
             }
         }
 

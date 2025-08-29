@@ -1,11 +1,19 @@
-import {useRef, useState, useEffect, useMemo} from 'react';
+import React, {useRef, useState, useEffect, useMemo} from 'react';
 import {
+    Heart,
     Plus,
     X,
 } from 'lucide-react';
 import {v4 as uuidv4} from 'uuid';
 import {ToolBar} from "./ToolBar.tsx";
-import type {blockType, mediaType, Thought, ThoughtBlock} from "../../../models/types.ts";
+import {
+    type blockType,
+    emotions,
+    type mediaType,
+    moodEmojis,
+    type Thought, type thought_Mood,
+    type ThoughtBlock
+} from "../../../models/types.ts";
 import ThoughtBlocks from "./ThougthsBlockWidget.tsx";
 import Swal from 'sweetalert2';
 import {useAppContext} from "../../../context/AppContext.tsx";
@@ -179,6 +187,11 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
         setIsDirty(true);
     };
 
+    const handleSetEmotion = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setDraftThought({ ...draftThought, primaryEmotion: moodEmojis[e.target.value], mood: e.target.value as thought_Mood });
+        setIsDirty(true);
+    };
+
     const handleFileUpload = (blockId: string, file: File) => {
         if (file) {
             const url = URL.createObjectURL(file);
@@ -241,11 +254,11 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
         }
 
         const hasMoodBlock = draftThought.blocks.some(b => b.type === 'mood');
-        if (!hasMoodBlock) {
+        if (!(!(draftThought.mood === '' && draftThought.primaryEmotion === '') || hasMoodBlock)) {
             void Swal.fire({
                 icon: 'info',
                 title: 'Add an emotion',
-                text: 'Add at least one emotion block to save this thought.',
+                text: 'Add at least one emotion block or set the Emotion for this thought to save this thought.',
                 confirmButtonText: 'Understood',
             });
             return;
@@ -324,7 +337,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                                 </select>
                             </div>
 
-                            <div className="mb-6">
+                            <div className="mb-2">
                                 {draftThought.tags && draftThought.tags.length > 0 && (
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         {draftThought.tags.map(tag => (
@@ -391,6 +404,25 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
                                         <Plus className="w-5 h-5" />
                                     </button>
                                 </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="text-sm font-semibold text-gray-700 flex items-center space-x-2 mb-2">
+                                    <Heart className="w-4 h-4" />
+                                    <span>Primary Emotion</span>
+                                </label>
+                                <select
+                                    value={draftThought.mood}
+                                    onChange={handleSetEmotion}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-400 transition-all duration-300 bg-gray-50/50"
+                                >
+                                    <option value="">Select emotion</option>
+                                    {emotions.map(emotion => (
+                                        <option key={emotion} value={emotion}>
+                                            {moodEmojis[emotion]} {emotion.charAt(0).toUpperCase() + emotion.slice(1)}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>

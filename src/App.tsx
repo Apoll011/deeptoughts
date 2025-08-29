@@ -37,7 +37,7 @@ const AppContent: React.FC = () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             isFavorite: false,
-            mood: 'calm',
+            mood: '',
             weather: '',
             location: ''
         };
