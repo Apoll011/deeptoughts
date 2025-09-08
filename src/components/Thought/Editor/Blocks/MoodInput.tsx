@@ -39,7 +39,7 @@ export function MoodInput({block, onUpdateBlock, onAddSecondaryMood, onRemoveSec
                                     });
                                     setStep(2);
                                 }}
-                                className={`flex flex-col items-center justify-center p-4 rounded-2xl border text-gray-700 
+                                className={`flex items-center space-x-1 px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-sm
                                     ${block.mood?.primary === emotion ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:bg-gray-50"} transition`}
                             >
                                 <span className="text-2xl">{moodEmojis[emotion]}</span>
