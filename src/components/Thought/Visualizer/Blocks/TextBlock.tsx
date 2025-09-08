@@ -9,6 +9,13 @@ export const TextBlock: React.FC<{ content: string; timestamp?: Date }> = ({ con
         return content.substring(0, 300) + '...';
     }, [content, isLongText, isExpanded]);
 
+    function formatTime(date: Date) {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
     const formatText = (text: string) => {
         return text
             .split(/(\s+)/)
@@ -72,7 +79,7 @@ export const TextBlock: React.FC<{ content: string; timestamp?: Date }> = ({ con
             {timestamp && (
                 <div className="mt-3 pt-3 border-t border-gray-100">
                     <time className="text-xs text-gray-500">
-                        {timestamp.toLocaleString()}
+                        {formatTime(timestamp)}
                     </time>
                 </div>
             )}
