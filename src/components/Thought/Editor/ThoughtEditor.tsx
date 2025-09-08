@@ -30,7 +30,7 @@ export default function ThoughtEditor({backAction, thoughtId}: {backAction: () =
     const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [wordList, setWordList] = useState<string[]>([]);
-    const haveToHaveABlockForHeader = false;
+    const haveToHaveABlockForHeader = true;
 
     useMemo(() => {
           setWordList(manager.allTags().map(tag => tag.toLowerCase()));
